@@ -10,9 +10,6 @@ class Board(object):
         """
         self.flags = [Flag() for i in xrange(1,10)]
 
-    def __is_flag_in_range(self,index):
-        return index in range(1,10)
-
     def get_flag(self, flag_index):
         """Get the Flag associated with the index
 
@@ -22,6 +19,9 @@ class Board(object):
             raise FlagNotFoundError(flag_index)
 
         return self.flags[flag_index - 1]
+
+    def __is_flag_in_range(self,index):
+        return index in range(1,10)
 
 class FlagNotFoundError(Exception):
     def __init__(self, flag_index):
