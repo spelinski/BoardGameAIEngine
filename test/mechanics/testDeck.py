@@ -1,7 +1,5 @@
 import unittest
 from mechanics.Deck import Deck,DeckEmptyError
-from collections import namedtuple
-from itertools import product
 
 
 class TestDeck(unittest.TestCase):
