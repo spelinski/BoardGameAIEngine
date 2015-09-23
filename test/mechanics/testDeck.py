@@ -1,33 +1,33 @@
 import unittest
-from mechanics.Deck import Deck,DeckEmptyError
+from mechanics.Deck import Deck, DeckEmptyError
 
 
 class TestDeck(unittest.TestCase):
 
     def test_deck_is_not_empty_by_default(self):
         listOfCards = [1]
-        self.assertFalse(Deck(listOfCards,False).is_empty())
+        self.assertFalse(Deck(listOfCards, False).is_empty())
 
     def test_can_draw_card_from_deck(self):
         listOfCards = [1]
-        drawnCard = Deck(listOfCards,False).draw()
+        drawnCard = Deck(listOfCards, False).draw()
         self.assertEqual(drawnCard, 1)
 
     def test_can_draw_different_cards_from_deck(self):
-        listOfCards = [1,2]
-        localDeck = Deck(listOfCards,False)
+        listOfCards = [1, 2]
+        localDeck = Deck(listOfCards, False)
         self.assertNotEqual(localDeck.draw(), localDeck.draw())
 
     def test_deck_is_empty_after_drawing_all_cards(self):
-        listOfCards = [1,2]
-        localDeck = Deck(listOfCards,False)
+        listOfCards = [1, 2]
+        localDeck = Deck(listOfCards, False)
         localDeck.draw()
         localDeck.draw()
         self.assertTrue(localDeck.is_empty())
 
     def test_error_thrown_when_drawing_from_empty_deck(self):
         listOfCards = [1]
-        localDeck = Deck(listOfCards,False)
+        localDeck = Deck(listOfCards, False)
         localDeck.draw()
         self.assertRaisesRegexp(
             DeckEmptyError, "Attempted to draw on an empty Deck", localDeck.draw)
