@@ -19,3 +19,9 @@ class TestBattlelineEngine(unittest.TestCase):
     def test_each_player_starts_with_7_cards(self):
         self.assertEquals(7, len(self.engine.player1.hand))
         self.assertEquals(7, len(self.engine.player2.hand))
+
+    def test_engine_initially_sends_out_player_hand_information(self):
+        player1_message = self.engine.player1.communication.messages_received[0]
+        player2_message = self.engine.player2.communication.messages_received[0]
+
+        self.assertNotEquals(player1_message, player2_message)
