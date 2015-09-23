@@ -11,6 +11,7 @@ class Deck(object):
         Constructor
         @param listOfCards list of the cards that start in the deck
         @param shuffleDeck go ahead and shuffle the deck (default True)
+        @raise TypeError if the first parameter is not a list
         """
         if not isinstance(listOfCards, list):
             raise TypeError

@@ -2,6 +2,7 @@ import unittest
 from mechanics.Deck import Deck
 from mechanics.Deck import DeckEmptyError
 from collections import namedtuple
+from itertools import product
 
 
 class TestDeck(unittest.TestCase):
@@ -39,4 +40,14 @@ class TestDeck(unittest.TestCase):
         listOfCards = [Card(number=1, color="Blue")]
         localDeck = Deck(listOfCards)
         localDeck.draw()
-        self.assertRaisesRegexp(DeckEmptyError, "Attempted to draw on an empty Deck", localDeck.draw)
+        self.assertRaisesRegexp(
+            DeckEmptyError, "Attempted to draw on an empty Deck", localDeck.draw)
+
+    def test_deck_shuffle_does_not_change_actual_cards(self):
+        Card = namedtuple('Card', 'number,color')
+        colorList = ["Blue", "Green", "White"]
+        listOfCards = [Card(number=currentNumber, color=currentColor)
+                       for currentNumber, currentColor in product(range(1, 10), colorList)]
+        localDeck = Deck(listOfCards, False)
+        localDeck.shuffle()
+        self.assertEqual(set(localDeck.deck), set(listOfCards))
