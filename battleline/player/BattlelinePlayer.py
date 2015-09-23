@@ -8,10 +8,17 @@ class BattlelinePlayer(Player):
     HAND_LIMIT = 7
 
     def __init__(self, name):
+        """Consructor
+        @param name the player name
+        """
         Player.__init__(self, name)
         self.hand = []
 
     def add_to_hand(self, card):
+        """
+        Add to the hand, as long as the hand is not already at the limit
+        @param card the card we want to add to the hand
+        """
         if(self.__is_hand_at_limit()):
             raise HandFullError(BattlelinePlayer.HAND_LIMIT)
         self.hand.append(card)
