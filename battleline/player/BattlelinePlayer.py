@@ -17,6 +17,7 @@ class BattlelinePlayer(object):
         """
         Add to the hand, as long as the hand is not already at the limit
         @param card the card we want to add to the hand
+        @raise HandFullError if we are already have a full hand
         """
         if(self.__is_hand_at_limit()):
             raise HandFullError(BattlelinePlayer.HAND_LIMIT)
