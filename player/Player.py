@@ -8,4 +8,7 @@ class Player(object):
         self.name = name
 
     def take_turn(self):
+        """
+        Meant to be overridden by derived classes
+        """
         raise NotImplementedError
