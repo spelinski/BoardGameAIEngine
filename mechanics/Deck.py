@@ -23,18 +23,16 @@ class Deck(object):
         shuffle(self.deck)
 
     def is_empty(self):
-        if len(self.deck) > 0:
-            return False
-        return True
+        return self.deck == []
 
     def draw(self):
         """
         draw the next card from the deck
         @raise DeckEmptyError if the deck is empty
         """
-        if not self.is_empty():
-            return self.deck.pop()
-        raise DeckEmptyError("draw")
+        if self.is_empty():
+            raise DeckEmptyError("draw")
+        return self.deck.pop()
 
 
 class DeckEmptyError(Exception):
