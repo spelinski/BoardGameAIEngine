@@ -1,10 +1,12 @@
 import unittest
 from battleline.engine.BattlelineEngine import BattlelineEngine
 from battleline.player.BattlelinePlayer import BattlelinePlayer
+
+from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
 class TestBattlelineEngine(unittest.TestCase):
 
     def setUp(self):
-        self.engine = BattlelineEngine(BattlelinePlayer("1"), BattlelinePlayer("2"))
+        self.engine = BattlelineEngine(BattlelinePlayer("1", MockPlayerCommunication()), BattlelinePlayer("2", MockPlayerCommunication()))
 
     def test_can_create_engine_with_two_players(self):
         self.assertEquals("1", self.engine.player1.name)
