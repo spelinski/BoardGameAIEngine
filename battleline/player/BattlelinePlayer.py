@@ -1,5 +1,4 @@
-from player.Player import Player
-class BattlelinePlayer(Player):
+class BattlelinePlayer(object):
     """
     Player object for Battleline
     Keeps track of a hand
@@ -11,7 +10,7 @@ class BattlelinePlayer(Player):
         """Consructor
         @param name the player name
         """
-        Player.__init__(self, name)
+        self.name = name
         self.hand = []
 
     def add_to_hand(self, card):
