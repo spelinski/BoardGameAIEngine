@@ -11,6 +11,7 @@ class TestBattlelineEngine(unittest.TestCase):
         self.engine = BattlelineEngine(BattlelinePlayer("1", MockPlayerCommunication()), BattlelinePlayer("2", MockPlayerCommunication))
 
         #reinitialize the deck with a non shuffled deck to make things more reliable
+        #don't do this in production code, the deck should be shuffled in real code
         self.engine.troop_deck = Deck(self.engine.get_troop_cards(), shuffleDeck=False)
 
     def test_can_create_engine_with_two_players(self):
