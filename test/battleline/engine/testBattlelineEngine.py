@@ -19,3 +19,16 @@ class TestBattlelineEngine(unittest.TestCase):
     def test_each_player_starts_with_7_cards(self):
         self.assertEquals(7, len(self.engine.player1.hand))
         self.assertEquals(7, len(self.engine.player2.hand))
+
+    def test_one_turn_plays_a_troop_and_draws_new_one(self):
+        player1_hand = self.engine.player1.hand
+        player2_hand = self.engine.player2.hand
+
+        self.engine.progress_turn()
+
+        self.assertHandsDifferBy1(player1_hand, self.engine.player1.hand)
+        self.assertHandsDifferBy1(player2_hand, self.engine.player2.hand)
+
+    def assertHandsDifferBy1(self, old_hand, new_hand):
+        self.assertEquals(1, len(set(old_hand) - set(new_hand)))
+        self.assertEquals(1, len(set(new_hand) - set(old_hand)))
