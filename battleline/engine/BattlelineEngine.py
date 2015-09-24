@@ -1,4 +1,4 @@
-from battleline.model.Deck import Deck
+from mechanics.Deck import Deck
 
 class BattlelineEngine(object):
     """
@@ -8,7 +8,7 @@ class BattlelineEngine(object):
     def __init__(self, player1, player2):
         self.player1 = player1
         self.player2 = player2
-        self.deck = Deck()
+        self.deck = Deck(list(range(1,60)))
         for i in xrange(7):
             self.player1.add_to_hand(self.deck.draw())
             self.player2.add_to_hand(self.deck.draw())
