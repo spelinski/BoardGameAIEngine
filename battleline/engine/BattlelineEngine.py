@@ -21,6 +21,7 @@ class BattlelineEngine(object):
     def initialize(self):
         """
         Initialize the game
+        Deal seven cards to each player
         """
         for i in xrange(7):
             self.player1.add_to_hand(self.troop_deck.draw())
@@ -29,7 +30,7 @@ class BattlelineEngine(object):
     def get_troop_cards(self):
         """
         Get the troop cards
-        A list of all troop cards
+        @return A list of all troop cards
         """
         colors = ["RED", "GREEN", "ORANGE", "YELLOW", "BLUE", "PURPLE"]
         return [TroopCard(name,number) for name,number in sorted(product(colors, range(1,11)), reverse=True)]
