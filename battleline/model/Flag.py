@@ -47,9 +47,7 @@ class Flag(object):
         """
         if not self.__is_valid_player_choice(player):
             raise InvalidPlayerError(player)
-        if len(self.sides[player]) >= self.MAX_CARDS_PER_SIDE:
-            return False
-        return True 
+        return len(self.sides[player]) < self.MAX_CARDS_PER_SIDE
 
     def __is_valid_player_choice(self, player):
         return player in self.sides
