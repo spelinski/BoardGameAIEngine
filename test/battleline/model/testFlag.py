@@ -25,7 +25,7 @@ class TestFlag(unittest.TestCase):
         self.assertTrue(self.flag.is_player_side_empty(Flag.PLAYER_TWO_ID))
         self.assertFalse(self.flag.is_empty())
 
-    def test_flag_can_not_add_more_than_tree_cards(self):
+    def test_flag_can_not_add_more_than_three_cards(self):
         for x in range(0,3): self.flag.add_card(Flag.PLAYER_ONE_ID, self.card)
         self.assertRaisesRegexp(TooManyCardsOnOneSideError, "Player player1 is attempting to add to many cards", self.flag.add_card, Flag.PLAYER_ONE_ID, self.card)
 
