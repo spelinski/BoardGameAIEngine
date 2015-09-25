@@ -1,31 +1,32 @@
 
 #Dummy card class until one is actually created.
-class Card(object):
-    def __init__(self):
-        pass
 
 class Flag(object):
     """A representation of a flag in Battle Line.
     A flag can hold 3 cards for both players.
     """
-    PLAYER_ONE = "player1"
-    PLAYER_TWO = "player2"
+    PLAYER_ONE_ID = "player1"
+    PLAYER_TWO_ID = "player2"
     MAX_CARDS_PER_SIDE = 3
 
     def __init__(self):
         """
         Constructor
         """
-        self.sides = {self.PLAYER_ONE:[], self.PLAYER_TWO:[]}
+        self.sides = {self.PLAYER_ONE_ID:[], self.PLAYER_TWO_ID:[]}
 
-    def is_empty(self, player=None):
-        """Determines if there are any cards played on this flag.
-
-        @param player player constant to check, None will return empty status for either side of flag
+    def is_empty(self):
         """
-        if player == None:
-            return self.is_empty(self.PLAYER_ONE) and self.is_empty(self.PLAYER_TWO)
-        elif player not in self.sides:
+        Determines if there are any cards played on this flag.
+        """
+        return self.is_player_side_empty(self.PLAYER_ONE_ID) and self.is_player_side_empty(self.PLAYER_TWO_ID)
+
+    def is_player_side_empty(self, player):
+        """ Determines if a player side is empty.
+
+        @param player The player side to check.
+        """
+        if not self.__is_valid_player_choice(player): 
             raise InvalidPlayerError(player)
         else:
             return len(self.sides[player]) == 0
@@ -36,11 +37,14 @@ class Flag(object):
         @param player player side to add the flag to. 
         @param card   the card to add to the player side
         """
-        if player != self.PLAYER_ONE and player != self.PLAYER_TWO:
+        if not self.__is_valid_player_choice(player):
             raise InvalidPlayerError(player)
         if len(self.sides[player]) >= self.MAX_CARDS_PER_SIDE:
             raise TooManyCardsOnOneSideError(player) 
         self.sides[player].append(card)
+
+    def __is_valid_player_choice(self, player):
+        return player in self.sides
 
 class InvalidPlayerError(Exception):
      def __init__(self, player_string):
