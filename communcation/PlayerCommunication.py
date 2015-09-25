@@ -3,7 +3,7 @@ Created on Sep 23, 2015
 
 @author: rohk
 '''
-from subprocess import Popen,PIPE
+from subprocess import Popen, PIPE
 import threading
 
 
@@ -15,10 +15,11 @@ class PlayerCommunication(object):
     def __init__(self, programWithPath):
         """
         Constructor
-        @param programWithPath relative path to executable 
+        @param programWithPath relative path to executable
         """
-        self.runningPlayer = Popen("./"+programWithPath,stdin =PIPE,stdout=PIPE, shell=True)
-        
+        self.runningPlayer = Popen(
+            "./" + programWithPath, stdin=PIPE, stdout=PIPE, shell=True)
+
     def send_message(self, message):
         """
         send a string to the external program
@@ -26,12 +27,12 @@ class PlayerCommunication(object):
         """
         self.runningPlayer.stdin.write(message + "\n")
         self.runningPlayer.stdin.flush()
-        
+
     def get_response(self, timeout=10):
         """
         get the response from the external program
-        @param timeout amount of time to wait on external program in seconds (default 10 seconds)
-        @raise BotCommunicationError on a timeout or empty response from external program
+        @param timeout amount of time to wait in seconds (default 10)
+        @raise BotCommunicationError on a timeout or empty response
         """
         self.exceptionFromThread = None
         thread = threading.Thread(target=self.__get_response_thread)
@@ -43,29 +44,31 @@ class PlayerCommunication(object):
         if thread.is_alive():
             raise BotCommunicationError("timeout")
         return self.response
-    
+
     def __get_response_thread(self):
         """
-        get_response calls this so that it can run a seperate thread with a timeout
+        get_response calls this so that it can run
+        a seperate thread with a timeout
         """
         self.response = self.runningPlayer.stdout.readline()
         if len(self.response) <= 0:
-            self.exceptionFromThread = BotCommunicationError("program didn't say anything")
-    
+            self.exceptionFromThread = BotCommunicationError(
+                "program didn't say anything")
+
     def close(self):
         """
         kill the external process
         """
         self.runningPlayer.terminate()
-        
+
 
 class BotCommunicationError(Exception):
 
-    def __init__(self, whatWentWrong):
+    def __init__(self, commFailure):
         """Create an Exception that the communcation with the bot failed
-        @param whatWentWrong
+        @param commFailure
         """
-        self.whatWentWrong = whatWentWrong
+        self.commFailure = commFailure
 
     def __str__(self):
-        return "Failed to send message because of {}".format(self.whatWentWrong)
+        return "Failed to send message because of {}".format(self.commFailure)

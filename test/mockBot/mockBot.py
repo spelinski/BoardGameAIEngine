@@ -7,7 +7,9 @@ Created on Sep 23, 2015
 
 from sys import stdin, stdout
 
+
 class Bot:
+
     def run(self):
         while not stdin.closed:
             try:
@@ -15,7 +17,7 @@ class Bot:
 
                 if len(line) == 0:
                     continue
-                
+
                 if line == "testing":
                     try:
                         stdout.write("1..2..3\n")
