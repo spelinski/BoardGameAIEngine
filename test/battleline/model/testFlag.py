@@ -28,3 +28,9 @@ class TestFlag(unittest.TestCase):
     def test_flag_can_not_add_more_than_tree_cards(self):
         for x in range(0,3): self.flag.add_card(Flag.PLAYER_ONE_ID, self.card)
         self.assertRaisesRegexp(TooManyCardsOnOneSideError, "Player player1 is attempting to add to many cards", self.flag.add_card, Flag.PLAYER_ONE_ID, self.card)
+
+    def test_flag_can_check_if_card_playable(self):
+        for x in range(0,3):
+            self.assertTrue(self.flag.is_flag_playable(Flag.PLAYER_ONE_ID))
+            self.flag.add_card(Flag.PLAYER_ONE_ID, self.card)
+        self.assertFalse(self.flag.is_flag_playable(Flag.PLAYER_ONE_ID))

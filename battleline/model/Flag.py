@@ -36,9 +36,20 @@ class Flag(object):
         """
         if not self.__is_valid_player_choice(player):
             raise InvalidPlayerError(player)
-        if len(self.sides[player]) >= self.MAX_CARDS_PER_SIDE:
+        if not self.is_flag_playable(player): 
             raise TooManyCardsOnOneSideError(player) 
         self.sides[player].append(card)
+
+    def is_flag_playable(self, player):
+        """Checks if a side of the flag can be played on.
+
+        @param player Player side to check
+        """
+        if not self.__is_valid_player_choice(player):
+            raise InvalidPlayerError(player)
+        if len(self.sides[player]) >= self.MAX_CARDS_PER_SIDE:
+            return False
+        return True 
 
     def __is_valid_player_choice(self, player):
         return player in self.sides
