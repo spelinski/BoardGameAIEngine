@@ -37,3 +37,13 @@ class TestFlag(unittest.TestCase):
             self.assertTrue(self.flag.is_flag_playable(Flag.PLAYER_ONE_ID))
             self.flag.add_card(Flag.PLAYER_ONE_ID, self.card)
         self.assertFalse(self.flag.is_flag_playable(Flag.PLAYER_ONE_ID))
+
+    def test_flag_can_claim_and_check_claimed_flags(self):
+        self.assertFalse(self.flag.is_flag_claimed())
+        self.assertFalse(self.flag.is_flag_claimed_by_player(Flag.PLAYER_ONE_ID))
+        self.assertFalse(self.flag.is_flag_claimed_by_player(Flag.PLAYER_TWO_ID)) 
+        self.flag.claim_flag(Flag.PLAYER_ONE_ID)
+        self.assertTrue(self.flag.is_flag_claimed())
+        self.assertTrue(self.flag.is_flag_claimed_by_player(Flag.PLAYER_ONE_ID))
+        self.assertFalse(self.flag.is_flag_claimed_by_player(Flag.PLAYER_TWO_ID)) 
+

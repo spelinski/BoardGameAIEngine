@@ -11,6 +11,7 @@ class Flag(object):
         Constructor
         """
         self.sides = {self.PLAYER_ONE_ID:[], self.PLAYER_TWO_ID:[]}
+        self.claimed = None
 
     def is_empty(self):
         """
@@ -23,10 +24,8 @@ class Flag(object):
 
         @param player The player side to check.
         """
-        if not self.__is_valid_player_choice(player): 
-            raise InvalidPlayerError(player)
-        else:
-            return len(self.sides[player]) == 0
+        self.__raise_error_if_invalid_player(player)
+        return len(self.sides[player]) == 0
 
     def add_card(self, player, card):
         """Add a card to the Flag
@@ -34,10 +33,8 @@ class Flag(object):
         @param player player side to add the flag to. 
         @param card   the card to add to the player side
         """
-        if not self.__is_valid_player_choice(player):
-            raise InvalidPlayerError(player)
-        if not self.is_flag_playable(player): 
-            raise TooManyCardsOnOneSideError(player) 
+        self.__raise_error_if_invalid_player(player)
+        self.__raise_error_if_card_can_not_be_played(player)
         self.sides[player].append(card)
 
     def is_flag_playable(self, player):
@@ -45,12 +42,30 @@ class Flag(object):
 
         @param player Player side to check
         """
-        if not self.__is_valid_player_choice(player):
-            raise InvalidPlayerError(player)
+        self.__raise_error_if_invalid_player(player)
         return len(self.sides[player]) < self.MAX_CARDS_PER_SIDE
+    
+    def claim_flag(self, player):
+        self.__raise_error_if_invalid_player(player) 
+        self.claimed = player
+
+    def is_flag_claimed(self):
+        return False if self.claimed == None else True
+
+    def is_flag_claimed_by_player(self, player):
+        return self.claimed == player 
 
     def __is_valid_player_choice(self, player):
         return player in self.sides
+
+    def __raise_error_if_invalid_player(self, player):
+        if not self.__is_valid_player_choice(player):
+            raise InvalidPlayerError(player)
+
+    def __raise_error_if_card_can_not_be_played(self, player):
+        if not self.is_flag_playable(player): 
+            raise TooManyCardsOnOneSideError(player) 
+
 
 class InvalidPlayerError(Exception):
      def __init__(self, player_string):
