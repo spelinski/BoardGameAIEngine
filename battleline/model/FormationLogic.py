@@ -5,39 +5,133 @@ class FormationLogic:
         self.playedCardList = []
     def checkAllFlags(self,board):
         #get a list of all played cards
-        setPlayedCardList(board)
-        #get the best possible formation for an empty set
+        self.setPlayedCardList(board)
+        #get the best possible formation for an empty set because there should be a lot of those requested
         bestFormationPossible = self.greatestPossibleFormation([])
         for flag in board.flags:
-            for thisSide in 1,2:
-                if thisSide == 1:
-                    otherSide = 2
+            for player in [flag.PLAYER_ONE_ID,flag.PLAYER_TWO_ID]:
+                if player == flag.PLAYER_ONE_ID:
+                    enemy = flag.PLAYER_TWO_ID
                 else:
-                    otherSide = 1
-		        if len(flag.getCards(thisSide)) == 3:
+                    player = flag.PLAYER_ONE_ID
+                #thisSideBestFormation = self.greatestPossibleFormation(flag.get_cards(thisSide))
+                if len(flag.get_cards(player)) == 3:
+                    playerCards  = flag.get_cards(player)
+                    enemyCards = flag.get_cards(enemy)
 		            #the flag needs to be checked
-		            if len(flag.side(otherSide)) == 0:
-		                if self.greatestPossibleFormation(flag.getCards(thisSide)) > bestFormationPossible:
-		                    flag.claim(thisSide)
-		                elif self.greatestPossibleFormation(flag.getCards(thisSide)) > self.greatestPossibleFormation(flag.getCards(otherSide)):
-		                    flag.claim(thisSide)
+                    if len(enemyCards) == 0:
+                        if self.getTheBetterFormation(playerCards, bestFormationPossible) == playerCards:
+                            flag.claim(player)
+                    elif self.getTheBetterFormation( playerCards, self.greatestPossibleFormation(enemyCards) ) == playerCards:
+                        flag.claim(player)
+                elif len(flag.get_cards(enemy)) == 3:
+                    playerCards  = flag.get_cards(player)
+                    enemyCards = flag.get_cards(enemy)
+		            #the flag needs to be checked
+                    if len(playerCards) == 0:
+                        if self.getTheBetterFormation(enemyCards, bestFormationPossible) == enemyCards:
+                            flag.claim(enemy)
+                    elif self.getTheBetterFormation( enemyCards, self.greatestPossibleFormation(playerCards) ) == enemyCards:
+                        flag.claim(enemy)
+
+    def getTheBetterFormation(self,formation1,formation2):
+        print "1: " + str(formation1)
+        print "2: " + str(formation2)
+        listOfFunctions = [self.isStraightFlush,self.isThreeOfAKind,self.isFlush,self.isStraight,self.isHost]
+        for function in listOfFunctions:
+            if function(formation1):
+                if function(formation2):
+                    return self.compareMaximums(formation1,formation2)
+                else:
+                    return formation1
+            if function(formation2):
+                return formation2
+    def compareMaximums(self,formation1,formation2):
+        formation1_n1,formation1_c1 = formation1[0]
+        formation1_n2,formation1_c2 = formation1[1]
+        formation1_n3,formation1_c3 = formation1[2]
+        formation1_max = max(max(formation1_n1,formation1_n2),formation1_n3)
+
+        formation2_n1,formation2_c1 = formation2[0]
+        formation2_n2,formation2_c2 = formation2[1]
+        formation2_n3,formation2_c3 = formation2[2]
+        formation2_max = max(max(formation2_n1,formation2_n2),formation2_n3)
+
+        if formation1_max > formation2_max:
+            return formation1
+        else:
+            return formation2
+        
+    def isStraightFlush(self,formation):
+        if len(formation) < 3:
+            return False
+        n1,c1 = formation[0]
+        n2,c2 = formation[1]
+        n3,c3 = formation[2]
+        nmin = min(min(n1,n2),n3)
+        if c1 != c2 or c1 != c3:
+            return False
+        if nmin+1 != n1 and nmin+1 != n2 and nmin+1 != n3:
+            return False
+        if nmin+2 != n1 and nmin+2 != n2 and nmin+2 != n3:
+            return False
+        return True
+
+    def isThreeOfAKind(self,formation):
+        if len(formation) < 3:
+            return False
+        n1,c1 = formation[0]
+        n2,c2 = formation[1]
+        n3,c3 = formation[2]
+        if n1 != n2 or n1 != n3:
+            return False
+        return True
+    def isFlush(self,formation):
+        if len(formation) < 3:
+            return False
+        n1,c1 = formation[0]
+        n2,c2 = formation[1]
+        n3,c3 = formation[2]
+        nmin = min(min(n1,n2),n3)
+        if c1 != c2 or c1 != c3:
+            return False
+        return True
+    def isStraight(self,formation):
+        if len(formation) < 3:
+            return False
+        n1,c1 = formation[0]
+        n2,c2 = formation[1]
+        n3,c3 = formation[2]
+        nmin = min(min(n1,n2),n3)
+        if nmin+1 != n1 and nmin+1 != n2 and nmin+1 != n3:
+            return False
+        if nmin+2 != n1 and nmin+2 != n2 and nmin+2 != n3:
+            return False
+        return True
+    def isHost(self,formation):
+        if len(formation) < 3:
+            return False
+        return True
     def setPlayedCardList(self,board):
-        for flag in board:
-            for card in flag:
-                self.playedCardList.append(card)
+        for flag in board.flags:
+            for player in flag.PLAYER_ONE_ID,flag.PLAYER_TWO_ID:
+                for card in flag.get_cards(player):
+                    self.playedCardList.append(card)
     def greatestPossibleFormation(self,listOfCards):
-		formation = []
-        # straight flush > three of a kind > flush > straight > host
+        if len(listOfCards) == 3:
+            return listOfCards
+        formation = []
+        #straight flush > three of a kind > flush > straight > host
         formation = self.createStraightFlush(listOfCards)
-		if formation == []:
+        if formation == []:
             formation = self.createThreeOfAKind(listOfCards)
-		if formation == []:
+        if formation == []:
             formation = self.createFlush(listOfCards)
-		if formation == []:
+        if formation == []:
             formation = self.createStraight(listOfCards)
-		if formation == []:
+        if formation == []:
             formation = self.createHost(listOfCards)
-		return formation
+        return formation
     """
     Begin the creation functions. Each tries to create a formation of its type. It will return [] if it can't create one
     They all take a list of cards that are present on the flag. They use the playedCardList variable to see what has already been played
@@ -50,67 +144,75 @@ class FormationLogic:
     """
     def createStraightFlush(self,listOfCards):
         if len(listOfCards) == 2:
-            listColor = listOfCards[0].color
-            largerCardNumber = max(listOfCards[0].number,listOfCards[1].number)
-            smallerCardNumber = min(listOfCards[0].number,listOfCards[1].number)
+            firstNumber,firstColor   = listOfCards[0]
+            secondNumber,secondColor = listOfCards[1]
+
+            largerCardNumber = max(firstNumber,secondNumber)
+            smallerCardNumber = min(firstNumber,secondNumber)
             #can't make a flush when starting with 2 cards of different color
-            if listOfCards[0].color != listOfCards[1].color:
+            if firstColor != secondColor:
                 return []
             #if you have a 10 and an 8, the 9 has to be unplayed to get a straight flush
-            if largerCardNumber == smallerCardNumber + 2 and (largerCardNumber-1,listColor) not in self.playedCardList:
-                listOfCards.append( (largerCardNumber-1,listColor) )
+            if largerCardNumber == smallerCardNumber + 2 and (largerCardNumber-1,firstColor) not in self.playedCardList:
+                listOfCards.append( (largerCardNumber-1,firstColor) )
                 return listOfCards
             
             #if you have a 9 and an 8, look for a 10 before looking for the 7
-            elif largerCardNumber != 10 and (largerCardNumber+1,listColor) not in self.playedCardList:
-                listOfCards.append( (largerCardNumber+1,listColor) )
+            elif largerCardNumber != 10 and (largerCardNumber+1,firstColor) not in self.playedCardList:
+                listOfCards.append( (largerCardNumber+1,firstColor) )
                 return listOfCards
-            elif smallerCardNumber != 1 and (smallerCardNumber-1,listColor) not in self.playedCardList:
-                listOfCards.append( (smallerCardNumber-1,listColor) )
+            elif smallerCardNumber != 1 and (smallerCardNumber-1,firstColor) not in self.playedCardList:
+                listOfCards.append( (smallerCardNumber-1,firstColor) )
                 return listOfCards
             else:
                 return []
         if len(listOfCards) == 1:
+            number,color = listOfCards[0]
             #check the 2 higher numbers in this color
-            if (listOfCards[0].number+1,listOfCards[0].color) in self.playedCardList and (listOfCards[0].number+2,listOfCards[0].color) in self.playedCardList:
-                listOfCards.append((listOfCards[0].number+1,listOfCards[0].color))
-                listOfCards.append((listOfCards[0].number+2,listOfCards[0].color))
+            if (number+1,color) not in self.playedCardList and (number+2,color) not in self.playedCardList:
+                listOfCards.append( (number+1,color) )
+                listOfCards.append( (number+2,color) )
                 return listOfCards
             #check 1 higher number, 1 lower number in this color
-            elif (listOfCards[0].number+1,listOfCards[0].color) in self.playedCardList and (listOfCards[0].number-1,listOfCards[0].color) in self.playedCardList:
-                listOfCards.append((listOfCards[0].number+1,listOfCards[0].color))
-                listOfCards.append((listOfCards[0].number-1,listOfCards[0].color))
+            elif (number+1,color) not in self.playedCardList and (number-1,color) not in self.playedCardList:
+                listOfCards.append( (number+1,color) )
+                listOfCards.append( (number-1,color) )
                 return listOfCards
             #check 2 lower numbers in this color
-            elif (listOfCards[0].number-1,listOfCards[0].color) in self.playedCardList and (listOfCards[0].number-2,listOfCards[0].color) in self.playedCardList:
-                listOfCards.append((listOfCards[0].number-1,listOfCards[0].color))
-                listOfCards.append((listOfCards[0].number-2,listOfCards[0].color))
+            elif (number-1,color) not in self.playedCardList and (number-2,color) not in self.playedCardList:
+                listOfCards.append( (number-1,color) )
+                listOfCards.append( (number-2,color) )
                 return listOfCards
             else:
                 return []
         if len(listOfCards) == 0:
             #calculate the highest possible straight flush with remaining cards
-            for color in COLORS:
-                for number in [8,7,6,5,4,3,2,1]:
+            for number in [8,7,6,5,4,3,2,1]:
+                for color in COLORS:
                     #check if number, number+1, and number+2 are all not in the list
                     if (number,color) not in self.playedCardList and (number+1,color) not in self.playedCardList and (number+2,color) not in self.playedCardList:
                         return [(number,color),(number+1,color),(number+2,color)]
+            return []
     def createThreeOfAKind(self,listOfCards):
         if len(listOfCards) == 2:
+            firstNumber,firstColor   = listOfCards[0]
+            secondNumber,secondColor = listOfCards[1]
+
             listOfColorsAvailable = []
-            number = listOfCards[0].number
+            if firstNumber != secondNumber:
+                return []
             #see if there is at least 1 color of this number unplayed
             for color in COLORS:
-                if (number,color) not in self.playedCardList:
+                if (firstNumber,color) not in self.playedCardList:
                     listOfColorsAvailable.append(color)
             if len(listOfColorsAvailable) >= 1:
-                listOfCards.append( (number,listOfColorsAvailable[0]) )
+                listOfCards.append( (firstNumber,listOfColorsAvailable[0]) )
                 return listOfCards
             else:
                 return []
         if len(listOfCards) == 1:
+            number,color = listOfCards[0]
             listOfColorsAvailable = []
-            number = listOfCards[0].number
             #see if there are at least 2 colors of this number unplayed
             for color in COLORS:
                 if (number,color) not in self.playedCardList:
@@ -123,7 +225,7 @@ class FormationLogic:
                 return []
         if len(listOfCards) == 0:
             #calculate the highest possible three of a kind with remaining cards
-            for number in range(10,1):
+            for number in range(10,1,-1):
                 listOfColorsAvailable = []
                 #see if there are at least 3 colors of this number unplayed
                 for color in COLORS:
@@ -135,22 +237,23 @@ class FormationLogic:
             return []
     def createFlush(self,listOfCards):
         if len(listOfCards) == 2:
+            firstNumber,firstColor   = listOfCards[0]
+            secondNumber,secondColor = listOfCards[1]
             listOfNumbersAvailable = []
-            color = listOfCards[0].color
             #see if there is at least 1 number of this color unplayed
-            for number in range(10,1):
-                if (number,color) not in self.playedCardList:
+            for number in range(10,1,-1):
+                if (number,firstColor) not in self.playedCardList:
                     listOfNumbersAvailable.append(number)
             if len(listOfNumbersAvailable) >= 1:
-                listOfCards.append( (listOfNumbersAvailable[0],color) )
+                listOfCards.append( (listOfNumbersAvailable[0],firstColor) )
                 return listOfCards
             else:
                 return []
         if len(listOfCards) == 1:
+            number,color = listOfCards[0]
             listOfNumbersAvailable = []
-            color = listOfCards[0].color
             #see if there is at least 2 numbers of this color unplayed
-            for number in range(10,1):
+            for number in range(10,1,-1):
                 if (number,color) not in self.playedCardList:
                     listOfNumbersAvailable.append(number)
             if len(listOfNumbersAvailable) >= 2:
@@ -164,7 +267,7 @@ class FormationLogic:
             for color in COLORS:
                 listOfNumbersAvailable = []
                 #see if there are at least 3 numbers of this color unplayed
-                for number in range(10,1):
+                for number in range(10,1,-1):
                     if (number,color) not in self.playedCardList:
                         listOfNumbersAvailable.append(number)
                 if len(listOfNumbersAvailable) >= 3:
@@ -173,8 +276,10 @@ class FormationLogic:
             return []
     def createStraight(self,listOfCards):
         if len(listOfCards) == 2:
-            largerCardNumber = max(listOfCards[0].number,listOfCards[1].number)
-            smallerCardNumber = min(listOfCards[0].number,listOfCards[1].number)
+            firstNumber,firstColor   = listOfCards[0]
+            secondNumber,secondColor = listOfCards[1]
+            largerCardNumber = max(firstNumber,secondNumber)
+            smallerCardNumber = min(firstNumber,secondNumber)
             listOfNeededNumbers = []
             if largerCardNumber != 10:
                 #find a number in any color that is 1 more than the larger one
@@ -194,34 +299,35 @@ class FormationLogic:
             else:
                 return []
         if len(listOfCards) == 1:
+            number,color = listOfCards[0]
             listOfNeededNumbers = []
             wasItAdded = [False,False,False,False]
-            if listOfCards[0].number != 10 and listOfCards[0].number != 9:
+            if number != 10 and number != 9:
                 #find a number in any color that is 2 more than this one
                 for color in COLORS:
-                    if (largerCardNumber+2,color) not in self.playedCardList:
-                        listOfNeededNumbers.append( (largerCardNumber+2,color) )
+                    if (number+2,color) not in self.playedCardList:
+                        listOfNeededNumbers.append( (number+2,color) )
                         wasItAdded[0]= True
                         break;
-            if listOfCards[0].number != 10:
+            if number != 10:
                 #find a number in any color that is 1 more than this one
                 for color in COLORS:
-                    if (largerCardNumber+1,color) not in self.playedCardList:
-                        listOfNeededNumbers.append( (largerCardNumber+1,color) )
+                    if (number+1,color) not in self.playedCardList:
+                        listOfNeededNumbers.append( (number+1,color) )
                         wasItAdded[1]= True
                         break;
-            if listOfCards[0].number != 1:
+            if number != 1:
                 #find a number in any color that is 1 less than this one
                 for color in COLORS:
-                    if (smallerCardNumber-1,color) not in self.playedCardList:
-                        listOfNeededNumbers.append( (smallerCardNumber-1,color) )
+                    if (number-1,color) not in self.playedCardList:
+                        listOfNeededNumbers.append( (number-1,color) )
                         wasItAdded[2]= True
                         break;
-            if listOfCards[0].number != 1 and listOfCards[0].number != 2:
+            if number != 1 and number != 2:
                 #find a number in any color that is 2 less than this one
                 for color in COLORS:
-                    if (smallerCardNumber-2,color) not in self.playedCardList:
-                        listOfNeededNumbers.append( (smallerCardNumber-2,color) )
+                    if (number-2,color) not in self.playedCardList:
+                        listOfNeededNumbers.append( (number-2,color) )
                         wasItAdded[3]= True
                         break;
             #if any adjacent pair of wasItAdded are both true, return the first 2 elements in the list
@@ -232,8 +338,41 @@ class FormationLogic:
             else:
                 return []
         if len(listOfCards) == 0:
+            listOfAvailableTroops = []
+            canItBeUsed=[False,False,False,False,False,False,False,False,False,False]
+            for number in range(10,0,-1):
+                for color in COLORS:
+                    if (number,color) not in self.playedCardList:
+                        canItBeUsed[number-1]=True
+                        listOfAvailableTroops.append( (number,color) )
+                        break
+            if ((canItBeUsed[9] and canItBeUsed[8] and canItBeUsed[7]) 
+               or (canItBeUsed[8] and canItBeUsed[7] and canItBeUsed[6]) 
+               or (canItBeUsed[7] and canItBeUsed[6] and canItBeUsed[5]) 
+               or (canItBeUsed[6] and canItBeUsed[5] and canItBeUsed[4]) 
+               or (canItBeUsed[5] and canItBeUsed[4] and canItBeUsed[3]) 
+               or (canItBeUsed[4] and canItBeUsed[3] and canItBeUsed[2]) 
+               or (canItBeUsed[3] and canItBeUsed[2] and canItBeUsed[1]) 
+               or (canItBeUsed[2] and canItBeUsed[1] and canItBeUsed[0])): 
+                listOfCards = [listOfAvailableTroops[0],listOfAvailableTroops[1],listOfAvailableTroops[2]]
+                return listOfCards
+            else:
+                return []
     def createHost(self,listOfCards):
-        if len(listOfCards) == 2:
-        if len(listOfCards) == 1:
-        if len(listOfCards) == 0:
-        
+        if len(listOfCards) == 3:
+            return listOfCards
+        neededCards = 3 - len(listOfCards)
+        listOfAvailableTroops = []
+        for number in range(10,0,-1):
+            for color in COLORS:
+                if (number,color) not in self.playedCardList:
+                    listOfAvailableTroops.append( (number,color) )
+                    if len(listOfAvailableTroops) == neededCards:
+                        listOfCards.append( listOfAvailableTroops[0] )
+                        if neededCards >= 2:
+                             listOfCards.append( listOfAvailableTroops[1] )
+                        if neededCards >= 3:
+                             listOfCards.append( listOfAvailableTroops[2] )
+                        return listOfCards
+        #if it gets complete out of the loop, then there aren't enough cards left to make a host.
+        return []
