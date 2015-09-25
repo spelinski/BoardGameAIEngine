@@ -41,5 +41,5 @@ class TestPlayerCommunication(unittest.TestCase):
         localPlayerCommunication = PlayerCommunication(self.workingBotPath)
         localPlayerCommunication.send_message("fail")
         self.assertRaisesRegexp(
-            BotCommunicationError, "Failed to send message because of timeout", localPlayerCommunication.get_response, 1)
+            BotCommunicationError, "Failed to send message because of timeout", localPlayerCommunication.get_response, 0.1)
         localPlayerCommunication.close()
