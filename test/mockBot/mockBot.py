@@ -15,8 +15,13 @@ class Bot:
 
                 if len(line) == 0:
                     continue
-                stdout.write("WOOOOOOOOOOOOO\n")
-                stdout.flush()
+                
+                if line == "testing":
+                    try:
+                        stdout.write("1..2..3\n")
+                        stdout.flush()
+                    except:
+                        pass
 
             except EOFError:
                 return
