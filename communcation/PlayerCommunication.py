@@ -8,24 +8,31 @@ import threading
 
 
 class PlayerCommunication(object):
-    '''
-    classdocs
-    '''
+    """
+    Class to communicate back and forth with an external program
+    """
 
     def __init__(self, programWithPath):
-        '''
+        """
         Constructor
-        '''
+        @param programWithPath relative path to executable 
+        """
         self.runningPlayer = Popen("./"+programWithPath,stdin =PIPE,stdout=PIPE, shell=True)
-    
-    def close(self):
-        self.runningPlayer.terminate()
         
     def send_message(self, message):
+        """
+        send a string to the external program
+        @param message string to send
+        """
         self.runningPlayer.stdin.write(message + "\n")
         self.runningPlayer.stdin.flush()
         
     def get_response(self, timeout=10):
+        """
+        get the response from the external program
+        @param timeout amount of time to wait on external program in seconds (default 10 seconds)
+        @raise BotCommunicationError on a timeout or empty response from external program
+        """
         self.exceptionFromThread = None
         thread = threading.Thread(target=self.__get_response_thread)
         thread.daemon = True
@@ -38,16 +45,25 @@ class PlayerCommunication(object):
         return self.response
     
     def __get_response_thread(self):
+        """
+        get_response calls this so that it can run a seperate thread with a timeout
+        """
         self.response = self.runningPlayer.stdout.readline()
         if len(self.response) <= 0:
             self.exceptionFromThread = BotCommunicationError("program didn't say anything")
+    
+    def close(self):
+        """
+        kill the external process
+        """
+        self.runningPlayer.terminate()
         
 
 class BotCommunicationError(Exception):
 
     def __init__(self, whatWentWrong):
-        """Create an Exception that the program is not valid
-        @param programWithPathString
+        """Create an Exception that the communcation with the bot failed
+        @param whatWentWrong
         """
         self.whatWentWrong = whatWentWrong
 
