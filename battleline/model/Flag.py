@@ -1,13 +1,12 @@
 
-
+#Dummy card class until one is actually created.
 class Card(object):
     def __init__(self):
         pass
 
-
 class Flag(object):
-    """
-    A representation of a flag
+    """A representation of a flag in Battle Line.
+    A flag can hold 3 cards for both players.
     """
     PLAYER_ONE = "player1"
     PLAYER_TWO = "player2"
@@ -20,7 +19,7 @@ class Flag(object):
         self.sides = {self.PLAYER_ONE:[], self.PLAYER_TWO:[]}
 
     def is_empty(self, player=None):
-        """Get the Flag associated with the index
+        """Determines if there are any cards played on this flag.
 
         @param player player constant to check, None will return empty status for either side of flag
         """
