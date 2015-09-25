@@ -1,6 +1,3 @@
-
-#Dummy card class until one is actually created.
-
 class Flag(object):
     """A representation of a flag in Battle Line.
     A flag can hold 3 cards for both players.
