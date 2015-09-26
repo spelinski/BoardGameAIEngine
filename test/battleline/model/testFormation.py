@@ -79,3 +79,7 @@ class TestFormation(unittest.TestCase):
     def test_non_straight_is_not_a_skirmish(self):
         formation = Formation([(1, "R"), (4, "G"), (2, "R")])
         self.assertFalse(formation.is_skirmish())
+
+    def test_is_host(self):
+        formation = Formation([(1, "R"), (5, "G"), (5, "R")])
+        self.assertTrue(formation.is_host())

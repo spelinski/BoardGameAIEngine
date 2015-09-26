@@ -62,6 +62,13 @@ class Formation(object):
         """
         return self.__is_in_order()
 
+    def is_host(self):
+        """
+        @Return if we are a host (sum)
+        @return True, since everything can be a host
+        """
+        return True
+
     def __is_in_order(self):
         sorted_nums = sorted(self.get_numbers())
         return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1
