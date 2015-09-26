@@ -35,6 +35,13 @@ class BattlelinePlayer(object):
         @param the message we want to send using communication object
         """
         return self.communication.send_message(message)
+    
+    def get_response(self):
+        """
+        Use the underlying communication object to get messages back
+        @return response being sent back
+        """
+        return self.communication.get_response()
 
 class HandFullError(Exception):
     def __init__(self, hand_limit):

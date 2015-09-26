@@ -38,7 +38,7 @@ class Deck(object):
 class DeckEmptyError(Exception):
 
     def __init__(self, attemptedAction):
-        """Create an Exception that the index is not valid
+        """Create an Exception that the attempted action is not valid
         @param attemptedAction what was trying to be done on an empty deck
         """
         self.attemptedAction = attemptedAction

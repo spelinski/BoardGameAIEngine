@@ -2,7 +2,10 @@ from mechanics.Deck import Deck
 from collections import namedtuple
 from itertools import product
 
+
 TroopCard = namedtuple("TroopCard", ["color", "number"])
+
+
 class BattlelineEngine(object):
     """
     An engine that coordinates two players, a board and the decks for battleline
@@ -33,4 +36,4 @@ class BattlelineEngine(object):
         @return A list of all troop cards
         """
         colors = ["RED", "GREEN", "ORANGE", "YELLOW", "BLUE", "PURPLE"]
-        return [TroopCard(name,number) for name,number in product(colors, range(1,11))]
+        return [TroopCard(name, number) for name, number in product(colors, range(1, 11))]

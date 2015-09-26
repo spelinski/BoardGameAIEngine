@@ -29,7 +29,7 @@ class TestBattlelinePlayer(unittest.TestCase):
         self.assertEquals([], self.communication.messages_received)
 
     def test_sending_a_message_translates_to_communication(self):
-        self.communication.add_response("This is a response")
-        self.assertEquals("This is a response", self.player.send_message("Command"))
+        self.player.send_message("Command")
+        self.assertEquals("This is a response", self.player.get_response())
         self.assertEquals(["Command"], self.communication.messages_received)
-        self.assertEquals("", self.player.send_message("Command"))
+        self.assertEquals("", self.player.get_response())
