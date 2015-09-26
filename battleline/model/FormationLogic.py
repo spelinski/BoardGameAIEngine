@@ -52,19 +52,8 @@ class FormationLogic:
 
 
     def isStraightFlush(self,formation):
-        if len(formation) < 3:
-            return False
-        n1,c1 = formation[0]
-        n2,c2 = formation[1]
-        n3,c3 = formation[2]
-        nmin = min(min(n1,n2),n3)
-        if c1 != c2 or c1 != c3:
-            return False
-        if nmin+1 != n1 and nmin+1 != n2 and nmin+1 != n3:
-            return False
-        if nmin+2 != n1 and nmin+2 != n2 and nmin+2 != n3:
-            return False
-        return True
+        f = Formation(formation)
+        return f.is_wedge()
 
     def isThreeOfAKind(self,formation):
         if len(formation) < 3:

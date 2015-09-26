@@ -1,6 +1,7 @@
 import unittest
 from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
+from battleline.model.Formation import FormationInvalidError
 class TestBoard(unittest.TestCase):
 
     def setUp(self):
@@ -64,7 +65,7 @@ class TestBoard(unittest.TestCase):
         self.assertEquals(self.logic.isStraightFlush([(8,'blue'),(9,'blue'),(10,'blue')]),True)
         self.assertEquals(self.logic.isStraightFlush([(8,'blue'),(9,'blue'),(7,'blue')]),True)
         self.assertEquals(self.logic.isStraightFlush([(8,'blue'),(9,'blue'),(6,'blue')]),False)
-        self.assertEquals(self.logic.isStraightFlush([(8,'blue'),(9,'blue')]),False)
+        self.assertRaises(FormationInvalidError, self.logic.isStraightFlush, [(8,'blue'),(9,'blue')])
 
     """test_isThreeOfAKind
 
