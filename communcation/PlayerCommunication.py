@@ -16,7 +16,6 @@ class PlayerCommunication(object):
         """
         self.runningPlayer = Popen(
             "./" + programWithPath, stdin=PIPE, stdout=PIPE, shell=True)
-
     def send_message(self, message):
         """
         send a string to the external program
