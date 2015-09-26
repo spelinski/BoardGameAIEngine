@@ -56,14 +56,9 @@ class FormationLogic:
         return f.is_wedge()
 
     def isThreeOfAKind(self,formation):
-        if len(formation) < 3:
-            return False
-        n1,c1 = formation[0]
-        n2,c2 = formation[1]
-        n3,c3 = formation[2]
-        if n1 != n2 or n1 != n3:
-            return False
-        return True
+        f = Formation(formation)
+        return f.is_phalanx()
+
     def isFlush(self,formation):
         if len(formation) < 3:
             return False

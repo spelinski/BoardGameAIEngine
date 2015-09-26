@@ -75,7 +75,7 @@ class TestBoard(unittest.TestCase):
         self.assertEquals(self.logic.isThreeOfAKind([(8,'blue'),(8,'red'),(8,'green')]),True)
         self.assertEquals(self.logic.isThreeOfAKind([(8,'blue'),(8,'red'),(8,'orange')]),True)
         self.assertEquals(self.logic.isThreeOfAKind([(8,'blue'),(8,'blue'),(6,'blue')]),False)
-        self.assertEquals(self.logic.isThreeOfAKind([(8,'blue'),(9,'blue')]),False)
+        self.assertRaises(FormationInvalidError, self.logic.isThreeOfAKind, [(8,'blue'),(9,'blue')])
 
     """test_isFlush
 
