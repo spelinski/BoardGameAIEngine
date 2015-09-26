@@ -43,6 +43,6 @@ class BattlelineEngine(object):
         self.__make_player_turn(self.player2)
 
     def __make_player_turn(self, player):
-         player.hand = player.hand[:6]
+         player.remove_from_hand(player.hand[0])
          if not self.troop_deck.is_empty():
              player.add_to_hand(self.troop_deck.draw())

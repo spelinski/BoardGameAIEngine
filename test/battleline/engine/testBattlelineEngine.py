@@ -52,12 +52,12 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                            TroopCard(4, "GREEN")], self.engine.player2.hand)
 
     def test_one_turn_plays_a_troop_and_draws_new_one(self):
-        player1_hand = self.engine.player1.hand
-        player2_hand = self.engine.player2.hand
+        #make new copies of the hand
+        player1_hand = [card for card in self.engine.player1.hand]
+        player2_hand = [card for card in self.engine.player2.hand]
 
         self.engine.progress_turn()
 
-        print player1_hand, self.engine.player1.hand
         self.assertHandsDifferBy1(player1_hand, self.engine.player1.hand)
         self.assertHandsDifferBy1(player2_hand, self.engine.player2.hand)
 

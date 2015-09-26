@@ -37,7 +37,6 @@ class TestBattlelinePlayer(unittest.TestCase):
     def test_exception_is_thrown_if_card_does_not_exist_in_player_hand(self):
         self.assertRaisesRegexp(InvalidMoveError, "Invalid Move - Player did not have card in hand", self.player.remove_from_hand, 1)
 
-
     def test_can_remove_card_from_hand(self):
         self.player.add_to_hand(1)
         self.player.add_to_hand(2)
