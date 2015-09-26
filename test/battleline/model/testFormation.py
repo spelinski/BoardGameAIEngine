@@ -46,3 +46,14 @@ class TestFormation(unittest.TestCase):
     def test_missing_color_is_not_wedge(self):
         formation = Formation([(1, "R"), (2, "R"), (3, "G")])
         self.assertFalse(formation.is_wedge())
+
+    def test_can_check_for_phalanx(self):
+        formation = Formation([(1, "R"), (1, "G"), (1, "Y")])
+        self.assertTrue(formation.is_phalanx())
+
+        formation = Formation([(10, "Y"), (10, "G"), (10, "B")])
+        self.assertTrue(formation.is_phalanx())
+
+    def test_two_of_a_kind_is_not_a_phalanx(self):
+        formation = Formation([(1, "R"), (1, "G"), (2, "R")])
+        self.assertFalse(formation.is_phalanx())

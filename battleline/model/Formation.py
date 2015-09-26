@@ -41,12 +41,25 @@ class Formation(object):
         """
         return self.__is_in_order() and self.__is_same_color()
 
+    def is_phalanx(self):
+        """
+        Return if we are a phalanx (three of a kind)
+        @return if this formation is a phalanx(three of a kind)
+        """
+        return self.__is_same_number()
+
     def __is_in_order(self):
         sorted_nums = sorted(self.get_numbers())
         return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1
 
     def __is_same_color(self):
-        return len(set(self.get_colors())) == 1
+        return self.__is_one_value(self.get_colors())
+
+    def __is_same_number(self):
+        return self.__is_one_value(self.get_numbers())
+
+    def __is_one_value(self, list):
+        return len(set(list)) == 1
 
 class FormationInvalidError(Exception):
 
