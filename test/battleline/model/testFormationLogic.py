@@ -103,7 +103,7 @@ class TestBoard(unittest.TestCase):
     """
     def test_isHost(self):
         self.assertEquals(self.logic.isHost([(8,'blue'),(9,'red'),(10,'blue')]),True)
-        self.assertEquals(self.logic.isHost([(8,'blue'),(9,'blue')]),False)
+        self.assertRaises(FormationInvalidError, self.logic.isHost, [(8,'blue'),(9,'blue')])
 
     """test_setPlayedCardList_empty
 

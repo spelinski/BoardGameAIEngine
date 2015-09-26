@@ -68,9 +68,9 @@ class FormationLogic:
         return f.is_skirmish()
 
     def isHost(self,formation):
-        if len(formation) < 3:
-            return False
-        return True
+        f = Formation(formation)
+        return f.is_host()
+
     def setPlayedCardList(self,board):
         for flag in board.flags:
             for player in flag.PLAYER_ONE_ID,flag.PLAYER_TWO_ID:
