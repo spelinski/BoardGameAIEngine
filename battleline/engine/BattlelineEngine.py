@@ -2,14 +2,8 @@ from mechanics.Deck import Deck
 from collections import namedtuple
 from itertools import product
 
-<<<<<<< HEAD
 TroopCard = namedtuple("TroopCard", ["number", "color"])
-=======
 
-TroopCard = namedtuple("TroopCard", ["color", "number"])
-
-
->>>>>>> b64c82ab8c5d26b8bd0f24c6e6b329a391acac48
 class BattlelineEngine(object):
     """
     An engine that coordinates two players, a board and the decks for battleline
