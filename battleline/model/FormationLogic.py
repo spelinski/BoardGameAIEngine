@@ -64,17 +64,9 @@ class FormationLogic:
         return f.is_battalion()
 
     def isStraight(self,formation):
-        if len(formation) < 3:
-            return False
-        n1,c1 = formation[0]
-        n2,c2 = formation[1]
-        n3,c3 = formation[2]
-        nmin = min(min(n1,n2),n3)
-        if nmin+1 != n1 and nmin+1 != n2 and nmin+1 != n3:
-            return False
-        if nmin+2 != n1 and nmin+2 != n2 and nmin+2 != n3:
-            return False
-        return True
+        f = Formation(formation)
+        return f.is_skirmish()
+
     def isHost(self,formation):
         if len(formation) < 3:
             return False

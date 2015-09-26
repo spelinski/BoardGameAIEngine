@@ -95,7 +95,7 @@ class TestBoard(unittest.TestCase):
         self.assertEquals(self.logic.isStraight([(8,'blue'),(9,'red'),(10,'blue')]),True)
         self.assertEquals(self.logic.isStraight([(8,'blue'),(9,'red'),(7,'blue')]),True)
         self.assertEquals(self.logic.isStraight([(8,'blue'),(9,'blue'),(6,'red')]),False)
-        self.assertEquals(self.logic.isStraight([(8,'blue'),(9,'blue')]),False)
+        self.assertRaises(FormationInvalidError, self.logic.isStraight, [(8,'blue'),(9,'blue')])
 
     """test_isHost
 
