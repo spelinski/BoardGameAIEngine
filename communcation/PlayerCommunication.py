@@ -9,7 +9,6 @@ class PlayerCommunication(object):
     """
     Class to communicate back and forth with an external program
     """
-
     def __init__(self, programWithPath):
         """
         Constructor
