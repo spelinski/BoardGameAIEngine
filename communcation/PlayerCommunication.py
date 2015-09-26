@@ -5,8 +5,6 @@ Created on Sep 23, 2015
 '''
 from subprocess import Popen, PIPE
 import threading
-
-
 class PlayerCommunication(object):
     """
     Class to communicate back and forth with an external program
