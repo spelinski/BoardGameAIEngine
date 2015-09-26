@@ -1,3 +1,8 @@
 This is a Python engine for the board game BattleLine
 
 To run the unit tests , call python -m unittest discover from the project directory
+
+To run code coverage, pip install coverage
+To create a coverage report, use coverage -m unittest discover
+
+Then, issue coverage report -m for command line coverage, or coverage html for a index.html file in htmlcov
