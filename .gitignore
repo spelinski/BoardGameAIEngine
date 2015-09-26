@@ -1,1 +1,7 @@
 *.pyc
+*.swp
+output.txt
+htmlcov
+.coverage
+*.py~
+

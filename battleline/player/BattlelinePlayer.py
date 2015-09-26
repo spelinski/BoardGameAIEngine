@@ -6,6 +6,7 @@ class BattlelinePlayer(object):
 
     HAND_LIMIT = 7
 
+
     def __init__(self, name, communication):
         """Constructor
         @param name the player name
