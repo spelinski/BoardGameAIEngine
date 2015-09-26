@@ -36,6 +36,15 @@ class BattlelinePlayer(object):
         """
         return self.communication.send_message(message)
 
+    def remove_from_hand(self, card):
+        """
+        Remove a card from the hand
+        @param the card to remove
+        @raises InvalidMoveError if the player didn't have the card
+        """
+        if card not in self.hand:
+            raise InvalidMoveError("Player did not have card in hand")
+
 class HandFullError(Exception):
     def __init__(self, hand_limit):
         """
@@ -49,3 +58,17 @@ class HandFullError(Exception):
         Return a string representation of the exception
         """
         return "Cannot exceed hand limit of {}".format(self.hand_limit)
+
+class InvalidMoveError(Exception):
+    def __init__(self, reason):
+        """
+        Constructor
+        @param reason the reason why this is an invalid mov
+        """
+        self.reason = reason
+
+    def __str__(self):
+        """
+        Return a string representation of the exception
+        """
+        return "Invalid Move - {}".format(self.reason)

@@ -1,5 +1,5 @@
 import unittest
-from battleline.player.BattlelinePlayer import BattlelinePlayer, HandFullError
+from battleline.player.BattlelinePlayer import BattlelinePlayer, HandFullError, InvalidMoveError
 from MockPlayerCommunication import MockPlayerCommunication
 class TestBattlelinePlayer(unittest.TestCase):
 
@@ -33,3 +33,6 @@ class TestBattlelinePlayer(unittest.TestCase):
         self.assertEquals("This is a response", self.player.send_message("Command"))
         self.assertEquals(["Command"], self.communication.messages_received)
         self.assertEquals("", self.player.send_message("Command"))
+
+    def test_exception_is_thrown_if_card_does_not_exist_in_player_hand(self):
+        self.assertRaisesRegexp(InvalidMoveError, "Invalid Move - Player did not have card in hand", self.player.remove_from_hand, 1)
