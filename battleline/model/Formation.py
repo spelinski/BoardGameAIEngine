@@ -48,6 +48,13 @@ class Formation(object):
         """
         return self.__is_same_number()
 
+    def is_battalion(self):
+        """
+        Return if we are a battalion (flush)
+        @return if this formation was a battalion(flush)
+        """
+        return self.__is_same_color()
+
     def __is_in_order(self):
         sorted_nums = sorted(self.get_numbers())
         return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1

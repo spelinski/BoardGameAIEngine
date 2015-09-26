@@ -57,3 +57,14 @@ class TestFormation(unittest.TestCase):
     def test_two_of_a_kind_is_not_a_phalanx(self):
         formation = Formation([(1, "R"), (1, "G"), (2, "R")])
         self.assertFalse(formation.is_phalanx())
+
+    def test_can_check_for_battalion(self):
+        formation = Formation([(1, "Y"), (2, "Y"), (3, "Y")])
+        self.assertTrue(formation.is_battalion())
+
+        formation = Formation([(10, "G"), (9, "G"), (10, "G")])
+        self.assertTrue(formation.is_battalion())
+
+    def test_two_of_a_color_is_not_a_battalion(self):
+        formation = Formation([(1, "R"), (3, "G"), (2, "R")])
+        self.assertFalse(formation.is_battalion())
