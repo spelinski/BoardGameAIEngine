@@ -55,6 +55,13 @@ class Formation(object):
         """
         return self.__is_same_color()
 
+    def is_skirmish(self):
+        """
+        Return if we are a skirmish (straight)
+        @return if this formation was a skirmish (straight)
+        """
+        return self.__is_in_order()
+
     def __is_in_order(self):
         sorted_nums = sorted(self.get_numbers())
         return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1

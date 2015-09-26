@@ -85,7 +85,7 @@ class TestBoard(unittest.TestCase):
         self.assertEquals(self.logic.isFlush([(8,'blue'),(9,'blue'),(1,'blue')]),True)
         self.assertEquals(self.logic.isFlush([(8,'blue'),(9,'blue'),(4,'blue')]),True)
         self.assertEquals(self.logic.isFlush([(8,'blue'),(9,'blue'),(6,'red')]),False)
-        self.assertEquals(self.logic.isFlush([(8,'blue'),(9,'blue')]),False)
+        self.assertRaises(FormationInvalidError, self.logic.isFlush, [(8,'blue'),(9,'blue')])
 
     """test_isStraight
 
