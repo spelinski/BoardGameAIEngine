@@ -1,5 +1,6 @@
 from Board import Board
 from battleline.view.Output import COLORS
+from Formation import Formation
 class FormationLogic:
     def __init__(self):
         self.playedCardList = []
@@ -47,21 +48,9 @@ class FormationLogic:
             if function(formation2):
                 return formation2
     def compareMaximums(self,formation1,formation2):
-        formation1_n1,formation1_c1 = formation1[0]
-        formation1_n2,formation1_c2 = formation1[1]
-        formation1_n3,formation1_c3 = formation1[2]
-        formation1_max = max(max(formation1_n1,formation1_n2),formation1_n3)
+        return formation1 if Formation(formation1).get_max_number() >  Formation(formation2).get_max_number() else formation2
 
-        formation2_n1,formation2_c1 = formation2[0]
-        formation2_n2,formation2_c2 = formation2[1]
-        formation2_n3,formation2_c3 = formation2[2]
-        formation2_max = max(max(formation2_n1,formation2_n2),formation2_n3)
 
-        if formation1_max > formation2_max:
-            return formation1
-        else:
-            return formation2
-        
     def isStraightFlush(self,formation):
         if len(formation) < 3:
             return False
@@ -156,7 +145,7 @@ class FormationLogic:
             if largerCardNumber == smallerCardNumber + 2 and (largerCardNumber-1,firstColor) not in self.playedCardList:
                 listOfCards.append( (largerCardNumber-1,firstColor) )
                 return listOfCards
-            
+
             #if you have a 9 and an 8, look for a 10 before looking for the 7
             elif largerCardNumber != 10 and (largerCardNumber+1,firstColor) not in self.playedCardList:
                 listOfCards.append( (largerCardNumber+1,firstColor) )
@@ -346,14 +335,14 @@ class FormationLogic:
                         canItBeUsed[number-1]=True
                         listOfAvailableTroops.append( (number,color) )
                         break
-            if ((canItBeUsed[9] and canItBeUsed[8] and canItBeUsed[7]) 
-               or (canItBeUsed[8] and canItBeUsed[7] and canItBeUsed[6]) 
-               or (canItBeUsed[7] and canItBeUsed[6] and canItBeUsed[5]) 
-               or (canItBeUsed[6] and canItBeUsed[5] and canItBeUsed[4]) 
-               or (canItBeUsed[5] and canItBeUsed[4] and canItBeUsed[3]) 
-               or (canItBeUsed[4] and canItBeUsed[3] and canItBeUsed[2]) 
-               or (canItBeUsed[3] and canItBeUsed[2] and canItBeUsed[1]) 
-               or (canItBeUsed[2] and canItBeUsed[1] and canItBeUsed[0])): 
+            if ((canItBeUsed[9] and canItBeUsed[8] and canItBeUsed[7])
+               or (canItBeUsed[8] and canItBeUsed[7] and canItBeUsed[6])
+               or (canItBeUsed[7] and canItBeUsed[6] and canItBeUsed[5])
+               or (canItBeUsed[6] and canItBeUsed[5] and canItBeUsed[4])
+               or (canItBeUsed[5] and canItBeUsed[4] and canItBeUsed[3])
+               or (canItBeUsed[4] and canItBeUsed[3] and canItBeUsed[2])
+               or (canItBeUsed[3] and canItBeUsed[2] and canItBeUsed[1])
+               or (canItBeUsed[2] and canItBeUsed[1] and canItBeUsed[0])):
                 listOfCards = [listOfAvailableTroops[0],listOfAvailableTroops[1],listOfAvailableTroops[2]]
                 return listOfCards
             else:
