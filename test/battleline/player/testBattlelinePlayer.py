@@ -29,9 +29,10 @@ class TestBattlelinePlayer(unittest.TestCase):
         self.assertEquals([], self.communication.messages_received)
 
     def test_sending_a_message_translates_to_communication(self):
-        self.communication.add_response("This is a response")
-        self.assertEquals("This is a response", self.player.send_message("Command"))
+        self.player.send_message("Command")
+        self.assertEquals("This is a response", self.player.get_response())
         self.assertEquals(["Command"], self.communication.messages_received)
+<<<<<<< HEAD
         self.assertEquals("", self.player.send_message("Command"))
 
     def test_exception_is_thrown_if_card_does_not_exist_in_player_hand(self):
@@ -42,3 +43,6 @@ class TestBattlelinePlayer(unittest.TestCase):
         self.player.add_to_hand(2)
         self.player.remove_from_hand(1)
         self.assertEquals([2], self.player.hand)
+=======
+        self.assertEquals("", self.player.get_response())
+>>>>>>> b64c82ab8c5d26b8bd0f24c6e6b329a391acac48
