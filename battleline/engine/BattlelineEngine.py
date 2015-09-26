@@ -33,4 +33,4 @@ class BattlelineEngine(object):
         @return A list of all troop cards
         """
         colors = ["RED", "GREEN", "ORANGE", "YELLOW", "BLUE", "PURPLE"]
-        return [TroopCard(name,number) for name,number in sorted(product(colors, range(1,11)), reverse=True)]
+        return [TroopCard(name,number) for name,number in product(colors, range(1,11))]
