@@ -44,6 +44,7 @@ class BattlelinePlayer(object):
         """
         if card not in self.hand:
             raise InvalidMoveError("Player did not have card in hand")
+        self.hand.remove(card)
 
 class HandFullError(Exception):
     def __init__(self, hand_limit):

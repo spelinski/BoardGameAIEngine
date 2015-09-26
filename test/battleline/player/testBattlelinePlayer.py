@@ -42,4 +42,4 @@ class TestBattlelinePlayer(unittest.TestCase):
         self.player.add_to_hand(1)
         self.player.add_to_hand(2)
         self.player.remove_from_hand(1)
-        self.assertEquals([1], self.player.hand)
+        self.assertEquals([2], self.player.hand)
