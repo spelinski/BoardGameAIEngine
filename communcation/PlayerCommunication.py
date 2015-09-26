@@ -39,7 +39,6 @@ class PlayerCommunication(object):
         if thread.is_alive():
             raise BotCommunicationError("timeout")
         return self.response
-
     def __get_response_thread(self):
         """
         get_response calls this so that it can run
