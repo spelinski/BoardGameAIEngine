@@ -34,10 +34,10 @@ class Formation(object):
         """
         return max(self.get_numbers())
 
-    def is_straight_flush(self):
+    def is_wedge(self):
         """
-        Return true if we are a straight flush
-        @return if this formation is a straight flush
+        Return true if we are a wedge (straight flush)
+        @return if this formation is a wedge (straight flush)
         """
         return self.__is_in_order() and self.__is_same_color()
 

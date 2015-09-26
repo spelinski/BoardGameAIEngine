@@ -32,17 +32,17 @@ class TestFormation(unittest.TestCase):
         self.assertEquals(10, formation.get_max_number())
 
 
-    def test_can_check_for_straight_flush(self):
+    def test_can_check_for_wedge(self):
         formation = Formation([(1, "R"), (2, "R"), (3, "R")])
-        self.assertTrue(formation.is_straight_flush())
+        self.assertTrue(formation.is_wedge())
 
         formation = Formation([(10, "G"), (9, "G"), (8, "G")])
-        self.assertTrue(formation.is_straight_flush())
+        self.assertTrue(formation.is_wedge())
 
-    def test_missing_number_is_not_straight_flush(self):
+    def test_missing_number_is_not_wedge(self):
         formation = Formation([(1, "R"), (4, "R"), (3, "R")])
-        self.assertFalse(formation.is_straight_flush())
+        self.assertFalse(formation.is_wedge())
 
-    def test_missing_color_is_not_straight_flush(self):
+    def test_missing_color_is_not_wedge(self):
         formation = Formation([(1, "R"), (2, "R"), (3, "G")])
-        self.assertFalse(formation.is_straight_flush())
+        self.assertFalse(formation.is_wedge())
