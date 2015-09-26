@@ -34,6 +34,17 @@ class Formation(object):
         """
         return max(self.get_numbers())
 
+    def is_straight_flush(self):
+        """
+        Return true if we are a straight flush
+        @return if this formation is a straight flush
+        """
+        return self.__is_in_order()
+
+    def __is_in_order(self):
+        sorted_nums = sorted(self.get_numbers())
+        return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1
+
 class FormationInvalidError(Exception):
 
     def __str__(self):
