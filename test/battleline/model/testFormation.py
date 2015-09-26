@@ -42,3 +42,7 @@ class TestFormation(unittest.TestCase):
     def test_missing_number_is_not_straight_flush(self):
         formation = Formation([(1, "R"), (4, "R"), (3, "R")])
         self.assertFalse(formation.is_straight_flush())
+
+    def test_missing_color_is_not_straight_flush(self):
+        formation = Formation([(1, "R"), (2, "R"), (3, "G")])
+        self.assertFalse(formation.is_straight_flush())

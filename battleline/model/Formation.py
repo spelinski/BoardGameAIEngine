@@ -39,11 +39,14 @@ class Formation(object):
         Return true if we are a straight flush
         @return if this formation is a straight flush
         """
-        return self.__is_in_order()
+        return self.__is_in_order() and self.__is_same_color()
 
     def __is_in_order(self):
         sorted_nums = sorted(self.get_numbers())
         return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1
+
+    def __is_same_color(self):
+        return len(set(self.get_colors())) == 1
 
 class FormationInvalidError(Exception):
 
