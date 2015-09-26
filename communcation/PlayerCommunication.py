@@ -23,7 +23,6 @@ class PlayerCommunication(object):
         """
         self.runningPlayer.stdin.write(message + "\n")
         self.runningPlayer.stdin.flush()
-
     def get_response(self, timeout=10):
         """
         get the response from the external program
