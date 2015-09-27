@@ -24,30 +24,30 @@ class TestBoard(unittest.TestCase):
     """
     def test_checkAllFlags_FlagContested(self):
         #flag 1: 10-9-8 vs 1-2-3
-        self.board.flags[0].add_card(self.board.flags[0].PLAYER_ONE_ID,(10,'blue'))
-        self.board.flags[0].add_card(self.board.flags[0].PLAYER_ONE_ID,(9,'blue'))
-        self.board.flags[0].add_card(self.board.flags[0].PLAYER_ONE_ID,(8,'blue'))
+        self.board.flags[0].add_card(self.board.flags[0].PLAYER_NORTH,(10,'blue'))
+        self.board.flags[0].add_card(self.board.flags[0].PLAYER_NORTH,(9,'blue'))
+        self.board.flags[0].add_card(self.board.flags[0].PLAYER_NORTH,(8,'blue'))
 
-        self.board.flags[0].add_card(self.board.flags[0].PLAYER_TWO_ID,(1,'blue'))
-        self.board.flags[0].add_card(self.board.flags[0].PLAYER_TWO_ID,(2,'blue'))
-        self.board.flags[0].add_card(self.board.flags[0].PLAYER_TWO_ID,(3,'blue'))
+        self.board.flags[0].add_card(self.board.flags[0].PLAYER_SOUTH,(1,'blue'))
+        self.board.flags[0].add_card(self.board.flags[0].PLAYER_SOUTH,(2,'blue'))
+        self.board.flags[0].add_card(self.board.flags[0].PLAYER_SOUTH,(3,'blue'))
 
         #flag 2: 10R-9R-8R vs 1-2-_
-        self.board.flags[1].add_card(self.board.flags[1].PLAYER_ONE_ID,(10,'red'))
-        self.board.flags[1].add_card(self.board.flags[1].PLAYER_ONE_ID,(9,'red'))
-        self.board.flags[1].add_card(self.board.flags[1].PLAYER_ONE_ID,(8,'red'))
+        self.board.flags[1].add_card(self.board.flags[1].PLAYER_NORTH,(10,'red'))
+        self.board.flags[1].add_card(self.board.flags[1].PLAYER_NORTH,(9,'red'))
+        self.board.flags[1].add_card(self.board.flags[1].PLAYER_NORTH,(8,'red'))
 
-        self.board.flags[1].add_card(self.board.flags[1].PLAYER_TWO_ID,(1,'red'))
-        self.board.flags[1].add_card(self.board.flags[1].PLAYER_TWO_ID,(2,'red'))
+        self.board.flags[1].add_card(self.board.flags[1].PLAYER_SOUTH,(1,'red'))
+        self.board.flags[1].add_card(self.board.flags[1].PLAYER_SOUTH,(2,'red'))
 
         #flag 3: 10-9-_ vs 1-2-3 (8 is played on flag 4)
-        self.board.flags[2].add_card(self.board.flags[1].PLAYER_ONE_ID,(10,'green'))
-        self.board.flags[2].add_card(self.board.flags[1].PLAYER_ONE_ID,(9,'green'))
+        self.board.flags[2].add_card(self.board.flags[1].PLAYER_NORTH,(10,'green'))
+        self.board.flags[2].add_card(self.board.flags[1].PLAYER_NORTH,(9,'green'))
 
-        self.board.flags[2].add_card(self.board.flags[1].PLAYER_TWO_ID,(1,'green'))
-        self.board.flags[2].add_card(self.board.flags[1].PLAYER_TWO_ID,(2,'green'))
-        self.board.flags[2].add_card(self.board.flags[1].PLAYER_TWO_ID,(3,'green'))
-        self.board.flags[3].add_card(self.board.flags[1].PLAYER_TWO_ID,(8,'green'))
+        self.board.flags[2].add_card(self.board.flags[1].PLAYER_SOUTH,(1,'green'))
+        self.board.flags[2].add_card(self.board.flags[1].PLAYER_SOUTH,(2,'green'))
+        self.board.flags[2].add_card(self.board.flags[1].PLAYER_SOUTH,(3,'green'))
+        self.board.flags[3].add_card(self.board.flags[1].PLAYER_SOUTH,(8,'green'))
         self.logic.checkAllFlags(self.board)
 
         #right now I just check if the flag has been claimed, I need to check if it has been claimed by the right person

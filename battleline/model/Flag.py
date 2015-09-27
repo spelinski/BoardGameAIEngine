@@ -2,22 +2,22 @@ class Flag(object):
     """A representation of a flag in Battle Line.
     A flag can hold 3 cards for both players.
     """
-    PLAYER_ONE_ID = "player1"
-    PLAYER_TWO_ID = "player2"
+    PLAYER_NORTH = "Player North"
+    PLAYER_SOUTH = "Player South"
     MAX_CARDS_PER_SIDE = 3
 
     def __init__(self):
         """
         Constructor
         """
-        self.sides = {self.PLAYER_ONE_ID:[], self.PLAYER_TWO_ID:[]}
+        self.sides = {self.PLAYER_NORTH:[], self.PLAYER_SOUTH:[]}
         self.claimed = None 
 
     def is_empty(self):
         """
         Determines if there are any cards played on this flag.
         """
-        return self.is_player_side_empty(self.PLAYER_ONE_ID) and self.is_player_side_empty(self.PLAYER_TWO_ID)
+        return self.is_player_side_empty(self.PLAYER_NORTH) and self.is_player_side_empty(self.PLAYER_SOUTH)
 
     def is_player_side_empty(self, player):
         """ Determines if a player side is empty.
@@ -88,7 +88,7 @@ class FlagAlreadyClaimedError(Exception):
         self.player = player_string
 
     def __str__(self):
-        return "Player {} is attempting to place card on already claimed flag.".format(self.player)
+        return "{} is attempting to place card on already claimed flag.".format(self.player)
 
 class InvalidPlayerError(Exception):
      def __init__(self, player_string):
@@ -108,5 +108,5 @@ class TooManyCardsOnOneSideError(Exception):
          self.player = player_string 
  
      def __str__(self):
-         return "Player {} is attempting to add to many cards".format(self.player)
+         return "{} is attempting to add to many cards".format(self.player)
 
