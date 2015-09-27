@@ -16,7 +16,7 @@ class TestBoard(unittest.TestCase):
     def test_checkAllFlags_empty(self):
         self.logic.checkAllFlags(self.board)
         for flag in self.board.flags:
-	        self.assertEquals(flag.is_flag_claimed(),False)
+	        self.assertEquals(flag.is_claimed(),False)
 
     """test_checkAllFlags_FlagContested
 
@@ -54,7 +54,7 @@ class TestBoard(unittest.TestCase):
         expectedResults =  [True, True, True, False, False, False, False, False, False]
         actualResults   = [False,False,False,False,False,False,False,False,False]
         for i,flag in enumerate(self.board.flags):
-            actualResults[i] = flag.is_flag_claimed()
+            actualResults[i] = flag.is_claimed()
         self.assertEquals(actualResults, expectedResults)
 
     

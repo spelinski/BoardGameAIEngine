@@ -44,14 +44,7 @@ class Flag(object):
         """
         return self.sides[player]
 
-    def claim(self, player):
-        """Mark this flag as claimed by this player
-
-        @param player player side to add the flag to. 
-        """
-        self.claimed = player
-  
-    def is_flag_playable(self, player):
+    def is_playable(self, player):
         """Checks if a side of the flag can be played on.
 
         @param player Player side to check
@@ -59,14 +52,18 @@ class Flag(object):
         self.__raise_error_if_invalid_player(player)
         return len(self.sides[player]) < self.MAX_CARDS_PER_SIDE
     
-    def claim_flag(self, player):
+    def claim(self, player):
+        """Mark this flag as claimed by this player
+
+        @param player player side to add the flag to. 
+        """
         self.__raise_error_if_invalid_player(player) 
         self.claimed = player
 
-    def is_flag_claimed(self):
-        return False if self.claimed == None else True
+    def is_claimed(self):
+        return self.claimed is not None
 
-    def is_flag_claimed_by_player(self, player):
+    def is_claimed_by_player(self, player):
         return self.claimed == player 
 
     def __is_valid_player_choice(self, player):
@@ -77,9 +74,9 @@ class Flag(object):
             raise InvalidPlayerError(player)
 
     def __raise_error_if_card_can_not_be_played(self, player):
-        if not self.is_flag_playable(player): 
+        if not self.is_playable(player): 
             raise TooManyCardsOnOneSideError(player) 
-        if self.is_flag_claimed():
+        if self.is_claimed():
             raise FlagAlreadyClaimedError(player)
 
 class FlagAlreadyClaimedError(Exception):
