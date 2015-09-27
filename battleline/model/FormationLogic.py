@@ -36,40 +36,7 @@ class FormationLogic:
                         flag.claim(enemy)
 
     def getTheBetterFormation(self,formation1,formation2):
-        print "1: " + str(formation1)
-        print "2: " + str(formation2)
-        listOfFunctions = [self.isStraightFlush,self.isThreeOfAKind,self.isFlush,self.isStraight,self.isHost]
-        for function in listOfFunctions:
-            if function(formation1):
-                if function(formation2):
-                    return self.compareMaximums(formation1,formation2)
-                else:
-                    return formation1
-            if function(formation2):
-                return formation2
-    def compareMaximums(self,formation1,formation2):
-        return formation1 if Formation(formation1).get_max_number() >  Formation(formation2).get_max_number() else formation2
-
-
-    def isStraightFlush(self,formation):
-        f = Formation(formation)
-        return f.is_wedge()
-
-    def isThreeOfAKind(self,formation):
-        f = Formation(formation)
-        return f.is_phalanx()
-
-    def isFlush(self,formation):
-        f = Formation(formation)
-        return f.is_battalion()
-
-    def isStraight(self,formation):
-        f = Formation(formation)
-        return f.is_skirmish()
-
-    def isHost(self,formation):
-        f = Formation(formation)
-        return f.is_host()
+        return formation1 if Formation(formation1).is_greater_strength_than(Formation(formation2)) else formation2
 
     def setPlayedCardList(self,board):
         for flag in board.flags:
