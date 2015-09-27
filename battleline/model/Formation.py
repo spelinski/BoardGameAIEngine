@@ -90,17 +90,17 @@ class Formation(object):
         return self.is_wedge() == other.is_wedge() and \
                self.is_phalanx() == other.is_phalanx() and \
                self.is_battalion() == other.is_battalion() and \
-               self.is_skirmish() == other.is_skirmish
+               self.is_skirmish() == other.is_skirmish()
 
 
     def is_equivalent_in_strength(self, other):
-
-        if not self.__does_match_type(other):
-            return False
-        return  self.__get_sum() == other.__get_sum()
+        if self.__does_match_type(other):
+            return  self.__get_sum() == other.__get_sum()
+        return False
 
     def is_greater_strength_than(self, other):
         if self.is_wedge(): return not other.is_wedge() or self.__get_sum() > other.__get_sum()
+        if self.is_phalanx(): return not other.is_phalanx() or self.__get_sum() > other.__get_sum()
         return False
 
 
