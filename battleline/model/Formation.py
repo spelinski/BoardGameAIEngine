@@ -82,6 +82,21 @@ class Formation(object):
     def __is_one_value(self, list):
         return len(set(list)) == 1
 
+    def __get_sum(self):
+        return sum(self.get_numbers())
+
+    def is_equivalent_in_strength(self, other):
+        if self.is_wedge(): return  other.is_wedge() and self.__get_sum() == other.__get_sum()
+        if self.is_phalanx(): return other.is_phalanx() and self.__get_sum() == other.__get_sum()
+        if self.is_battalion(): return other.is_battalion() and self.__get_sum() == other.__get_sum()
+        if self.is_skirmish(): return other.is_skirmish() and self.__get_sum() == other.__get_sum()
+        return  self.__get_sum() == other.__get_sum()
+
+    def is_greater_strength_than(self, other):
+        if self.is_wedge(): return not other.is_wedge() or self.__get_sum() > other.__get_sum()
+        return False
+
+
 class FormationInvalidError(Exception):
 
     def __str__(self):
