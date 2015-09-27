@@ -59,9 +59,6 @@ class Formation(object):
     def __is_skirmish(self):
         return self.__is_in_order()
 
-    def __is_host(self):
-        return True
-
     def __is_in_order(self):
         sorted_nums = sorted(self.get_numbers())
         return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1
