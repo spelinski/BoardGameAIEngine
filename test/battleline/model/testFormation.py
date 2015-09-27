@@ -142,3 +142,8 @@ class TestFormation(unittest.TestCase):
 
     def test_greater_than_check_skirmish_and_host(self):
         self.assertTrue(Formation([(1, "G"), (3, "B"), (2, "G")]).is_greater_strength_than(Formation([(4, "G"), (9, "G"), (5, "B")])))
+
+
+    def test_greater_than_check_two_hosts(self):
+        self.assertTrue(Formation([(4, "G"), (8, "G"), (3, "Y")]).is_greater_strength_than(Formation([(1, "G"), (1, "R"), (2, "Y")])))
+        self.assertFalse(Formation([(4, "G"), (8, "G"), (3, "Y")]).is_greater_strength_than(Formation([(4, "P"), (8, "P"), (3, "O")])))
