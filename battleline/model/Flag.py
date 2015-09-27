@@ -10,7 +10,7 @@ class Flag(object):
         """
         Constructor
         """
-        self.sides = {self.PLAYER_ONE_ID:[], self.PLAYER_TWO_ID:[]}
+        self.sides = {self.PLAYER_ONE_ID: [], self.PLAYER_TWO_ID: []}
         self.isClaimed = False
 
     def is_empty(self):
@@ -24,7 +24,7 @@ class Flag(object):
 
         @param player The player side to check.
         """
-        if not self.__is_valid_player_choice(player): 
+        if not self.__is_valid_player_choice(player):
             raise InvalidPlayerError(player)
         else:
             return len(self.sides[player]) == 0
@@ -37,8 +37,8 @@ class Flag(object):
         """
         if not self.__is_valid_player_choice(player):
             raise InvalidPlayerError(player)
-        if not self.is_flag_playable(player): 
-            raise TooManyCardsOnOneSideError(player) 
+        if not self.is_flag_playable(player):
+            raise TooManyCardsOnOneSideError(player)
         self.sides[player].append(card)
 
     def get_cards(self, player):
@@ -53,9 +53,9 @@ class Flag(object):
 
         @param player player side to add the flag to. 
         """
-        #putting this so that it will pass the FormationLogic unittest...
+        # putting this so that it will pass the FormationLogic unittest...
         self.isClaimed = True
-  
+
     def is_flag_playable(self, player):
         """Checks if a side of the flag can be played on.
 
@@ -68,23 +68,26 @@ class Flag(object):
     def __is_valid_player_choice(self, player):
         return player in self.sides
 
+
 class InvalidPlayerError(Exception):
-     def __init__(self, player_string):
-         """Create an Exception that the player is not valid
-         @param player_string the player name that was not valid
-         """
-         self.player = player_string 
- 
-     def __str__(self):
-         return "Player String {} is invalid".format(self.player)
+
+    def __init__(self, player_string):
+        """Create an Exception that the player is not valid
+        @param player_string the player name that was not valid
+        """
+        self.player = player_string
+
+    def __str__(self):
+        return "Player String {} is invalid".format(self.player)
+
 
 class TooManyCardsOnOneSideError(Exception):
-     def __init__(self, player_string):
-         """Create an Exception that the player is trying to add to many cards
-         @param player_string the player name that was adding too many cards 
-         """
-         self.player = player_string 
- 
-     def __str__(self):
-         return "Player {} is attempting to add to many cards".format(self.player)
 
+    def __init__(self, player_string):
+        """Create an Exception that the player is trying to add to many cards
+        @param player_string the player name that was adding too many cards 
+        """
+        self.player = player_string
+
+    def __str__(self):
+        return "Player {} is attempting to add to many cards".format(self.player)

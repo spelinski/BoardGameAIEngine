@@ -3,6 +3,7 @@ class Formation(object):
     A representation of a formation (three cards)
     """
     MAX_SIZE = 3
+
     def __init__(self, troops):
         """
         Constructor
@@ -15,10 +16,14 @@ class Formation(object):
         self.type = self.__get_type()
 
     def __get_type(self):
-        if self.__is_wedge(): return "wedge"
-        if self.__is_phalanx(): return "phalanx"
-        if self.__is_battalion(): return "battalion"
-        if self.__is_skirmish(): return "skirmish"
+        if self.__is_wedge():
+            return "wedge"
+        if self.__is_phalanx():
+            return "phalanx"
+        if self.__is_battalion():
+            return "battalion"
+        if self.__is_skirmish():
+            return "skirmish"
         return "host"
 
     def get_numbers(self):
@@ -77,7 +82,6 @@ class Formation(object):
         # does not check host values
         return self.type == other.type
 
-
     def is_equivalent_in_strength(self, other):
         """
         Check if the two armies are equivalent in strength
@@ -85,7 +89,7 @@ class Formation(object):
         @return true if the two armies are the same type and have the same sum
         """
         if self.__does_match_type(other):
-            return  self.__get_sum() == other.__get_sum()
+            return self.__get_sum() == other.__get_sum()
         return False
 
     def is_greater_strength_than(self, other):
@@ -101,7 +105,6 @@ class Formation(object):
     def __get_ordered_strength(self):
         strength = ["host", "skirmish", "battalion", "phalanx", "wedge"]
         return strength.index(self.type)
-
 
 
 class FormationInvalidError(Exception):
