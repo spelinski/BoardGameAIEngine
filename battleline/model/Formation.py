@@ -87,15 +87,11 @@ class Formation(object):
 
     def __does_match_type(self, other):
         # does not check host values
-        if self.is_wedge(): return other.is_wedge()
-        if other.is_wedge(): return self.is_wedge()
-        if self.is_phalanx(): return other.is_phalanx()
-        if other.is_phalanx(): return self.is_phalanx()
-        if self.is_battalion(): return other.is_battalion()
-        if other.is_battalion(): return self.is_battalion()
-        if self.is_skirmish(): return other.is_skirmish()
-        if other.is_skirmish(): return self.is_skirmish()
-        return True
+        return self.is_wedge() == other.is_wedge() and \
+               self.is_phalanx() == other.is_phalanx() and \
+               self.is_battalion() == other.is_battalion() and \
+               self.is_skirmish() == other.is_skirmish
+
 
     def is_equivalent_in_strength(self, other):
 
