@@ -79,7 +79,7 @@ class TestBoard(unittest.TestCase):
         actualResults = [False, False, False, False,
                          False, False, False, False, False]
         for i, flag in enumerate(self.board.flags):
-            actualResults[i] = flag.is_claimed
+            actualResults[i] = flag.is_claimed()
         self.assertEquals(actualResults, expectedResults)
 
     """test_setPlayedCardList_empty
