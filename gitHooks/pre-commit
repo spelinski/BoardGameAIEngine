@@ -1,0 +1,9 @@
+#!/bin/sh
+
+touched_python_files=`git diff --cached --name-only |egrep '\.py$' || true`
+if [ -n "$touched_python_files" ]; then
+    autopep8 \
+        --in-place \
+        --verbose \
+        $touched_python_files
+fi

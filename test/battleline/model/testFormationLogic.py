@@ -57,54 +57,7 @@ class TestBoard(unittest.TestCase):
             actualResults[i] = flag.is_flag_claimed()
         self.assertEquals(actualResults, expectedResults)
 
-    """test_isStraightFlush
-
-    test if the isStraightFlush function works
-    """
-    def test_isStraightFlush(self):
-        self.assertEquals(self.logic.isStraightFlush([(8,'blue'),(9,'blue'),(10,'blue')]),True)
-        self.assertEquals(self.logic.isStraightFlush([(8,'blue'),(9,'blue'),(7,'blue')]),True)
-        self.assertEquals(self.logic.isStraightFlush([(8,'blue'),(9,'blue'),(6,'blue')]),False)
-        self.assertRaises(FormationInvalidError, self.logic.isStraightFlush, [(8,'blue'),(9,'blue')])
-
-    """test_isThreeOfAKind
-
-    test if the isThreeOfAKind function works
-    """
-    def test_isThreeOfAKind(self):
-        self.assertEquals(self.logic.isThreeOfAKind([(8,'blue'),(8,'red'),(8,'green')]),True)
-        self.assertEquals(self.logic.isThreeOfAKind([(8,'blue'),(8,'red'),(8,'orange')]),True)
-        self.assertEquals(self.logic.isThreeOfAKind([(8,'blue'),(8,'blue'),(6,'blue')]),False)
-        self.assertRaises(FormationInvalidError, self.logic.isThreeOfAKind, [(8,'blue'),(9,'blue')])
-
-    """test_isFlush
-
-    test if the isFlush function works
-    """
-    def test_isFlush(self):
-        self.assertEquals(self.logic.isFlush([(8,'blue'),(9,'blue'),(1,'blue')]),True)
-        self.assertEquals(self.logic.isFlush([(8,'blue'),(9,'blue'),(4,'blue')]),True)
-        self.assertEquals(self.logic.isFlush([(8,'blue'),(9,'blue'),(6,'red')]),False)
-        self.assertRaises(FormationInvalidError, self.logic.isFlush, [(8,'blue'),(9,'blue')])
-
-    """test_isStraight
-
-    test if the isStraight function works
-    """
-    def test_isStraight(self):
-        self.assertEquals(self.logic.isStraight([(8,'blue'),(9,'red'),(10,'blue')]),True)
-        self.assertEquals(self.logic.isStraight([(8,'blue'),(9,'red'),(7,'blue')]),True)
-        self.assertEquals(self.logic.isStraight([(8,'blue'),(9,'blue'),(6,'red')]),False)
-        self.assertRaises(FormationInvalidError, self.logic.isStraight, [(8,'blue'),(9,'blue')])
-
-    """test_isHost
-
-    test if the isHost function works
-    """
-    def test_isHost(self):
-        self.assertEquals(self.logic.isHost([(8,'blue'),(9,'red'),(10,'blue')]),True)
-        self.assertRaises(FormationInvalidError, self.logic.isHost, [(8,'blue'),(9,'blue')])
-
+    
     """test_setPlayedCardList_empty
 
     test if the setPlayedCardList function will parse an empty board
