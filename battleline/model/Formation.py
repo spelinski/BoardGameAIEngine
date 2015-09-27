@@ -102,6 +102,7 @@ class Formation(object):
         if self.is_wedge(): return not other.is_wedge() or self.__get_sum() > other.__get_sum()
         if self.is_phalanx(): return not other.is_phalanx() or self.__get_sum() > other.__get_sum()
         if self.is_battalion(): return not other.is_battalion() or self.__get_sum() > other.__get_sum()
+        if self.is_skirmish(): return not other.is_skirmish() or self.__get_sum() > other.__get_sum()
         return False
 
 

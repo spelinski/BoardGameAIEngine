@@ -127,11 +127,18 @@ class TestFormation(unittest.TestCase):
         self.assertFalse(Formation([(2, "Y"), (2, "R"), (2, "B")]).is_greater_strength_than(Formation([(2, "P"), (2, "G"), (2, "O")])))
 
     def test_greater_than_check_phalanx_and_battalion(self):
-        self.assertTrue(Formation([(3, "Y"), (3, "R"), (3, "B")]).is_greater_strength_than(Formation([(1, "G"), (3, "G"), (5, "G")])))
+        self.assertTrue(Formation([(3, "Y"), (3, "R"), (3, "B")]).is_greater_strength_than(Formation([(1, "G"), (3, "G"), (6, "G")])))
 
     def test_greater_than_check_two_battalions(self):
         self.assertTrue(Formation([(1, "G"), (3, "G"), (8, "G")]).is_greater_strength_than(Formation([(4, "G"), (5, "G"), (2, "G")])))
         self.assertFalse(Formation([(1, "G"), (3, "G"), (8, "G")]).is_greater_strength_than(Formation([(4, "G"), (6, "G"), (2, "G")])))
 
     def test_greater_than_check_battalion_and_skirmish(self):
-        self.assertTrue(Formation([(3, "G"), (7, "G"), (2, "G")]).is_greater_strength_than(Formation([(4, "G"), (3, "G"), (5, "B")])))
+        self.assertTrue(Formation([(3, "G"), (6, "G"), (2, "G")]).is_greater_strength_than(Formation([(4, "G"), (3, "G"), (5, "B")])))
+
+    def test_greater_than_check_two_skirmishes(self):
+        self.assertTrue(Formation([(4, "G"), (2, "G"), (3, "Y")]).is_greater_strength_than(Formation([(3, "G"), (1, "G"), (2, "Y")])))
+        self.assertFalse(Formation([(4, "G"), (2, "G"), (3, "Y")]).is_greater_strength_than(Formation([(4, "Y"), (2, "B"), (3, "B")])))
+
+    def test_greater_than_check_skirmish_and_host(self):
+        self.assertTrue(Formation([(1, "G"), (3, "B"), (2, "G")]).is_greater_strength_than(Formation([(4, "G"), (9, "G"), (5, "B")])))
