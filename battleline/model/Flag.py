@@ -10,7 +10,7 @@ class Flag(object):
         """
         Constructor
         """
-        self.sides = {self.PLAYER_NORTH:[], self.PLAYER_SOUTH:[]}
+        self.sides = {self.PLAYER_NORTH: [], self.PLAYER_SOUTH: []}
         self.claimed = None 
 
     def is_empty(self):
@@ -91,14 +91,16 @@ class FlagAlreadyClaimedError(Exception):
         return "{} is attempting to place card on already claimed flag.".format(self.player)
 
 class InvalidPlayerError(Exception):
-     def __init__(self, player_string):
-         """Create an Exception that the player is not valid
-         @param player_string the player name that was not valid
-         """
-         self.player = player_string 
- 
-     def __str__(self):
-         return "Player String {} is invalid".format(self.player)
+
+    def __init__(self, player_string):
+        """Create an Exception that the player is not valid
+        @param player_string the player name that was not valid
+        """
+        self.player = player_string
+
+    def __str__(self):
+        return "Player String {} is invalid".format(self.player)
+
 
 class TooManyCardsOnOneSideError(Exception):
      def __init__(self, player_string):

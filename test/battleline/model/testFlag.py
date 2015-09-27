@@ -1,7 +1,9 @@
 import unittest
 from battleline.model.Flag import Flag, InvalidPlayerError, TooManyCardsOnOneSideError, FlagAlreadyClaimedError
 
+
 class TestFlag(unittest.TestCase):
+
     def setUp(self):
         self.flag = Flag()
         self.card = "dummyCard"
@@ -14,13 +16,15 @@ class TestFlag(unittest.TestCase):
         self.assertTrue(self.flag.is_player_side_empty(Flag.PLAYER_SOUTH))
 
     def test_board_cannot_get_invalid_flags(self):
-        self.assertRaisesRegexp(InvalidPlayerError, "Player String player3 is invalid", self.flag.is_player_side_empty, "player3")
+        self.assertRaisesRegexp(
+            InvalidPlayerError, "Player String player3 is invalid", self.flag.is_player_side_empty, "player3")
 
     def test_board_cannot_get_is_flag_playable_on_invalid_player(self):
         self.assertRaisesRegexp(InvalidPlayerError, "Player String player3 is invalid", self.flag.is_playable, "player3")
 
     def test_flag_cannot_add_to_invalid_player(self):
-        self.assertRaisesRegexp(InvalidPlayerError, "Player String player3 is invalid", self.flag.add_card, "player3", self.card)
+        self.assertRaisesRegexp(
+            InvalidPlayerError, "Player String player3 is invalid", self.flag.add_card, "player3", self.card)
 
     def test_flag_player_and_global_not_empty_after_adding_card(self):
         self.flag.add_card(Flag.PLAYER_NORTH, self.card) 
