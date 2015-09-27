@@ -16,6 +16,6 @@ class MockPlayerCommunication(object):
     def send_message(self, message):
         self.messages_received.append(message)
         self.add_response("This is a response")
-    
+
     def get_response(self):
         return self.responses.pop() if self.responses else ""

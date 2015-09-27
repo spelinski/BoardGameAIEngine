@@ -1,4 +1,6 @@
 from Flag import Flag
+
+
 class Board(object):
     """Represent a board in Battleline.
     A board is represented as 9 flags, each with 3 potential slots on the top and bottom
@@ -8,7 +10,7 @@ class Board(object):
         """
         Constructor
         """
-        self.flags = [Flag() for i in xrange(1,10)]
+        self.flags = [Flag() for i in xrange(1, 10)]
 
     def get_flag(self, flag_index):
         """Get the Flag associated with the index
@@ -20,10 +22,12 @@ class Board(object):
 
         return self.flags[flag_index - 1]
 
-    def __is_flag_in_range(self,index):
-        return index in range(1,10)
+    def __is_flag_in_range(self, index):
+        return index in range(1, 10)
+
 
 class FlagNotFoundError(Exception):
+
     def __init__(self, flag_index):
         """Create an Exception that the index is not valid
         @param flag_index the index of the flag that was not valid
