@@ -1,5 +1,5 @@
 import unittest
-from battleline.model.Flag import Flag, InvalidPlayerError, TooManyCardsOnOneSideError
+from battleline.model.Flag import Flag, InvalidPlayerError, TooManyCardsOnOneSideError, FlagAlreadyClaimedError
 
 class TestFlag(unittest.TestCase):
     def setUp(self):
@@ -46,4 +46,8 @@ class TestFlag(unittest.TestCase):
         self.assertTrue(self.flag.is_flag_claimed())
         self.assertTrue(self.flag.is_flag_claimed_by_player(Flag.PLAYER_ONE_ID))
         self.assertFalse(self.flag.is_flag_claimed_by_player(Flag.PLAYER_TWO_ID)) 
+
+    def test_flag_can_not_place_card_after_claimed(self):
+        self.flag.claim_flag(Flag.PLAYER_ONE_ID)
+        self.assertRaisesRegexp(FlagAlreadyClaimedError, "Player player2 is attempting to place card on already claimed flag.", self.flag.add_card, Flag.PLAYER_TWO_ID, self.card)
 

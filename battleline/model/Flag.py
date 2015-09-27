@@ -11,7 +11,7 @@ class Flag(object):
         Constructor
         """
         self.sides = {self.PLAYER_ONE_ID:[], self.PLAYER_TWO_ID:[]}
-        self.isClaimed = False
+        self.claimed = None 
 
     def is_empty(self):
         """
@@ -49,8 +49,7 @@ class Flag(object):
 
         @param player player side to add the flag to. 
         """
-        #putting this so that it will pass the FormationLogic unittest...
-        self.isClaimed = True
+        self.claimed = player
   
     def is_flag_playable(self, player):
         """Checks if a side of the flag can be played on.
@@ -80,7 +79,19 @@ class Flag(object):
     def __raise_error_if_card_can_not_be_played(self, player):
         if not self.is_flag_playable(player): 
             raise TooManyCardsOnOneSideError(player) 
+        if self.is_flag_claimed():
+            raise FlagAlreadyClaimedError(player)
 
+class FlagAlreadyClaimedError(Exception):
+    def __init__(self, player_string):
+        """Create an Exception that the player is trying to place 
+        a card on and already claimed flag.
+        @param player_string the player name that is placing the card
+        """
+        self.player = player_string
+
+    def __str__(self):
+        return "Player {} is attempting to place card on already claimed flag.".format(self.player)
 
 class InvalidPlayerError(Exception):
      def __init__(self, player_string):
