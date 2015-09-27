@@ -6,3 +6,6 @@ To run code coverage, pip install coverage
 To create a coverage report, use coverage - m unittest discover
 
 Then, issue coverage report - m for command line coverage, or coverage html for a index.html file in htmlcov
+
+To use hooks copy them from the gitHooks folder to .git/hooks/
+This currently includes a file for pre-commit
