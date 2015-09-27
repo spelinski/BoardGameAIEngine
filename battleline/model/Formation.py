@@ -12,6 +12,14 @@ class Formation(object):
         if len(troops) != 3:
             raise FormationInvalidError
         self.troops = troops
+        self.type = self.__get_type()
+
+    def __get_type(self):
+        if self.__is_wedge(): return "wedge"
+        if self.__is_phalanx(): return "phalanx"
+        if self.__is_battalion(): return "battalion"
+        if self.__is_skirmish(): return "skirmish"
+        return "host"
 
     def get_numbers(self):
         """
@@ -34,39 +42,19 @@ class Formation(object):
         """
         return max(self.get_numbers())
 
-    def is_wedge(self):
-        """
-        Return true if we are a wedge (straight flush)
-        @return if this formation is a wedge (straight flush)
-        """
+    def __is_wedge(self):
         return self.__is_in_order() and self.__is_same_color()
 
-    def is_phalanx(self):
-        """
-        Return if we are a phalanx (three of a kind)
-        @return if this formation is a phalanx(three of a kind)
-        """
+    def __is_phalanx(self):
         return self.__is_same_number()
 
-    def is_battalion(self):
-        """
-        Return if we are a battalion (flush)
-        @return if this formation was a battalion(flush)
-        """
+    def __is_battalion(self):
         return self.__is_same_color()
 
-    def is_skirmish(self):
-        """
-        Return if we are a skirmish (straight)
-        @return if this formation was a skirmish (straight)
-        """
+    def __is_skirmish(self):
         return self.__is_in_order()
 
-    def is_host(self):
-        """
-        @Return if we are a host (sum)
-        @return True, since everything can be a host
-        """
+    def __is_host(self):
         return True
 
     def __is_in_order(self):
@@ -81,6 +69,40 @@ class Formation(object):
 
     def __is_one_value(self, list):
         return len(set(list)) == 1
+
+    def __get_sum(self):
+        return sum(self.get_numbers())
+
+    def __does_match_type(self, other):
+        # does not check host values
+        return self.type == other.type
+
+
+    def is_equivalent_in_strength(self, other):
+        """
+        Check if the two armies are equivalent in strength
+        @param other the other formation
+        @return true if the two armies are the same type and have the same sum
+        """
+        if self.__does_match_type(other):
+            return  self.__get_sum() == other.__get_sum()
+        return False
+
+    def is_greater_strength_than(self, other):
+        """
+        Check if the one formation is greater than the other
+        @param other the other formation
+        @return true if the two armies are the same type and this has the greater sum, otherwise, whoever has the greater formation
+        """
+        if self.__does_match_type(other):
+            return self.__get_sum() > other.__get_sum()
+        return self.__get_ordered_strength() > other.__get_ordered_strength()
+
+    def __get_ordered_strength(self):
+        strength = ["host", "skirmish", "battalion", "phalanx", "wedge"]
+        return strength.index(self.type)
+
+
 
 class FormationInvalidError(Exception):
 
