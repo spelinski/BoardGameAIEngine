@@ -6,12 +6,15 @@ class BattlelinePlayer(object):
 
     HAND_LIMIT = 7
 
-    def __init__(self, name):
-        """Consructor
+
+    def __init__(self, name, communication):
+        """Constructor
         @param name the player name
+        @param communication the communication the player has with a bot
         """
         self.name = name
         self.hand = []
+        self.communication = communication
 
     def add_to_hand(self, card):
         """
@@ -25,6 +28,20 @@ class BattlelinePlayer(object):
 
     def __is_hand_at_limit(self):
         return len(self.hand) == BattlelinePlayer.HAND_LIMIT
+
+    def send_message(self, message):
+        """
+        Use the underlying communication object to talk convey commands
+        @param the message we want to send using communication object
+        """
+        return self.communication.send_message(message)
+    
+    def get_response(self):
+        """
+        Use the underlying communication object to get messages back
+        @return response being sent back
+        """
+        return self.communication.get_response()
 
 class HandFullError(Exception):
     def __init__(self, hand_limit):
