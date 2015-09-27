@@ -128,6 +128,7 @@ class TestFormation(unittest.TestCase):
 
     def test_greater_than_check_phalanx_and_battalion(self):
         self.assertTrue(Formation([(3, "Y"), (3, "R"), (3, "B")]).is_greater_strength_than(Formation([(1, "G"), (3, "G"), (6, "G")])))
+        self.assertFalse(Formation([(1, "G"), (3, "G"), (6, "G")]).is_greater_strength_than(Formation([(3, "Y"), (3, "R"), (3, "B")])))
 
     def test_greater_than_check_two_battalions(self):
         self.assertTrue(Formation([(1, "G"), (3, "G"), (8, "G")]).is_greater_strength_than(Formation([(4, "G"), (5, "G"), (2, "G")])))

@@ -12,6 +12,14 @@ class Formation(object):
         if len(troops) != 3:
             raise FormationInvalidError
         self.troops = troops
+        self.type = self.__get_type()
+
+    def __get_type(self):
+        if self.is_wedge(): return "wedge"
+        if self.is_phalanx(): return "phalanx"
+        if self.is_battalion(): return "battalion"
+        if self.is_skirmish(): return "skirmish"
+        return "host"
 
     def get_numbers(self):
         """
@@ -87,10 +95,7 @@ class Formation(object):
 
     def __does_match_type(self, other):
         # does not check host values
-        return self.is_wedge() == other.is_wedge() and \
-               self.is_phalanx() == other.is_phalanx() and \
-               self.is_battalion() == other.is_battalion() and \
-               self.is_skirmish() == other.is_skirmish()
+        return self.type == other.type
 
 
     def is_equivalent_in_strength(self, other):
@@ -101,10 +106,11 @@ class Formation(object):
     def is_greater_strength_than(self, other):
         if self.__does_match_type(other):
             return self.__get_sum() > other.__get_sum()
-        if self.is_wedge(): return not other.is_wedge()
-        if self.is_phalanx(): return not other.is_phalanx()
-        if self.is_battalion(): return not other.is_battalion()
-        if self.is_skirmish(): return not other.is_skirmish()
+        return self.__get_ordered_strength() > other.__get_ordered_strength()
+
+    def __get_ordered_strength(self):
+        strength = ["host", "skirmish", "battalion", "phalanx", "wedge"]
+        return strength.index(self.type)
 
 
 
