@@ -85,11 +85,22 @@ class Formation(object):
     def __get_sum(self):
         return sum(self.get_numbers())
 
+    def __does_match_type(self, other):
+        # does not check host values
+        if self.is_wedge(): return other.is_wedge()
+        if other.is_wedge(): return self.is_wedge()
+        if self.is_phalanx(): return other.is_phalanx()
+        if other.is_phalanx(): return self.is_phalanx()
+        if self.is_battalion(): return other.is_battalion()
+        if other.is_battalion(): return self.is_battalion()
+        if self.is_skirmish(): return other.is_skirmish()
+        if other.is_skirmish(): return self.is_skirmish()
+        return True
+
     def is_equivalent_in_strength(self, other):
-        if self.is_wedge(): return  other.is_wedge() and self.__get_sum() == other.__get_sum()
-        if self.is_phalanx(): return other.is_phalanx() and self.__get_sum() == other.__get_sum()
-        if self.is_battalion(): return other.is_battalion() and self.__get_sum() == other.__get_sum()
-        if self.is_skirmish(): return other.is_skirmish() and self.__get_sum() == other.__get_sum()
+
+        if not self.__does_match_type(other):
+            return False
         return  self.__get_sum() == other.__get_sum()
 
     def is_greater_strength_than(self, other):

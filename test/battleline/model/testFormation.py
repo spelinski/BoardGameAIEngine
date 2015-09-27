@@ -2,8 +2,6 @@ import unittest
 from battleline.model.Formation import Formation, FormationInvalidError
 class TestFormation(unittest.TestCase):
 
-
-
     def test_formation_with_less_than_three_cards_is_considered_invalid(self):
         self.assertRaisesRegexp(FormationInvalidError, "Formation must have 3 cards", Formation, [(1, "R"), (2, "Y")])
 
@@ -89,6 +87,7 @@ class TestFormation(unittest.TestCase):
 
     def test_formation_equality_with_wedge_and_host(self):
         self.assertFalse(Formation([(1, "R"), (2, "R"), (3, "R")]).is_equivalent_in_strength( Formation([(1, "B"), (2, "B"), (4, "G")])))
+        self.assertFalse(Formation([(5, "R"), (1, "R"), (3, "Y")]).is_equivalent_in_strength( Formation([(2, "B"), (3, "B"), (4, "B")])))
 
     def test_formation_equality_with_two_wedges(self):
         self.assertTrue(Formation([(1, "R"), (2, "R"), (3, "R")]).is_equivalent_in_strength( Formation([(1, "G"), (2, "G"), (3, "G")])))
@@ -103,7 +102,6 @@ class TestFormation(unittest.TestCase):
         self.assertTrue(Formation([(1, "R"), (1, "G"), (1, "Y")]).is_equivalent_in_strength( Formation([(1, "P"), (1, "B"), (1, "O")])))
         self.assertFalse(Formation([(1, "R"), (1, "G"), (1, "Y")]).is_equivalent_in_strength( Formation([(2, "P"), (2, "B"), (2, "O")])))
 
-
     def test_formation_equality_with_two_battalions(self):
         self.assertTrue(Formation([(3, "R"), (2, "R"), (5, "R")]).is_equivalent_in_strength( Formation([(5, "B"), (2, "B"), (3, "B")])))
         self.assertFalse(Formation([(6, "R"), (2, "R"), (3, "R")]).is_equivalent_in_strength( Formation([(5, "B"), (2, "B"), (3, "B")])))
@@ -113,7 +111,7 @@ class TestFormation(unittest.TestCase):
         self.assertFalse(Formation([(1, "R"), (2, "R"), (3, "Y")]).is_equivalent_in_strength( Formation([(4, "B"), (2, "B"), (3, "G")])))
 
     def test_formation_equality_with_two_hosts(self):
-        self.assertTrue(Formation([(1, "R"), (2, "Y"), (3, "R")]).is_equivalent_in_strength( Formation([(1, "G"), (2, "G"), (3, "B")])))
+        self.assertTrue(Formation([(1, "R"), (4, "Y"), (3, "R")]).is_equivalent_in_strength( Formation([(1, "G"), (4, "G"), (3, "B")])))
         self.assertFalse(Formation([(1, "R"), (2, "Y"), (3, "R")]).is_equivalent_in_strength( Formation([(4, "G"), (2, "G"), (3, "B")])))
 
     def test_greater_than_check_two_wedges(self):
