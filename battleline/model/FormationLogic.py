@@ -15,11 +15,11 @@ class FormationLogic:
         # be a lot of those requested
         bestFormationPossible = self.greatestPossibleFormation([])
         for flag in board.flags:
-            for player in [flag.PLAYER_ONE_ID, flag.PLAYER_TWO_ID]:
-                if player == flag.PLAYER_ONE_ID:
-                    enemy = flag.PLAYER_TWO_ID
+            for player in [flag.PLAYER_NORTH, flag.PLAYER_SOUTH]:
+                if player == flag.PLAYER_NORTH:
+                    enemy = flag.PLAYER_SOUTH
                 else:
-                    player = flag.PLAYER_ONE_ID
+                    player = flag.PLAYER_NORTH
                 #thisSideBestFormation = self.greatestPossibleFormation(flag.get_cards(thisSide))
                 if len(flag.get_cards(player)) == 3:
                     playerCards = flag.get_cards(player)
@@ -45,7 +45,7 @@ class FormationLogic:
 
     def setPlayedCardList(self, board):
         for flag in board.flags:
-            for player in flag.PLAYER_ONE_ID, flag.PLAYER_TWO_ID:
+            for player in flag.PLAYER_NORTH, flag.PLAYER_SOUTH:
                 for card in flag.get_cards(player):
                     self.playedCardList.append(card)
 
