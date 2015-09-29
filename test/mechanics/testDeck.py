@@ -37,3 +37,6 @@ class TestDeck(unittest.TestCase):
         localDeck = Deck(listOfCards, False)
         localDeck.shuffle()
         self.assertEqual(set(localDeck.deck), set(listOfCards))
+
+    def test_raise_type_error_if_no_list(self):
+        self.assertRaisesRegexp(TypeError, "", Deck, "")
