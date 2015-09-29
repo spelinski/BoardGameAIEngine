@@ -1,4 +1,5 @@
 from mechanics.Deck import Deck
+from BoardLogic import BoardLogic
 from collections import namedtuple
 from itertools import product
 
@@ -19,6 +20,9 @@ class BattlelineEngine(object):
         self.player1 = player1
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
+        self.boardLogic = BoardLogic()
+        
+        self.__make_player_turn_index = 0
 
     def initialize(self):
         """
@@ -43,8 +47,14 @@ class BattlelineEngine(object):
         """
         self.__make_player_turn(self.player1)
         self.__make_player_turn(self.player2)
+        self.__make_player_turn_index = self.__make_player_turn_index + 1
+        if self.__make_player_turn_index == 9:
+            self.__make_player_turn_index = 0
 
     def __make_player_turn(self, player):
         player.remove_from_hand(player.hand[0])
+        self.boardLogic.addCard(self.__make_player_turn_index,player.name,player.hand[0])
         if not self.troop_deck.is_empty():
             player.add_to_hand(self.troop_deck.draw())
+
+
