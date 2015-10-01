@@ -5,12 +5,12 @@ Created on Sep 30, 2015
 '''
 import unittest
 from battleline.engine.CommandGenerator import CommandGenerator
-from communcation.PlayerCommunication import PlayerCommunication
 from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
 from collections import namedtuple
 from itertools import product
 
 TroopCard = namedtuple("TroopCard", ["number", "color"])
+
 
 class TestCommandGenerator(unittest.TestCase):
 
@@ -18,47 +18,55 @@ class TestCommandGenerator(unittest.TestCase):
         self.mockCommunication = MockPlayerCommunication()
 
     def test_send_player_north_name(self):
-        self.workingBotPath = "test/mockBot/mockBot.py"
-        self.localPlayerCommunication = PlayerCommunication(self.workingBotPath)
-        self.localCommandGenerator = CommandGenerator(self.localPlayerCommunication, "north")
-        self.assertEqual(self.localCommandGenerator.sendPlayerDirectionName(), "player north mockBot\n")
-        self.localPlayerCommunication.close()
-    
+        self.localCommandGenerator = CommandGenerator(
+            self.mockCommunication, "north")
+        self.localCommandGenerator.send_player_direction_name()
+        self.assertEqual(
+            self.mockCommunication.messages_received.pop(), "player north name")
+
     def test_send_player_south_name(self):
-        self.workingBotPath = "test/mockBot/mockBot.py"
-        self.localPlayerCommunication = PlayerCommunication(self.workingBotPath)
-        self.localCommandGenerator = CommandGenerator(self.localPlayerCommunication, "south")
-        self.assertEqual(self.localCommandGenerator.sendPlayerDirectionName(), "player south mockBot\n")
-        self.localPlayerCommunication.close()
-    
+        self.localCommandGenerator = CommandGenerator(
+            self.mockCommunication, "south")
+        self.localCommandGenerator.send_player_direction_name()
+        self.assertEqual(
+            self.mockCommunication.messages_received.pop(), "player south name")
+
     def test_send_colors(self):
-        self.localCommandGenerator = CommandGenerator(self.mockCommunication, "north")
-        self.localCommandGenerator.sendColors()
+        self.localCommandGenerator = CommandGenerator(
+            self.mockCommunication, "north")
+        self.localCommandGenerator.send_colors()
         colors = ["RED", "GREEN", "ORANGE", "YELLOW", "BLUE", "PURPLE"]
         colorString = "colors"
         for color in colors:
             colorString += " " + color
-        self.assertEqual(self.mockCommunication.messages_received.pop(), colorString)
-    
+        self.assertEqual(
+            self.mockCommunication.messages_received.pop(), colorString)
+
     def test_send_player_hand_north(self):
-        self.localCommandGenerator = CommandGenerator(self.mockCommunication, "north")
+        self.localCommandGenerator = CommandGenerator(
+            self.mockCommunication, "north")
         colors = ["RED"]
-        hand = [TroopCard(number, color) for color, number in product(colors, range(1, 8))]
-        self.localCommandGenerator.sendPlayerHand(hand)
+        hand = [TroopCard(number, color)
+                for color, number in product(colors, range(1, 8))]
+        self.localCommandGenerator.send_player_hand(hand)
         cardString = "player north hand"
         for card in hand:
             cardString += " " + card.color + "," + str(card.number)
-        self.assertEqual(self.mockCommunication.messages_received.pop(), cardString)
-    
+        self.assertEqual(
+            self.mockCommunication.messages_received.pop(), cardString)
+
     def test_send_player_hand_south(self):
-        self.localCommandGenerator = CommandGenerator(self.mockCommunication, "south")
+        self.localCommandGenerator = CommandGenerator(
+            self.mockCommunication, "south")
         colors = ["RED"]
-        hand = [TroopCard(number, color) for color, number in product(colors, range(1, 8))]
-        self.localCommandGenerator.sendPlayerHand(hand)
+        hand = [TroopCard(number, color)
+                for color, number in product(colors, range(1, 8))]
+        self.localCommandGenerator.send_player_hand(hand)
         cardString = "player south hand"
         for card in hand:
             cardString += " " + card.color + "," + str(card.number)
-        self.assertEqual(self.mockCommunication.messages_received.pop(), cardString)
+        self.assertEqual(
+            self.mockCommunication.messages_received.pop(), cardString)
 
 
 """
