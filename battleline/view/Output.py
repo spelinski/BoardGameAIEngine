@@ -20,13 +20,13 @@ ACTIONS
 'color'  can be any of ['color1', 'color2', 'color3', 'color4', 'color5', 'color6']
 'tactic' can be any of ['Alexander','Darius','cavalry','shield','traitor','deserter','redeploy','scout','fog','mud']
 """
+
+import os.path
+
 COLORS = ['color1', 'color2', 'color3', 'color4', 'color5', 'color6']
 TACTICS = ['Alexander', 'Darius', 'cavalry', 'shield',
            'traitor', 'deserter', 'redeploy', 'scout', 'fog', 'mud']
 ACTIONS = ['draw', 'play', 'claim', 'win']
-
-import os.path
-
 
 class Output:
 
@@ -37,9 +37,9 @@ class Output:
         self.fileHandle = open(self.filename, 'w')
         self.fileHandle.close()
 
-        self.outputString = ""
+        self.outputstring = ""
 
-    def setup_player_postitions(self, playerName, place):
+    def setup_player_positions(self, playerName, place):
         self.outputstring = "{} is {}".format(playerName, place)
         self.__write()
 
@@ -48,16 +48,16 @@ class Output:
         self.__write()
 
     def __set_output_string(self, playerName, action, card, flagNumber):
-        if card = "":
-            self.outputString = "{} {}s {}".format(
+        if card == "":
+            self.outputstring = "{} {}s {}".format(
                 playerName, action, flagNumber)
         else:
-            self.outputString = "{} {}s {} {} {}".format(
+            self.outputstring = "{} {}s {} {} {}".format(
                 playerName, action, card.number, card.color, flagNumber)
 
     def __write(self):
         self.fileHandle = open(self.filename, 'a')
-        self.fileHandle.write(self.outputString + "\n")
+        self.fileHandle.write(self.outputstring + "\n")
         self.fileHandle.close()
 
     def __find_next_filename(self):
