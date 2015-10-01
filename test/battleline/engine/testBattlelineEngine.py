@@ -8,7 +8,7 @@ from test.battleline.player.MockPlayerCommunication import MockPlayerCommunicati
 
 def get_engine_with_ordered_cards():
     engine = BattlelineEngine(BattlelinePlayer(
-        "1", MockPlayerCommunication()), BattlelinePlayer("2", MockPlayerCommunication))
+        "Player North", MockPlayerCommunication()), BattlelinePlayer("Player South", MockPlayerCommunication))
 
     # reinitialize the deck with a non shuffled deck to make things more reliable
     # don't do this in production code, the deck should be shuffled in real
@@ -24,8 +24,8 @@ class TestBattlelineUninitializedEngine(unittest.TestCase):
         self.engine = get_engine_with_ordered_cards()
 
     def test_can_create_engine_with_two_players(self):
-        self.assertEquals("1", self.engine.player1.name)
-        self.assertEquals("2", self.engine.player2.name)
+        self.assertEquals("Player North", self.engine.player1.name)
+        self.assertEquals("Player South", self.engine.player2.name)
         self.assertEquals([], self.engine.player1.hand)
         self.assertEquals([], self.engine.player2.hand)
 
