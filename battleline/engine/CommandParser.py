@@ -11,7 +11,6 @@ class CommandParser(object):
 
 
 class InvalidParseError(Exception):
-
     def __init__(self, message):
         """
         Constructor
