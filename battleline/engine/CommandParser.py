@@ -22,6 +22,7 @@ class ServerCommandParser(object):
         """
         if self.__is_player_name_request(message):
             return self.__parse_player_name_request(message)
+        if self.__is_colors_message(message): return self.__parse_colors_message(message)
         raise InvalidParseError(message)
 
     def __is_player_name_request(self, string):
@@ -33,6 +34,14 @@ class ServerCommandParser(object):
         if message[1] != Identifiers.NORTH and message[1] != Identifiers.SOUTH:
             raise InvalidParseError(string)
         return make_dict("player_name_request", message[1])
+
+    def __is_colors_message(self, string):
+        message = string.split()
+        return len(message) == 7 and message[0] == "colors"
+
+    def __parse_colors_message(self, string):
+        message = string.split()
+        return message[1:]
 
 
 class ClientCommandParser(object):
