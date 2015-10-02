@@ -14,6 +14,85 @@ class TestFormationLogic(unittest.TestCase):
         self.logic = FormationLogic()
         self.fullList = [(number, color) for color, number in product(COLORS, range(1, 11))]
 
+    """test_checkAllFlags_empty
+
+    test if the checkAllFlags function will work on an empty board
+    """
+
+    def test_checkAllFlags_empty(self):
+        self.logic.checkAllFlags(self.board)
+        for flag in self.board.flags:
+            self.assertEquals(flag.is_claimed(), False)
+
+    """test_checkAllFlags_FlagContested
+
+    test if the checkAllFlags function will work on an empty board
+    """
+
+    def test_checkAllFlags_FlagContested(self):
+        # flag 1: 10-9-8 vs 1-2-3
+        self.board.flags[0].add_card(
+            self.board.flags[0].PLAYER_NORTH, (10, 'blue'))
+        self.board.flags[0].add_card(
+            self.board.flags[0].PLAYER_NORTH, (9, 'blue'))
+        self.board.flags[0].add_card(
+            self.board.flags[0].PLAYER_NORTH, (8, 'blue'))
+
+        self.board.flags[0].add_card(
+            self.board.flags[0].PLAYER_SOUTH, (1, 'blue'))
+        self.board.flags[0].add_card(
+            self.board.flags[0].PLAYER_SOUTH, (2, 'blue'))
+        self.board.flags[0].add_card(
+            self.board.flags[0].PLAYER_SOUTH, (3, 'blue'))
+
+        # flag 2: 10R-9R-8R vs 1-2-_
+        self.board.flags[1].add_card(
+            self.board.flags[1].PLAYER_NORTH, (10, 'red'))
+        self.board.flags[1].add_card(
+            self.board.flags[1].PLAYER_NORTH, (9, 'red'))
+        self.board.flags[1].add_card(
+            self.board.flags[1].PLAYER_NORTH, (8, 'red'))
+
+        self.board.flags[1].add_card(
+            self.board.flags[1].PLAYER_SOUTH, (1, 'red'))
+        self.board.flags[1].add_card(
+            self.board.flags[1].PLAYER_SOUTH, (2, 'red'))
+
+        # flag 3: 10-9-_ vs 1-2-3 (8 is played on flag 4)
+        self.board.flags[2].add_card(
+            self.board.flags[1].PLAYER_NORTH, (10, 'green'))
+        self.board.flags[2].add_card(
+            self.board.flags[1].PLAYER_NORTH, (9, 'green'))
+
+        self.board.flags[2].add_card(
+            self.board.flags[1].PLAYER_SOUTH, (1, 'green'))
+        self.board.flags[2].add_card(
+            self.board.flags[1].PLAYER_SOUTH, (2, 'green'))
+        self.board.flags[2].add_card(
+            self.board.flags[1].PLAYER_SOUTH, (3, 'green'))
+        self.board.flags[3].add_card(
+            self.board.flags[1].PLAYER_SOUTH, (8, 'green'))
+        self.logic.checkAllFlags(self.board)
+
+        # right now I just check if the flag has been claimed, I need to check
+        # if it has been claimed by the right person
+        expectedResults = [True, True, True, False,
+                           False, False, False, False, False]
+        actualResults = [False, False, False, False,
+                         False, False, False, False, False]
+        for i, flag in enumerate(self.board.flags):
+            actualResults[i] = flag.is_claimed()
+        self.assertEquals(actualResults, expectedResults)
+
+    """test_setPlayedCardList_empty
+
+    test if the setPlayedCardList function will parse an empty board
+    """
+
+    def test_setPlayedCardList_empty(self):
+        self.logic.setPlayedCardList(self.board)
+        self.assertEquals(self.logic.playedCardList, [])
+
     """test_greatestPossibleFormation
 
     test if the greatestPossibleFormation function will give the correct best formation with all available cards
