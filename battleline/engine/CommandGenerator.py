@@ -23,22 +23,22 @@ class CommandGenerator(object):
             "player " + self.playerDirection + " name")
 
     def send_colors(self):
-        colorString = "colors"
+        msg = "colors"
         for color in Identifiers.COLORS:
-            colorString += " " + color
-        self.playerCommunication.send_message(colorString)
+            msg += " " + color
+        self.playerCommunication.send_message(msg)
 
     def send_player_hand(self, hand):
-        cardString = "player " + self.playerDirection + " hand"
+        msg = "player " + self.playerDirection + " hand"
         for card in hand:
-            cardString += " " + card.color + "," + str(card.number)
-        self.playerCommunication.send_message(cardString)
+            msg += " " + card.color + "," + str(card.number)
+        self.playerCommunication.send_message(msg)
 
     def send_flag_claim_status(self, listOfFlags):
-        flagClaimString = "flag claim-status"
+        msg = "flag claim-status"
         for flag in listOfFlags:
-            flagClaimString += " " + self.__who_has_claimed_parsed(flag)
-        self.playerCommunication.send_message(flagClaimString)
+            msg += " " + self.__who_has_claimed_parsed(flag)
+        self.playerCommunication.send_message(msg)
 
     def send_opponent_play(self, flagIndex, card):
         self.playerCommunication.send_message(
@@ -55,20 +55,20 @@ class CommandGenerator(object):
             ++i
 
     def __send_flag_cards_north(self, flag, number):
-        flagCardNorthString = "flag " + str(number) + " cards north"
+        msg = "flag " + str(number) + " cards north"
         for card in flag.get_cards("Player North"):
-            flagCardNorthString += " " + card.color + "," + str(card.number)
-        self.playerCommunication.send_message(flagCardNorthString)
+            msg += " " + card.color + "," + str(card.number)
+        self.playerCommunication.send_message(msg)
 
     def __send_flag_cards_south(self, flag, number):
-        flagCardNorthString = "flag " + str(number) + " cards south"
+        msg = "flag " + str(number) + " cards south"
         for card in flag.get_cards("Player South"):
-            flagCardNorthString += " " + card.color + "," + str(card.number)
-        self.playerCommunication.send_message(flagCardNorthString)
+            msg += " " + card.color + "," + str(card.number)
+        self.playerCommunication.send_message(msg)
 
     def __who_has_claimed_parsed(self, flag):
         if flag.claimed == "Player North":
-            return "north"
+            return Identifiers.NORTH
         elif flag.claimed == "Player South":
-            return "south"
+            return Identifiers.SOUTH
         return "unclaimed"
