@@ -18,21 +18,21 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_player_north_name(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         localCommandGenerator.send_player_direction_name()
         self.assertEqual(
             self.mockCommunication.messages_received.pop(), "player north name")
 
     def test_send_player_south_name(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "south")
+            self.mockCommunication, Identifiers.SOUTH)
         localCommandGenerator.send_player_direction_name()
         self.assertEqual(
             self.mockCommunication.messages_received.pop(), "player south name")
 
     def test_send_colors(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         localCommandGenerator.send_colors()
         colorString = "colors"
         for color in Identifiers.COLORS:
@@ -42,7 +42,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_player_hand_north(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         hand = [TroopCard(number, Identifiers.COLORS[0])
                 for number in range(1, 8)]
         localCommandGenerator.send_player_hand(hand)
@@ -54,7 +54,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_player_hand_south(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "south")
+            self.mockCommunication, Identifiers.SOUTH)
         hand = [TroopCard(number, Identifiers.COLORS[0])
                 for number in range(1, 8)]
         localCommandGenerator.send_player_hand(hand)
@@ -66,7 +66,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_flag_claim_status_no_claims(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         claimStatusString = "flag claim-status"
         flagList = []
         for _ in range(1, 10):
@@ -78,7 +78,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_flag_claim_status_north_claim(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         claimStatusString = "flag claim-status"
         flagList = []
         for _ in range(1, 9):
@@ -94,7 +94,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_flag_claim_status_south_claim(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         claimStatusString = "flag claim-status"
         flagList = []
         for _ in range(1, 9):
@@ -110,7 +110,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_flag_cards_no_cards(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         flagList = []
         for _ in range(1, 10):
             flagList.append(Flag())
@@ -126,7 +126,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_flag_cards_one_card(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         flagList = []
         for _ in range(1, 9):
             flagList.append(Flag())
@@ -149,7 +149,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_opponent_play(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         localCommandGenerator.send_opponent_play(
             2, TroopCard(2, Identifiers.COLORS[0]))
         self.assertEqual(
@@ -157,7 +157,7 @@ class TestCommandGenerator(unittest.TestCase):
 
     def test_send_go_play(self):
         localCommandGenerator = CommandGenerator(
-            self.mockCommunication, "north")
+            self.mockCommunication, Identifiers.NORTH)
         localCommandGenerator.send_go_play()
         self.assertEqual(
             self.mockCommunication.messages_received.pop(), "go play-card")
