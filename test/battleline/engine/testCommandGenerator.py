@@ -43,7 +43,8 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_player_hand_north(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, "north")
-        hand = [TroopCard(number, Identifiers.COLORS[0]) for number in range(1, 8)]
+        hand = [TroopCard(number, Identifiers.COLORS[0])
+                for number in range(1, 8)]
         localCommandGenerator.send_player_hand(hand)
         cardString = "player north hand"
         for card in hand:
@@ -54,7 +55,8 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_player_hand_south(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, "south")
-        hand = [TroopCard(number, Identifiers.COLORS[0]) for number in range(1, 8)]
+        hand = [TroopCard(number, Identifiers.COLORS[0])
+                for number in range(1, 8)]
         localCommandGenerator.send_player_hand(hand)
         cardString = "player south hand"
         for card in hand:
@@ -148,7 +150,8 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_opponent_play(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, "north")
-        localCommandGenerator.send_opponent_play(2, TroopCard(2, Identifiers.COLORS[0]))
+        localCommandGenerator.send_opponent_play(
+            2, TroopCard(2, Identifiers.COLORS[0]))
         self.assertEqual(
             self.mockCommunication.messages_received.pop(), "opponent play 2 " + Identifiers.COLORS[0] + ",2")
 

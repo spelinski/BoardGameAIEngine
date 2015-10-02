@@ -5,6 +5,7 @@ Created on Sep 30, 2015
 '''
 from battleline.Identifiers import Identifiers
 
+
 class CommandGenerator(object):
     '''
     classdocs
