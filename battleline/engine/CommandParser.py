@@ -35,8 +35,6 @@ class ServerCommandParser(object):
         return make_dict("player_name_request", message[1])
 
 
-
-
 class ClientCommandParser(object):
     """
     Meant for parsing messages that come from the server
@@ -49,10 +47,11 @@ class ClientCommandParser(object):
         @return a dictionary of {type: message type,  values : arbitrary}
         @raise InvalidParseError if the message was not of the type we expected
         """
-        if self.__is_player_name_response(message): return self.__make_player_name_response(message)
+        if self.__is_player_name_response(message):
+            return self.__make_player_name_response(message)
         raise InvalidParseError(message)
 
-    def __is_player_name_response(self,string):
+    def __is_player_name_response(self, string):
         return string.split()[0] == "player"
 
     def __make_player_name_response(self, string):
