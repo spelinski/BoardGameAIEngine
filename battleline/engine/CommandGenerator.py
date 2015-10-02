@@ -3,7 +3,7 @@ Created on Sep 30, 2015
 
 @author: rohk
 '''
-
+from battleline.Identifiers import Identifiers
 
 class CommandGenerator(object):
     '''
@@ -22,9 +22,8 @@ class CommandGenerator(object):
             "player " + self.playerDirection + " name")
 
     def send_colors(self):
-        colors = ["RED", "GREEN", "ORANGE", "YELLOW", "BLUE", "PURPLE"]
         colorString = "colors"
-        for color in colors:
+        for color in Identifiers.COLORS:
             colorString += " " + color
         self.playerCommunication.send_message(colorString)
 
@@ -67,8 +66,8 @@ class CommandGenerator(object):
         self.playerCommunication.send_message(flagCardNorthString)
 
     def __who_has_claimed_parsed(self, flag):
-        if flag.who_has_claimed() == "Player North":
+        if flag.claimed == "Player North":
             return "north"
-        elif flag.who_has_claimed() == "Player South":
+        elif flag.claimed == "Player South":
             return "south"
         return "unclaimed"

@@ -6,11 +6,9 @@ Created on Sep 30, 2015
 import unittest
 from battleline.engine.CommandGenerator import CommandGenerator
 from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
-from collections import namedtuple
-from itertools import product
 from battleline.model.Flag import Flag
-
-TroopCard = namedtuple("TroopCard", ["number", "color"])
+from battleline.engine.BattlelineEngine import TroopCard
+from battleline.Identifiers import Identifiers
 
 
 class TestCommandGenerator(unittest.TestCase):
@@ -36,9 +34,8 @@ class TestCommandGenerator(unittest.TestCase):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, "north")
         localCommandGenerator.send_colors()
-        colors = ["RED", "GREEN", "ORANGE", "YELLOW", "BLUE", "PURPLE"]
         colorString = "colors"
-        for color in colors:
+        for color in Identifiers.COLORS:
             colorString += " " + color
         self.assertEqual(
             self.mockCommunication.messages_received.pop(), colorString)
@@ -46,9 +43,7 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_player_hand_north(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, "north")
-        colors = ["RED"]
-        hand = [TroopCard(number, color)
-                for color, number in product(colors, range(1, 8))]
+        hand = [TroopCard(number, Identifiers.COLORS[0]) for number in range(1, 8)]
         localCommandGenerator.send_player_hand(hand)
         cardString = "player north hand"
         for card in hand:
@@ -59,9 +54,7 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_player_hand_south(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, "south")
-        colors = ["RED"]
-        hand = [TroopCard(number, color)
-                for color, number in product(colors, range(1, 8))]
+        hand = [TroopCard(number, Identifiers.COLORS[0]) for number in range(1, 8)]
         localCommandGenerator.send_player_hand(hand)
         cardString = "player south hand"
         for card in hand:
@@ -136,7 +129,7 @@ class TestCommandGenerator(unittest.TestCase):
         for _ in range(1, 9):
             flagList.append(Flag())
         lastFlag = Flag()
-        lastFlag.add_card("Player North", TroopCard(1, "RED"))
+        lastFlag.add_card("Player North", TroopCard(1, Identifiers.COLORS[0]))
         localCommandGenerator.send_flag_cards(flagList)
         i = 1
         for _ in flagList:
@@ -144,7 +137,7 @@ class TestCommandGenerator(unittest.TestCase):
             self.assertEqual(
                 self.mockCommunication.messages_received.pop(), flagString + " south")
             if i == 10:
-                flagString += " RED,1"
+                flagString += " " + Identifiers.COLORS[0] + ",1"
                 self.assertEqual(
                     self.mockCommunication.messages_received.pop(), flagString + " north")
             else:
@@ -155,9 +148,9 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_opponent_play(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, "north")
-        localCommandGenerator.send_opponent_play(2, TroopCard(2, "RED"))
+        localCommandGenerator.send_opponent_play(2, TroopCard(2, Identifiers.COLORS[0]))
         self.assertEqual(
-            self.mockCommunication.messages_received.pop(), "opponent play 2 RED,2")
+            self.mockCommunication.messages_received.pop(), "opponent play 2 " + Identifiers.COLORS[0] + ",2")
 
     def test_send_go_play(self):
         localCommandGenerator = CommandGenerator(
