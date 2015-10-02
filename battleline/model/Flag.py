@@ -64,7 +64,10 @@ class Flag(object):
         return self.claimed is not None
 
     def is_claimed_by_player(self, player):
-        return self.claimed == player 
+        return self.claimed == player
+    
+    def who_has_claimed(self):
+        return self.claimed
 
     def __is_valid_player_choice(self, player):
         return player in self.sides
