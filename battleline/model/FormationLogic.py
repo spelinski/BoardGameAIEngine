@@ -1,7 +1,6 @@
 from Board import Board
-from battleline.view.Output import COLORS
+from battleline.Identifiers import Identifiers
 from Formation import Formation
-
 
 class FormationLogic:
 
@@ -123,7 +122,7 @@ class FormationLogic:
             # calculate the highest possible straight flush with remaining
             # cards
             for number in [8, 7, 6, 5, 4, 3, 2, 1]:
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     # check if number, number+1, and number+2 are all not in
                     # the list
                     if (number, color) not in self.playedCardList and (number + 1, color) not in self.playedCardList and (number + 2, color) not in self.playedCardList:
@@ -139,7 +138,7 @@ class FormationLogic:
             if firstNumber != secondNumber:
                 return []
             # see if there is at least 1 color of this number unplayed
-            for color in COLORS:
+            for color in Identifiers.COLORS:
                 if (firstNumber, color) not in self.playedCardList:
                     listOfColorsAvailable.append(color)
             if len(listOfColorsAvailable) >= 1:
@@ -151,7 +150,7 @@ class FormationLogic:
             number, color = listOfCards[0]
             listOfColorsAvailable = []
             # see if there are at least 2 colors of this number unplayed
-            for color in COLORS:
+            for color in Identifiers.COLORS:
                 if (number, color) not in self.playedCardList:
                     listOfColorsAvailable.append(color)
             if len(listOfColorsAvailable) >= 2:
@@ -166,7 +165,7 @@ class FormationLogic:
             for number in range(10, 1, -1):
                 listOfColorsAvailable = []
                 # see if there are at least 3 colors of this number unplayed
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (number, color) not in self.playedCardList:
                         listOfColorsAvailable.append(color)
                 if len(listOfColorsAvailable) >= 3:
@@ -203,7 +202,7 @@ class FormationLogic:
                 return []
         if len(listOfCards) == 0:
             # calculate the highest possible flush with remaining cards
-            for color in COLORS:
+            for color in Identifiers.COLORS:
                 listOfNumbersAvailable = []
                 # see if there are at least 3 numbers of this color unplayed
                 for number in range(10, 1, -1):
@@ -223,7 +222,7 @@ class FormationLogic:
             listOfNeededNumbers = []
             if largerCardNumber != 10:
                 # find a number in any color that is 1 more than the larger one
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (largerCardNumber + 1, color) not in self.playedCardList:
                         listOfNeededNumbers.append(
                             (largerCardNumber + 1, color))
@@ -231,7 +230,7 @@ class FormationLogic:
             if smallerCardNumber != 1:
                 # find a number in any color that is 1 less than the smaller
                 # one
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (smallerCardNumber - 1, color) not in self.playedCardList:
                         listOfNeededNumbers.append(
                             (smallerCardNumber - 1, color))
@@ -247,28 +246,28 @@ class FormationLogic:
             wasItAdded = [False, False, False, False]
             if number != 10 and number != 9:
                 # find a number in any color that is 2 more than this one
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (number + 2, color) not in self.playedCardList:
                         listOfNeededNumbers.append((number + 2, color))
                         wasItAdded[0] = True
                         break
             if number != 10:
                 # find a number in any color that is 1 more than this one
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (number + 1, color) not in self.playedCardList:
                         listOfNeededNumbers.append((number + 1, color))
                         wasItAdded[1] = True
                         break
             if number != 1:
                 # find a number in any color that is 1 less than this one
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (number - 1, color) not in self.playedCardList:
                         listOfNeededNumbers.append((number - 1, color))
                         wasItAdded[2] = True
                         break
             if number != 1 and number != 2:
                 # find a number in any color that is 2 less than this one
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (number - 2, color) not in self.playedCardList:
                         listOfNeededNumbers.append((number - 2, color))
                         wasItAdded[3] = True
@@ -286,7 +285,7 @@ class FormationLogic:
             canItBeUsed = [False, False, False, False,
                            False, False, False, False, False, False]
             for number in range(10, 0, -1):
-                for color in COLORS:
+                for color in Identifiers.COLORS:
                     if (number, color) not in self.playedCardList:
                         canItBeUsed[number - 1] = True
                         listOfAvailableTroops.append((number, color))
@@ -311,7 +310,7 @@ class FormationLogic:
         neededCards = 3 - len(listOfCards)
         listOfAvailableTroops = []
         for number in range(10, 0, -1):
-            for color in COLORS:
+            for color in Identifiers.COLORS:
                 if (number, color) not in self.playedCardList:
                     listOfAvailableTroops.append((number, color))
                     if len(listOfAvailableTroops) == neededCards:

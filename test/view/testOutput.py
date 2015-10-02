@@ -1,6 +1,6 @@
 import unittest
 from collections import namedtuple
-from battleline.view.Output import Output, ACTIONS, COLORS, TACTICS
+from battleline.view.Output import Output, ACTIONS
 
 class TestOutput(unittest.TestCase):
 

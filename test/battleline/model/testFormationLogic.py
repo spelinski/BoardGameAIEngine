@@ -2,15 +2,18 @@ import unittest
 from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
 from battleline.model.Formation import FormationInvalidError
+from battleline.Identifiers import Identifiers
+from itertools import product
 
+COLORS = Identifiers.COLORS
 
 class TestBoard(unittest.TestCase):
 
     def setUp(self):
         self.board = Board()
         self.logic = FormationLogic()
-        self.fullList = [(1, 'blue'), (2, 'blue'), (3, 'blue'), (4, 'blue'), (5, 'blue'), (6, 'blue'), (7, 'blue'), (8, 'blue'), (9, 'blue'), (10, 'blue'), (1, 'red'), (2, 'red'), (3, 'red'), (4, 'red'), (5, 'red'), (6, 'red'), (7, 'red'), (8, 'red'), (9, 'red'), (10, 'red'), (1, 'green'), (2, 'green'), (3, 'green'), (4, 'green'), (5, 'green'), (6, 'green'), (7, 'green'), (8, 'green'), (9, 'green'), (10, 'green'), (1, 'orange'), (
-            2, 'orange'), (3, 'orange'), (4, 'orange'), (5, 'orange'), (6, 'orange'), (7, 'orange'), (8, 'orange'), (9, 'orange'), (10, 'orange'), (1, 'purple'), (2, 'purple'), (3, 'purple'), (4, 'purple'), (5, 'purple'), (6, 'purple'), (7, 'purple'), (8, 'purple'), (9, 'purple'), (10, 'purple'), (1, 'yellow'), (2, 'yellow'), (3, 'yellow'), (4, 'yellow'), (5, 'yellow'), (6, 'yellow'), (7, 'yellow'), (8, 'yellow'), (9, 'yellow'), (10, 'yellow')]
+        self.fullList = [(number, color) for color, number in product(COLORS, range(1, 11))]
+
 
     """test_checkAllFlags_empty
 
@@ -30,46 +33,46 @@ class TestBoard(unittest.TestCase):
     def test_checkAllFlags_FlagContested(self):
         # flag 1: 10-9-8 vs 1-2-3
         self.board.flags[0].add_card(
-            self.board.flags[0].PLAYER_NORTH, (10, 'blue'))
+            self.board.flags[0].PLAYER_NORTH, (10, COLORS[0]))
         self.board.flags[0].add_card(
-            self.board.flags[0].PLAYER_NORTH, (9, 'blue'))
+            self.board.flags[0].PLAYER_NORTH, (9, COLORS[0]))
         self.board.flags[0].add_card(
-            self.board.flags[0].PLAYER_NORTH, (8, 'blue'))
+            self.board.flags[0].PLAYER_NORTH, (8, COLORS[0]))
 
         self.board.flags[0].add_card(
-            self.board.flags[0].PLAYER_SOUTH, (1, 'blue'))
+            self.board.flags[0].PLAYER_SOUTH, (1, COLORS[0]))
         self.board.flags[0].add_card(
-            self.board.flags[0].PLAYER_SOUTH, (2, 'blue'))
+            self.board.flags[0].PLAYER_SOUTH, (2, COLORS[0]))
         self.board.flags[0].add_card(
-            self.board.flags[0].PLAYER_SOUTH, (3, 'blue'))
+            self.board.flags[0].PLAYER_SOUTH, (3, COLORS[0]))
 
         # flag 2: 10R-9R-8R vs 1-2-_
         self.board.flags[1].add_card(
-            self.board.flags[1].PLAYER_NORTH, (10, 'red'))
+            self.board.flags[1].PLAYER_NORTH, (10, COLORS[1]))
         self.board.flags[1].add_card(
-            self.board.flags[1].PLAYER_NORTH, (9, 'red'))
+            self.board.flags[1].PLAYER_NORTH, (9, COLORS[1]))
         self.board.flags[1].add_card(
-            self.board.flags[1].PLAYER_NORTH, (8, 'red'))
+            self.board.flags[1].PLAYER_NORTH, (8, COLORS[1]))
 
         self.board.flags[1].add_card(
-            self.board.flags[1].PLAYER_SOUTH, (1, 'red'))
+            self.board.flags[1].PLAYER_SOUTH, (1, COLORS[1]))
         self.board.flags[1].add_card(
-            self.board.flags[1].PLAYER_SOUTH, (2, 'red'))
+            self.board.flags[1].PLAYER_SOUTH, (2, COLORS[1]))
 
         # flag 3: 10-9-_ vs 1-2-3 (8 is played on flag 4)
         self.board.flags[2].add_card(
-            self.board.flags[1].PLAYER_NORTH, (10, 'green'))
+            self.board.flags[1].PLAYER_NORTH, (10, COLORS[2]))
         self.board.flags[2].add_card(
-            self.board.flags[1].PLAYER_NORTH, (9, 'green'))
+            self.board.flags[1].PLAYER_NORTH, (9, COLORS[2]))
 
         self.board.flags[2].add_card(
-            self.board.flags[1].PLAYER_SOUTH, (1, 'green'))
+            self.board.flags[1].PLAYER_SOUTH, (1, COLORS[2]))
         self.board.flags[2].add_card(
-            self.board.flags[1].PLAYER_SOUTH, (2, 'green'))
+            self.board.flags[1].PLAYER_SOUTH, (2, COLORS[2]))
         self.board.flags[2].add_card(
-            self.board.flags[1].PLAYER_SOUTH, (3, 'green'))
+            self.board.flags[1].PLAYER_SOUTH, (3, COLORS[2]))
         self.board.flags[3].add_card(
-            self.board.flags[1].PLAYER_SOUTH, (8, 'green'))
+            self.board.flags[1].PLAYER_SOUTH, (8, COLORS[2]))
         self.logic.checkAllFlags(self.board)
 
         # right now I just check if the flag has been claimed, I need to check
@@ -98,9 +101,9 @@ class TestBoard(unittest.TestCase):
 
     def test_greatestPossibleFormation_empty(self):
         self.assertEquals(self.logic.greatestPossibleFormation([]), [
-                          (8, 'blue'), (9, 'blue'), (10, 'blue')])
+                          (8, COLORS[0]), (9, COLORS[0]), (10, COLORS[0])])
         self.assertEquals(self.logic.greatestPossibleFormation(
-            [(1, 'blue'), (2, 'blue'), (3, 'blue')]), [(1, 'blue'), (2, 'blue'), (3, 'blue')])
+            [(1, COLORS[0]), (2, COLORS[0]), (3, COLORS[0])]), [(1, COLORS[0]), (2, COLORS[0]), (3, COLORS[0])])
     """test_creationFunctions_empty
 
     test if the create function will give the correct formation
@@ -108,33 +111,33 @@ class TestBoard(unittest.TestCase):
 
     def test_creationFunctions_empty(self):
         self.assertEquals(self.logic.createStraightFlush(
-            []), [(8, 'blue'), (9, 'blue'), (10, 'blue')])
+            []), [(8, COLORS[0]), (9, COLORS[0]), (10, COLORS[0])])
         self.assertEquals(self.logic.createThreeOfAKind(
-            []), [(10, 'blue'), (10, 'red'), (10, 'green')])
+            []), [(10, COLORS[0]), (10, COLORS[1]), (10, COLORS[2])])
         self.assertEquals(self.logic.createFlush(
-            []), [(10, 'blue'), (9, 'blue'), (8, 'blue')])
+            []), [(10, COLORS[0]), (9, COLORS[0]), (8, COLORS[0])])
         self.assertEquals(self.logic.createStraight(
-            []), [(10, 'blue'), (9, 'blue'), (8, 'blue')])
+            []), [(10, COLORS[0]), (9, COLORS[0]), (8, COLORS[0])])
         self.assertEquals(self.logic.createHost(
-            []), [(10, 'blue'), (10, 'red'), (10, 'green')])
+            []), [(10, COLORS[0]), (10, COLORS[1]), (10, COLORS[2])])
 
     """test_creationFunctions_without10blue
 
-    test if (10,'blue') card is used, the create function will give the correct formation
+    test if (10,COLORS[0]) card is used, the create function will give the correct formation
     """
 
     def test_creationFunctions_without10blue(self):
-        self.logic.playedCardList = [(10, 'blue')]
+        self.logic.playedCardList = [(10, COLORS[0])]
         self.assertEquals(self.logic.createStraightFlush([]), [
-                          (8, 'red'), (9, 'red'), (10, 'red')])
+                          (8, COLORS[1]), (9, COLORS[1]), (10, COLORS[1])])
         self.assertEquals(self.logic.createThreeOfAKind(
-            []), [(10, 'red'), (10, 'green'), (10, 'orange')])
+            []), [(10, COLORS[1]), (10, COLORS[2]), (10, COLORS[3])])
         self.assertEquals(self.logic.createFlush(
-            []), [(9, 'blue'), (8, 'blue'), (7, 'blue')])
+            []), [(9, COLORS[0]), (8, COLORS[0]), (7, COLORS[0])])
         self.assertEquals(self.logic.createStraight(
-            []), [(10, 'red'), (9, 'blue'), (8, 'blue')])
+            []), [(10, COLORS[1]), (9, COLORS[0]), (8, COLORS[0])])
         self.assertEquals(self.logic.createHost(
-            []), [(10, 'red'), (10, 'green'), (10, 'orange')])
+            []), [(10, COLORS[1]), (10, COLORS[2]), (10, COLORS[3])])
 
     """test_creationFunctions_oneCard
 
@@ -142,18 +145,18 @@ class TestBoard(unittest.TestCase):
     """
 
     def test_creationFunctions_oneCard(self):
-        self.logic.playedCardList = [(5, 'blue')]
-        card5Blue = (5, 'blue')
+        self.logic.playedCardList = [(5, COLORS[0])]
+        card5Blue = (5, COLORS[0])
         self.assertEquals(self.logic.createStraightFlush([card5Blue]), [
-                          (5, 'blue'), (6, 'blue'), (7, 'blue')])
+                          (5, COLORS[0]), (6, COLORS[0]), (7, COLORS[0])])
         self.assertEquals(self.logic.createThreeOfAKind([card5Blue]), [
-                          (5, 'blue'), (5, 'red'), (5, 'green')])
+                          (5, COLORS[0]), (5, COLORS[1]), (5, COLORS[2])])
         self.assertEquals(self.logic.createFlush([card5Blue]), [
-                          (5, 'blue'), (10, 'blue'), (9, 'blue')])
+                          (5, COLORS[0]), (10, COLORS[0]), (9, COLORS[0])])
         self.assertEquals(self.logic.createStraight([card5Blue]), [
-                          (5, 'blue'), (7, 'blue'), (6, 'blue')])
+                          (5, COLORS[0]), (7, COLORS[0]), (6, COLORS[0])])
         self.assertEquals(self.logic.createHost([card5Blue]), [
-                          (5, 'blue'), (10, 'blue'), (10, 'red')])
+                          (5, COLORS[0]), (10, COLORS[0]), (10, COLORS[1])])
 
     """test_creationFunctions_twoCards
 
@@ -161,20 +164,20 @@ class TestBoard(unittest.TestCase):
     """
 
     def test_creationFunctions_twoCards(self):
-        card5Blue = (5, 'blue')
-        card5Red = (5, 'red')
-        card6Blue = (6, 'blue')
+        card5Blue = (5, COLORS[0])
+        card5Red = (5, COLORS[1])
+        card6Blue = (6, COLORS[0])
         self.logic.playedCardList = [card5Blue, card6Blue, card5Red]
         self.assertEquals(self.logic.createStraightFlush([card5Blue, card6Blue]), [
-                          (5, 'blue'), (6, 'blue'), (7, 'blue')])
+                          (5, COLORS[0]), (6, COLORS[0]), (7, COLORS[0])])
         self.assertEquals(self.logic.createThreeOfAKind([card5Blue, card5Red]), [
-                          (5, 'blue'), (5, 'red'), (5, 'green')])
+                          (5, COLORS[0]), (5, COLORS[1]), (5, COLORS[2])])
         self.assertEquals(self.logic.createFlush([card5Blue, card6Blue]), [
-                          (5, 'blue'), (6, 'blue'), (10, 'blue')])
+                          (5, COLORS[0]), (6, COLORS[0]), (10, COLORS[0])])
         self.assertEquals(self.logic.createStraight([card5Blue, card6Blue]), [
-                          (5, 'blue'), (6, 'blue'), (7, 'blue')])
+                          (5, COLORS[0]), (6, COLORS[0]), (7, COLORS[0])])
         self.assertEquals(self.logic.createHost([card5Blue, card6Blue]), [
-                          (5, 'blue'), (6, 'blue'), (10, 'blue')])
+                          (5, COLORS[0]), (6, COLORS[0]), (10, COLORS[0])])
 
     """test_creationFunctions_invalids_empty
 
@@ -195,7 +198,7 @@ class TestBoard(unittest.TestCase):
     """
 
     def test_creationFunctions_invalids_oneCard(self):
-        card5Blue = (5, 'blue')
+        card5Blue = (5, COLORS[0])
         self.logic.playedCardList = self.fullList
         self.assertEquals(self.logic.createStraightFlush([card5Blue]), [])
         self.assertEquals(self.logic.createThreeOfAKind([card5Blue]), [])
@@ -209,9 +212,9 @@ class TestBoard(unittest.TestCase):
     """
 
     def test_creationFunctions_invalids_twoCards(self):
-        card5Blue = (5, 'blue')
-        card5Red = (5, 'red')
-        card6Blue = (6, 'blue')
+        card5Blue = (5, COLORS[0])
+        card5Red = (5, COLORS[1])
+        card6Blue = (6, COLORS[0])
         self.logic.playedCardList = self.fullList
         self.assertEquals(self.logic.createStraightFlush(
             [card5Blue, card6Blue]), [])
