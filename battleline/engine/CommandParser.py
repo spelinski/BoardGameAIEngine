@@ -3,6 +3,17 @@ from battleline.Identifiers import *
 def make_dict(type, value):
     return {"type": type, "value": value}
 
+def make_card( card):
+    try:
+        card_parts = card.split(",")
+        if len(card_parts) != 2 or card_parts[0] not in Identifiers.COLORS or int(card_parts[1]) not in range(1,11):
+            raise ValueError
+
+        return TroopCard(color=card_parts[0], number=int(card_parts[1]))
+    except ValueError:
+        raise InvalidParseError("Invalid Card " + card)
+
+
 
 class ServerCommandParser(object):
     """
@@ -56,17 +67,8 @@ class ServerCommandParser(object):
 
     def __parse_player_hand_message(self, string):
         message = string.split()
-        return make_dict("player_hand", (message[1], [self.__make_card(card) for card in message[3:]]))
+        return make_dict("player_hand", (message[1], [make_card(card) for card in message[3:]]))
 
-    def __make_card(self, card):
-        try:
-            card_parts = card.split(",")
-            if len(card_parts) != 2 or card_parts[0] not in Identifiers.COLORS or int(card_parts[1]) not in range(1,11):
-                raise ValueError
-
-            return TroopCard(color=card_parts[0], number=int(card_parts[1]))
-        except ValueError:
-            raise InvalidParseError("Invalid Card " + card)
 
     def __is_flag_claim_message(self, string):
         message = string.split()
@@ -85,7 +87,7 @@ class ServerCommandParser(object):
         try:
             if int(message[1]) not in range(1,10):
                 raise ValueError
-            return make_dict("flag_cards", (int(message[1]), message[3], [self.__make_card(card) for card in message[4:]]))
+            return make_dict("flag_cards", (int(message[1]), message[3], [make_card(card) for card in message[4:]]))
         except ValueError:
             raise InvalidParseError(string)
 
@@ -98,7 +100,7 @@ class ServerCommandParser(object):
         try:
             if int(message[2]) not in range(1,10):
                 raise ValueError
-            return make_dict("opponent", (int(message[2]), self.__make_card(message[3])))
+            return make_dict("opponent", (int(message[2]), make_card(message[3])))
         except ValueError:
             raise InvalidParseError(string)
 
@@ -121,17 +123,33 @@ class ClientCommandParser(object):
         @raise InvalidParseError if the message was not of the type we expected
         """
         if self.__is_player_name_response(message):
-            return self.__make_player_name_response(message)
+            return self.__parse_player_name_response(message)
+        if self.__is_play_card_response(message):
+            return self.__parse_play_card_response(message)
         raise InvalidParseError(message)
 
     def __is_player_name_response(self, string):
-        return string.split()[0] == "player"
+        message = string.split()
+        return len(message) == 3 and message[0] == "player"
 
-    def __make_player_name_response(self, string):
+    def __parse_player_name_response(self, string):
         message = string.split()
         if not Identifiers.is_player_valid(message[1]):
             raise InvalidParseError(string)
         return make_dict("player_name_response", (message[1], message[2]))
+
+    def __is_play_card_response(self,string):
+        message = string.split()
+        return len(message) == 3 and message[0] == "play"
+
+    def __parse_play_card_response(self,string):
+        message = string.split()
+        try:
+            if int(message[1]) not in range(1,10):
+                raise ValueError
+            return make_dict("play_card_response", (int(message[1]), make_card(message[2])))
+        except ValueError:
+            raise InvalidParseError(string)
 
 
 class InvalidParseError(Exception):

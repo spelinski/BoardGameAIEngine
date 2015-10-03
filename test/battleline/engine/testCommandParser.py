@@ -96,14 +96,26 @@ class TestServerParser(unittest.TestCase):
 
     def test_play_card_message(self):
         self.assertEquals(make_dict("play_card", None), ServerCommandParser().parse("go play-card"))
+
 class TestClientParser(unittest.TestCase):
 
     def test_invalid_message_thrown_if_invalid_message_server(self):
-        self.assertRaisesRegexp(
-            InvalidParseError, "Invalid Parsed Message - Invalid Server Message", ServerCommandParser().parse, "Invalid Server Message")
+        invalid_messages = ["Invalid Client Message", "player unknown name", "player north", "play 0 color1,2",
+                            "play 10 color1,3", "play 1"]
+        for message in invalid_messages:
+            self.assertRaisesRegexp(
+                InvalidParseError, "Invalid Parsed Message - {}".format(message), ClientCommandParser().parse, message)
+
 
     def test_can_parse_player_name_response(self):
-        self.assertEquals({"type": "player_name_response", "value": (
-            Identifiers.NORTH, "name")}, ClientCommandParser().parse("player north name"))
-        self.assertEquals({"type": "player_name_response", "value": (
-            Identifiers.SOUTH, "name2")}, ClientCommandParser().parse("player south name2"))
+        self.assertEquals(make_dict("player_name_response", (Identifiers.NORTH, "name")), ClientCommandParser().parse("player north name"))
+        self.assertEquals(make_dict("player_name_response", (Identifiers.SOUTH, "name2")), ClientCommandParser().parse("player south name2"))
+
+    def test_can_parse_play_card_response(self):
+        self.assertEquals(make_dict("play_card_response", (1, TroopCard(color="color1", number=2))), ClientCommandParser().parse("play 1 color1,2"))
+        self.assertEquals(make_dict("play_card_response", (2, TroopCard(color="color3", number=4))), ClientCommandParser().parse("play 2 color3,4"))
+
+    def test_invalid_parse_error_raised_when_invalid_card_play_card(self):
+        for card in invalid_card_strings:
+            self.assertRaisesRegexp(
+                InvalidParseError, "Invalid Parsed Message - Invalid Card " + card, ClientCommandParser().parse, "play 1 " + card)
