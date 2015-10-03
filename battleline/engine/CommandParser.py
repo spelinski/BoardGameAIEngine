@@ -26,6 +26,8 @@ class ServerCommandParser(object):
             return self.__parse_flag_claim_message(message)
         if self.__is_flag_card_message(message):
             return self.__parse_flag_card_message(message)
+        if self.__is_opponent_message(message):
+            return self.__parse_opponent_message(message)
         raise InvalidParseError(message)
 
     def __is_player_name_request(self, string):
@@ -82,6 +84,19 @@ class ServerCommandParser(object):
             if int(message[1]) not in range(1,10):
                 raise ValueError
             return make_dict("flag_cards", (int(message[1]), message[3], [self.__make_card(card) for card in message[4:]]))
+        except ValueError:
+            raise InvalidParseError(string)
+
+    def __is_opponent_message(self, string):
+        message = string.split()
+        return len(message) == 4 and message[0] == "opponent" and message[1] == "play"
+
+    def __parse_opponent_message(self, string):
+        message = string.split()
+        try:
+            if int(message[2]) not in range(1,10):
+                raise ValueError
+            return make_dict("opponent", (int(message[2]), self.__make_card(message[3])))
         except ValueError:
             raise InvalidParseError(string)
 
