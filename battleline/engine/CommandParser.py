@@ -22,7 +22,10 @@ class ServerCommandParser(object):
             return self.__parse_colors_message(message)
         if self.__is_player_hand_message(message):
             return self.__parse_player_hand_message(message)
-        if self.__is_flag_claim_message(message): return self.__parse_flag_claim_message(message)
+        if self.__is_flag_claim_message(message):
+            return self.__parse_flag_claim_message(message)
+        if self.__is_flag_card_message(message):
+            return self.__parse_flag_card_message(message)
         raise InvalidParseError(message)
 
     def __is_player_name_request(self, string):
@@ -54,7 +57,7 @@ class ServerCommandParser(object):
     def __make_card(self, card):
         try:
             card_parts = card.split(",")
-            if len(card_parts) != 2 or card_parts[0] not in Identifiers.COLORS:
+            if len(card_parts) != 2 or card_parts[0] not in Identifiers.COLORS or int(card_parts[1]) not in range(1,11):
                 raise ValueError
 
             return TroopCard(color=card_parts[0], number=int(card_parts[1]))
@@ -68,6 +71,19 @@ class ServerCommandParser(object):
     def __parse_flag_claim_message(self,string):
         message = string.split()
         return make_dict("flag_claim" , message[2:])
+
+    def __is_flag_card_message(self, string):
+        message = string.split()
+        return len(message) >= 4 and len(message) <= 7 and message[0] == "flag" and message[2] == "cards" and Identifiers.is_player_valid(message[3])
+
+    def __parse_flag_card_message(self, string):
+        message = string.split()
+        try:
+            if int(message[1]) not in range(1,10):
+                raise ValueError
+            return make_dict("flag_cards", (int(message[1]), message[3], [self.__make_card(card) for card in message[4:]]))
+        except ValueError:
+            raise InvalidParseError(string)
 
 class ClientCommandParser(object):
     """
