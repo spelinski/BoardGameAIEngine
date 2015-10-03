@@ -3,6 +3,7 @@ from BoardLogic import BoardLogic
 from itertools import product
 from battleline.Identifiers import TroopCard
 
+
 class BattlelineEngine(object):
     """
     An engine that coordinates two players, a board and the decks for battleline
@@ -50,6 +51,7 @@ class BattlelineEngine(object):
 
     def __make_player_turn(self, player):
         player.remove_from_hand(player.hand[0])
-        self.boardLogic.addCard(self.__make_player_turn_index,player.name,player.hand[0])
+        self.boardLogic.addCard(
+            self.__make_player_turn_index, player.name, player.hand[0])
         if not self.troop_deck.is_empty():
             player.add_to_hand(self.troop_deck.draw())
