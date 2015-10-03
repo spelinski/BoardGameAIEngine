@@ -1,6 +1,5 @@
 from battleline.Identifiers import *
 
-
 def make_dict(type, value):
     return {"type": type, "value": value}
 
@@ -31,7 +30,7 @@ class ServerCommandParser(object):
 
     def __parse_player_name_request(self, string):
         message = string.split()
-        if message[1] != Identifiers.NORTH and message[1] != Identifiers.SOUTH:
+        if not Identifiers.is_player_valid(message[1]):
             raise InvalidParseError(string)
         return make_dict("player_name_request", message[1])
 
@@ -69,7 +68,7 @@ class ClientCommandParser(object):
 
     def __make_player_name_response(self, string):
         message = string.split()
-        if message[1] != Identifiers.NORTH and message[1] != Identifiers.SOUTH:
+        if not Identifiers.is_player_valid(message[1]):
             raise InvalidParseError(string)
         return make_dict("player_name_response", (message[1], message[2]))
 
