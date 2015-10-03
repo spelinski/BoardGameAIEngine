@@ -106,7 +106,6 @@ class TestClientParser(unittest.TestCase):
             self.assertRaisesRegexp(
                 InvalidParseError, "Invalid Parsed Message - {}".format(message), ClientCommandParser().parse, message)
 
-
     def test_can_parse_player_name_response(self):
         self.assertEquals(make_dict("player_name_response", (Identifiers.NORTH, "name")), ClientCommandParser().parse("player north name"))
         self.assertEquals(make_dict("player_name_response", (Identifiers.SOUTH, "name2")), ClientCommandParser().parse("player south name2"))
