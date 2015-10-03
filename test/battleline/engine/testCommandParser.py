@@ -37,18 +37,13 @@ class TestServerParser(unittest.TestCase):
 
     def test_can_parse_player_hand_one_card(self):
         self.assertEquals(make_dict("player_hand", (Identifiers.SOUTH, [TroopCard(color=Identifiers.COLORS[0], number=5),
-                                                                        TroopCard(color=Identifiers.COLORS[
-                                                                                  0], number=6),
-                                                                        TroopCard(color=Identifiers.COLORS[
-                                                                                  0], number=7),
-                                                                        TroopCard(color=Identifiers.COLORS[
-                                                                                  1], number=1),
-                                                                        TroopCard(color=Identifiers.COLORS[
-                                                                                  1], number=2),
-                                                                        TroopCard(color=Identifiers.COLORS[
-                                                                                  1], number=3),
-                                                                        TroopCard(color=Identifiers.COLORS[1], number=4), ])),
-                          ServerCommandParser().parse("player south hand color1,5 color1,6 color1,7 color2,1 color2,2 color2,3 color2,4"))
+                                                                        TroopCard(color=Identifiers.COLORS[0], number=6),
+                                                                        TroopCard(color=Identifiers.COLORS[0], number=7),
+                                                                        TroopCard(color=Identifiers.COLORS[1], number=1),
+                                                                        TroopCard(color=Identifiers.COLORS[1], number=2),
+                                                                        TroopCard(color=Identifiers.COLORS[1], number=3),
+                                                                        TroopCard(color=Identifiers.COLORS[1], number=4),])),
+                       ServerCommandParser().parse("player south hand color1,5 color1,6 color1,7 color2,1 color2,2 color2,3 color2,4"))
 
     def test_invalid_parse_error_raised_when_invalid_card(self):
         self.assertRaisesRegexp(
@@ -59,6 +54,12 @@ class TestServerParser(unittest.TestCase):
             InvalidParseError, "Invalid Parsed Message - Invalid Card color1", ServerCommandParser().parse, "player north hand color1")
         self.assertRaisesRegexp(
             InvalidParseError, "Invalid Parsed Message - Invalid Card color1,string,3", ServerCommandParser().parse, "player north hand color1,string,3")
+
+    def test_flag_claim_status(self):
+        self.assertEquals(make_dict("flag_claim", ["unclaimed", Identifiers.NORTH, Identifiers.SOUTH, 
+                                             "unclaimed", Identifiers.NORTH, Identifiers.SOUTH,
+                                             "unclaimed", Identifiers.NORTH, Identifiers.SOUTH]),
+                                    ServerCommandParser().parse("flag claim-status unclaimed north south unclaimed north south unclaimed north south")
 
 
 class TestClientParser(unittest.TestCase):
