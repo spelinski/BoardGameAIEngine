@@ -3,12 +3,14 @@ from battleline.engine.CommandParser import ServerCommandParser, ClientCommandPa
 
 
 def make_dict(msg_type, value):
-    return {"type" : msg_type, "value" : value}
+    return {"type": msg_type, "value": value}
+
 
 class TestServerParser(unittest.TestCase):
 
     def test_invalid_message_thrown_if_invalid_message_server(self):
-        invalid_messages = ["Invalid Server Message", "player north wrong", "player unknown name", "colors 0 1 2 3 4"]
+        invalid_messages = ["Invalid Server Message",
+                            "player north wrong", "player unknown name", "colors 0 1 2 3 4"]
         for message in invalid_messages:
             self.assertRaisesRegexp(
                 InvalidParseError, "Invalid Parsed Message - {}".format(message), ServerCommandParser().parse, message)
@@ -24,8 +26,8 @@ class TestServerParser(unittest.TestCase):
                           ServerCommandParser().parse("colors 0 1 2 3 4 5"))
 
     def test_can_parse_player_hand_empty(self):
-        self.assertEquals(make_dict("player_hand", (Identifiers.NORTH, [])), ServerCommandParser().parse("player north hand"))
-
+        self.assertEquals(make_dict("player_hand", (Identifiers.NORTH, [])),
+                          ServerCommandParser().parse("player north hand"))
 
 
 class TestClientParser(unittest.TestCase):

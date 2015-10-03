@@ -24,7 +24,8 @@ class ServerCommandParser(object):
             return self.__parse_player_name_request(message)
         if self.__is_colors_message(message):
             return self.__parse_colors_message(message)
-        if self.__is_player_hand_message(message): return make_dict("player_hand", (Identifiers.NORTH, []))
+        if self.__is_player_hand_message(message):
+            return make_dict("player_hand", (Identifiers.NORTH, []))
         raise InvalidParseError(message)
 
     def __is_player_name_request(self, string):
