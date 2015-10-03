@@ -30,6 +30,9 @@ class TestServerParser(unittest.TestCase):
         self.assertEquals(make_dict("player_hand", (Identifiers.NORTH, [])),
                           ServerCommandParser().parse("player north hand"))
 
+    def test_can_parse_player_hand_one_card(self):
+        self.assertEquals(make_dict("player_hand", (Identifiers.SOUTH, [TroopCard(color=Identifiers.COLORS[0], number=5)])),
+                          ServerCommandParser().parse("player south hand color1,5"))
 
 class TestClientParser(unittest.TestCase):
 
