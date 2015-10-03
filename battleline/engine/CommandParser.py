@@ -1,6 +1,5 @@
 from battleline.Identifiers import *
 
-
 def make_dict(type, value):
     return {"type": type, "value": value}
 
@@ -23,6 +22,7 @@ class ServerCommandParser(object):
             return self.__parse_colors_message(message)
         if self.__is_player_hand_message(message):
             return self.__parse_player_hand_message(message)
+        if self.__is_flag_claim_message(message): return make_dict("flag_claim" , ["unclaimed", "north", "south", "unclaimed", "north", "south", "unclaimed", "north", "south"])
         raise InvalidParseError(message)
 
     def __is_player_name_request(self, string):
@@ -45,7 +45,7 @@ class ServerCommandParser(object):
 
     def __is_player_hand_message(self, string):
         message = string.split()
-        return len(message) >= 3 and len(message) <= 10 and message[0] == "player" and Identifiers.is_player_valid(message[1]) and message[2] == "hand"
+        return len(message) >= 3 and len(message) <=10 and message[0] == "player" and Identifiers.is_player_valid(message[1]) and message[2] == "hand"
 
     def __parse_player_hand_message(self, string):
         message = string.split()
@@ -60,6 +60,11 @@ class ServerCommandParser(object):
             return TroopCard(color=card_parts[0], number=int(card_parts[1]))
         except ValueError:
             raise InvalidParseError("Invalid Card " + card)
+
+    def __is_flag_claim_message(self, string):
+        message = string.split()
+        return len(message) == 11 and message[0] == "flag" and message[1] == "claim-status" and all(status in ["unclaimed", Identifiers.NORTH, Identifiers.SOUTH] for status in message[3:])
+
 
 
 class ClientCommandParser(object):

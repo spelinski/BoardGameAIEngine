@@ -12,7 +12,11 @@ class TestServerParser(unittest.TestCase):
     def test_invalid_message_thrown_if_invalid_message_server(self):
         invalid_messages = ["Invalid Server Message",
                             "player north wrong", "player unknown name", "colors 0 1 2 3 4", "player unknown hand",
-                            "player north hand 1,1 2,2 3,3 4,4 5,5 6,6 7,7 8,8"]
+                            "player north hand 1,1 2,2 3,3 4,4 5,5 6,6 7,7 8,8",
+                            "flag claim-status north north north north north north north north",
+                            "flag claim-status north north north north north north north north north north",
+                            "flag claim-wrong north north north north north north north north north",
+                            "flag claim-status north north north north north north north north wrong"]
         for message in invalid_messages:
             self.assertRaisesRegexp(
                 InvalidParseError, "Invalid Parsed Message - {}".format(message), ServerCommandParser().parse, message)
@@ -56,10 +60,10 @@ class TestServerParser(unittest.TestCase):
             InvalidParseError, "Invalid Parsed Message - Invalid Card color1,string,3", ServerCommandParser().parse, "player north hand color1,string,3")
 
     def test_flag_claim_status(self):
-        self.assertEquals(make_dict("flag_claim", ["unclaimed", Identifiers.NORTH, Identifiers.SOUTH, 
+        self.assertEquals(make_dict("flag_claim", ["unclaimed", Identifiers.NORTH, Identifiers.SOUTH,
                                              "unclaimed", Identifiers.NORTH, Identifiers.SOUTH,
                                              "unclaimed", Identifiers.NORTH, Identifiers.SOUTH]),
-                                    ServerCommandParser().parse("flag claim-status unclaimed north south unclaimed north south unclaimed north south")
+                                    ServerCommandParser().parse("flag claim-status unclaimed north south unclaimed north south unclaimed north south"))
 
 
 class TestClientParser(unittest.TestCase):
