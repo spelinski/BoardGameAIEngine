@@ -1,5 +1,6 @@
 from battleline.Identifiers import *
 
+
 def make_dict(type, value):
     return {"type": type, "value": value}
 
