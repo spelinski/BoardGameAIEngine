@@ -1,5 +1,6 @@
 import unittest
-from battleline.engine.CommandParser import ServerCommandParser, ClientCommandParser, InvalidParseError, Identifiers
+from battleline.engine.CommandParser import ServerCommandParser, ClientCommandParser, InvalidParseError
+from Identifiers import *
 
 
 def make_dict(msg_type, value):

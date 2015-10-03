@@ -1,7 +1,4 @@
-
-class Identifiers(object):
-    NORTH = "north"
-    SOUTH = "south"
+from Identifiers import *
 
 
 def make_dict(type, value):
