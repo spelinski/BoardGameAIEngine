@@ -1,9 +1,7 @@
 from mechanics.Deck import Deck
 from BoardLogic import BoardLogic
-from collections import namedtuple
 from itertools import product
-
-TroopCard = namedtuple("TroopCard", ["number", "color"])
+from battleline.Identifiers import TroopCard
 
 
 class BattlelineEngine(object):
