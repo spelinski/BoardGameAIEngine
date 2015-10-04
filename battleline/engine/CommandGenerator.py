@@ -78,7 +78,7 @@ class CommandGenerator(object):
         Tell the bot all the cards on each flag
         @param listOfFlags list of all the flags in the game in order from 1-9
         """
-        for i,flag in enumerate(listOfFlags, start=1):
+        for i, flag in enumerate(listOfFlags, start=1):
             self.__send_flag_cards_north(flag, i)
             self.__send_flag_cards_south(flag, i)
 
