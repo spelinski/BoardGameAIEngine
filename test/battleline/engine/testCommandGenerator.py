@@ -114,14 +114,12 @@ class TestCommandGenerator(unittest.TestCase):
         for _ in range(1, 10):
             flagList.append(Flag())
         localCommandGenerator.send_flag_cards(flagList)
-        i = 1
-        for _ in flagList:
+        for _,i in enumerate(flagList, start=1):
             flagString = "flag " + str(i) + " cards"
             self.assertEqual(
                 self.mockCommunication.messages_received.pop(), flagString + " south")
             self.assertEqual(
                 self.mockCommunication.messages_received.pop(), flagString + " north")
-            ++i
 
     def test_send_flag_cards_one_card(self):
         localCommandGenerator = CommandGenerator(
@@ -132,8 +130,7 @@ class TestCommandGenerator(unittest.TestCase):
         lastFlag = Flag()
         lastFlag.add_card("Player North", TroopCard(1, Identifiers.COLORS[0]))
         localCommandGenerator.send_flag_cards(flagList)
-        i = 1
-        for _ in flagList:
+        for _,i in enumerate(flagList, start=1):
             flagString = "flag " + str(i) + " cards"
             self.assertEqual(
                 self.mockCommunication.messages_received.pop(), flagString + " south")
@@ -144,7 +141,6 @@ class TestCommandGenerator(unittest.TestCase):
             else:
                 self.assertEqual(
                     self.mockCommunication.messages_received.pop(), flagString + " north")
-            ++i
 
     def test_send_opponent_play(self):
         localCommandGenerator = CommandGenerator(
