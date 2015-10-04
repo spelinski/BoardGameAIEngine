@@ -7,8 +7,7 @@ import unittest
 from battleline.engine.CommandGenerator import CommandGenerator
 from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
 from battleline.model.Flag import Flag
-from battleline.engine.BattlelineEngine import TroopCard
-from battleline.Identifiers import Identifiers
+from battleline.Identifiers import Identifiers, TroopCard
 
 
 class TestCommandGenerator(unittest.TestCase):
