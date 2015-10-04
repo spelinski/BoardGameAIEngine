@@ -110,37 +110,33 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_flag_cards_no_cards(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, Identifiers.NORTH)
-        flagList = []
-        for _ in range(1, 10):
-            flagList.append(Flag())
+        flagList = [Flag() for _ in xrange(10)]
         localCommandGenerator.send_flag_cards(flagList)
-        for _, i in enumerate(flagList, start=1):
+        for i,_ in enumerate(flagList, start=1):
             flagString = "flag " + str(i) + " cards"
             self.assertEqual(
-                self.mockCommunication.messages_received.pop(), flagString + " south")
+                self.mockCommunication.messages_received.pop(0), flagString + " north")
             self.assertEqual(
-                self.mockCommunication.messages_received.pop(), flagString + " north")
+                self.mockCommunication.messages_received.pop(0), flagString + " south")
 
     def test_send_flag_cards_one_card(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, Identifiers.NORTH)
-        flagList = []
-        for _ in range(1, 9):
-            flagList.append(Flag())
+        flagList = [Flag() for _ in xrange(9)]
         lastFlag = Flag()
         lastFlag.add_card("Player North", TroopCard(1, Identifiers.COLORS[0]))
         localCommandGenerator.send_flag_cards(flagList)
-        for _, i in enumerate(flagList, start=1):
+        for i,_ in enumerate(flagList, start=1):
             flagString = "flag " + str(i) + " cards"
             self.assertEqual(
-                self.mockCommunication.messages_received.pop(), flagString + " south")
+                self.mockCommunication.messages_received.pop(0), flagString + " north")
             if i == 10:
                 flagString += " " + Identifiers.COLORS[0] + ",1"
                 self.assertEqual(
-                    self.mockCommunication.messages_received.pop(), flagString + " north")
+                    self.mockCommunication.messages_received.pop(0), flagString + " south")
             else:
                 self.assertEqual(
-                    self.mockCommunication.messages_received.pop(), flagString + " north")
+                    self.mockCommunication.messages_received.pop(0), flagString + " south")
 
     def test_send_opponent_play(self):
         localCommandGenerator = CommandGenerator(
