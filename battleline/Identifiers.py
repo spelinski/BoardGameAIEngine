@@ -14,3 +14,7 @@ class Identifiers(object):
                'traitor', 'deserter', 'redeploy', 'scout', 'fog', 'mud')
     NORTH = 'north'
     SOUTH = 'south'
+
+    @classmethod
+    def is_player_valid(cls, player):
+        return player in [Identifiers.NORTH, Identifiers.SOUTH]
