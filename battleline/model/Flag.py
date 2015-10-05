@@ -30,7 +30,7 @@ class Flag(object):
     def add_card(self, player, card):
         """Add a card to the Flag
 
-        @param player player side to add the flag to. 
+        @param player player side to add the flag to.
         @param card   the card to add to the player side
         """
         self.__raise_error_if_invalid_player(player)
@@ -40,7 +40,7 @@ class Flag(object):
     def get_cards(self, player):
         """Get all cards on owned by this player on this flag
 
-        @param player player side to get the cards from 
+        @param player player side to get the cards from
         """
         return self.sides[player]
 
@@ -55,7 +55,7 @@ class Flag(object):
     def claim(self, player):
         """Mark this flag as claimed by this player
 
-        @param player player side to add the flag to. 
+        @param player player side to add the flag to.
         """
         self.__raise_error_if_invalid_player(player)
         self.claimed = player
@@ -83,7 +83,7 @@ class Flag(object):
 class FlagAlreadyClaimedError(Exception):
 
     def __init__(self, player_string):
-        """Create an Exception that the player is trying to place 
+        """Create an Exception that the player is trying to place
         a card on and already claimed flag.
         @param player_string the player name that is placing the card
         """
@@ -109,7 +109,7 @@ class TooManyCardsOnOneSideError(Exception):
 
     def __init__(self, player_string):
         """Create an Exception that the player is trying to add to many cards
-        @param player_string the player name that was adding too many cards 
+        @param player_string the player name that was adding too many cards
         """
         self.player = player_string
 
