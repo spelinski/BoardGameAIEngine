@@ -110,7 +110,7 @@ class TestCommandGenerator(unittest.TestCase):
     def test_send_flag_cards_no_cards(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, Identifiers.NORTH)
-        flagList = [Flag() for _ in xrange(10)]
+        flagList = [Flag() for _ in xrange(9)]
         localCommandGenerator.send_flag_cards(flagList)
         for i, _ in enumerate(flagList, start=1):
             flagString = "flag " + str(i) + " cards"
@@ -119,24 +119,47 @@ class TestCommandGenerator(unittest.TestCase):
             self.assertEqual(
                 self.mockCommunication.messages_received.pop(0), flagString + " south")
 
-    def test_send_flag_cards_one_card(self):
+    def test_send_flag_cards_one_card_north(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, Identifiers.NORTH)
-        flagList = [Flag() for _ in xrange(9)]
+        flagList = [Flag() for _ in xrange(8)]
         lastFlag = Flag()
         lastFlag.add_card("Player North", TroopCard(1, Identifiers.COLORS[0]))
+        flagList.append(lastFlag)
         localCommandGenerator.send_flag_cards(flagList)
         for i, _ in enumerate(flagList, start=1):
-            flagString = "flag " + str(i) + " cards"
-            self.assertEqual(
-                self.mockCommunication.messages_received.pop(0), flagString + " north")
-            if i == 10:
-                flagString += " " + Identifiers.COLORS[0] + ",1"
+            northFlagString = "flag " + str(i) + " cards north"
+            if i == 9:
+                northFlagString += " " + Identifiers.COLORS[0] + ",1"
                 self.assertEqual(
-                    self.mockCommunication.messages_received.pop(0), flagString + " south")
+                    self.mockCommunication.messages_received.pop(0), northFlagString)
             else:
                 self.assertEqual(
-                    self.mockCommunication.messages_received.pop(0), flagString + " south")
+                    self.mockCommunication.messages_received.pop(0), northFlagString)
+            southFlagString = "flag " + str(i) + " cards south"
+            self.assertEqual(
+                self.mockCommunication.messages_received.pop(0), southFlagString)
+
+    def test_send_flag_cards_one_card_south(self):
+        localCommandGenerator = CommandGenerator(
+            self.mockCommunication, Identifiers.NORTH)
+        flagList = [Flag() for _ in xrange(8)]
+        lastFlag = Flag()
+        lastFlag.add_card("Player South", TroopCard(1, Identifiers.COLORS[0]))
+        flagList.append(lastFlag)
+        localCommandGenerator.send_flag_cards(flagList)
+        for i, _ in enumerate(flagList, start=1):
+            northFlagString = "flag " + str(i) + " cards north"
+            self.assertEqual(
+                self.mockCommunication.messages_received.pop(0), northFlagString)
+            southFlagString = "flag " + str(i) + " cards south"
+            if i == 9:
+                southFlagString += " " + Identifiers.COLORS[0] + ",1"
+                self.assertEqual(
+                    self.mockCommunication.messages_received.pop(0), southFlagString)
+            else:
+                self.assertEqual(
+                    self.mockCommunication.messages_received.pop(0), southFlagString)
 
     def test_send_opponent_play(self):
         localCommandGenerator = CommandGenerator(
