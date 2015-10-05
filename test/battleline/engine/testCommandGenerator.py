@@ -135,11 +135,11 @@ class TestCommandGenerator(unittest.TestCase):
                     self.mockCommunication.messages_received.pop(0), northFlagString)
             else:
                 self.assertEqual(
-                    self.mockCommunication.messages_received.pop(0), northFlagString )  
-            southFlagString = "flag " + str(i) + " cards south"  
+                    self.mockCommunication.messages_received.pop(0), northFlagString)
+            southFlagString = "flag " + str(i) + " cards south"
             self.assertEqual(
                 self.mockCommunication.messages_received.pop(0), southFlagString)
-            
+
     def test_send_flag_cards_one_card_south(self):
         localCommandGenerator = CommandGenerator(
             self.mockCommunication, Identifiers.NORTH)
@@ -151,8 +151,8 @@ class TestCommandGenerator(unittest.TestCase):
         for i, _ in enumerate(flagList, start=1):
             northFlagString = "flag " + str(i) + " cards north"
             self.assertEqual(
-                self.mockCommunication.messages_received.pop(0), northFlagString )
-            southFlagString = "flag " + str(i) + " cards south"  
+                self.mockCommunication.messages_received.pop(0), northFlagString)
+            southFlagString = "flag " + str(i) + " cards south"
             if i == 9:
                 southFlagString += " " + Identifiers.COLORS[0] + ",1"
                 self.assertEqual(
