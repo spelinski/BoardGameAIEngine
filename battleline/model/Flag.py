@@ -1,5 +1,6 @@
 from battleline.Identifiers import Identifiers
 
+
 class Flag(object):
     """A representation of a flag in Battle Line.
     A flag can hold 3 cards for both players.

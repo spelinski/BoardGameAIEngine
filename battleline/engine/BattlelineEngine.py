@@ -19,6 +19,8 @@ class BattlelineEngine(object):
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
         self.boardLogic = BoardLogic()
+        self.player1.generator.send_colors()
+        self.player2.generator.send_colors()
 
         self.__make_player_turn_index = 0
 

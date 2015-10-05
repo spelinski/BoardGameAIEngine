@@ -82,3 +82,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.engine.progress_turn()
         self.assertEquals(6, len(self.engine.player1.hand))
         self.assertEquals(6, len(self.engine.player2.hand))
+
+    def test_colors_are_sent_down_to_each_player(self):
+        self.assertEquals(["colors color1 color2 color3 color4 color5 color6"], self.engine.player1.communication.messages_received[1:])
+        self.assertEquals(["colors color1 color2 color3 color4 color5 color6"], self.engine.player2.communication.messages_received[1:])

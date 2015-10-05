@@ -2,6 +2,7 @@ import unittest
 from battleline.model.Flag import Flag, InvalidPlayerError, TooManyCardsOnOneSideError, FlagAlreadyClaimedError
 from battleline.Identifiers import *
 
+
 class TestFlag(unittest.TestCase):
 
     def setUp(self):

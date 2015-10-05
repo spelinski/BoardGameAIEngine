@@ -1,6 +1,7 @@
 from battleline.engine.CommandGenerator import CommandGenerator
 from battleline.engine.CommandParser import ClientCommandParser
 
+
 class BattlelinePlayer(object):
     """
     Player object for Battleline
@@ -16,8 +17,10 @@ class BattlelinePlayer(object):
         """
         self.hand = []
         self.communication = communication
-        CommandGenerator(communication, direction).send_player_direction_name()
-        self.name = ClientCommandParser().parse(self.communication.get_response())["value"][1]
+        self.generator = CommandGenerator(communication, direction)
+        self.generator.send_player_direction_name()
+        self.name = ClientCommandParser().parse(
+            self.communication.get_response())["value"][1]
         self.direction = direction
 
     def add_to_hand(self, card):
