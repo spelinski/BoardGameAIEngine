@@ -89,7 +89,7 @@ class CommandGenerator(object):
         @param number the flag numer bewteen 1-9
         """
         msg = "flag " + str(number) + " cards north"
-        for card in flag.get_cards("Player North"):
+        for card in flag.get_cards(Identifiers.NORTH):
             msg += " " + card.color + "," + str(card.number)
         self.playerCommunication.send_message(msg)
 
@@ -100,7 +100,7 @@ class CommandGenerator(object):
         @param number the flag numer bewteen 1-9
         """
         msg = "flag " + str(number) + " cards south"
-        for card in flag.get_cards("Player South"):
+        for card in flag.get_cards(Identifiers.SOUTH):
             msg += " " + card.color + "," + str(card.number)
         self.playerCommunication.send_message(msg)
 
@@ -109,8 +109,6 @@ class CommandGenerator(object):
         Parses out who has claimed the flag
         @param flag the flag to parse the claimant of
         """
-        if flag.claimed == "Player North":
-            return Identifiers.NORTH
-        elif flag.claimed == "Player South":
-            return Identifiers.SOUTH
+        if flag.claimed in [Identifiers.NORTH, Identifiers.SOUTH]:
+            return flag.claimed
         return "unclaimed"
