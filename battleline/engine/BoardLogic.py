@@ -1,9 +1,10 @@
 from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
-from battleline.view.Output import COLORS
+from battleline.Identifiers import Identifiers
 from collections import namedtuple
 TroopCard = namedtuple("TroopCard", ["number", "color"])
 
+COLORS = Identifiers.COLORS
 
 
 class BoardLogic:
