@@ -47,7 +47,8 @@ class BoardLogic:
                 enemyCards, self.playedCardList)
             if self.__is_current_player_formation_best(playerCards, bestEnemyFormation):
                 flag.claim(player)
-            #Need to think about changing getTheBetterFormation to not depend on which is passed first to dectect equal strength
+            # Need to think about changing getTheBetterFormation to not depend
+            # on which is passed first to dectect equal strength
             if self.__is_enemy_formation_best(playerCards, bestEnemyFormation) and self.__is_enemy_formation_best(bestEnemyFormation, playerCards):
                 # the latestPlayer loses
                 if latestPlayer == Identifiers.NORTH:
@@ -55,7 +56,7 @@ class BoardLogic:
                 else:
                     flag.claim(Identifiers.NORTH)
 
-    def __is_current_player_formation_best(self,playerCards, bestEnemyFormation):
+    def __is_current_player_formation_best(self, playerCards, bestEnemyFormation):
         return (self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards)
 
     def __is_enemy_formation_best(self, playerCards, bestEnemyFormation):
