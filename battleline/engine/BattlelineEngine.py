@@ -49,6 +49,20 @@ class BattlelineEngine(object):
         self.__make_player_turn(self.player2)
 
     def __make_player_turn(self, player):
+        self.__send_messages_to_player(player)
+        flag,card = self.__get_flag_and_card_from_player(player)
+        self.lastMove = flag, card
+        if card and flag:
+            self.__process_player_turn(player, flag, card)
+
+    def __process_player_turn(self, player, flag, card):
+        player.remove_from_hand(card)
+        self.board_logic.addCard(
+            flag - 1, player.direction, card)
+        if not self.troop_deck.is_empty():
+            player.add_to_hand(self.troop_deck.draw())
+
+    def __send_messages_to_player(self, player):
         player.generator.send_player_hand(player.hand)
         player.generator.send_flag_claim_status(self.board_logic.board.flags)
         player.generator.send_flag_cards(self.board_logic.board.flags)
@@ -56,21 +70,22 @@ class BattlelineEngine(object):
             player.generator.send_opponent_play(
                 self.lastMove[0], self.lastMove[1])
         player.generator.send_go_play()
+
+    def __get_flag_and_card_from_player(self,player):
         try:
             data = ClientCommandParser().parse(player.communication.get_response())
             flag, card = data["value"]
         except InvalidParseError:
             flag, card = 1, None
-        if card not in player.hand:
-            card = player.hand[0] if player.hand else None
+        return self.__get_valid_flag(flag, player),self.__get_valid_card(card, player)
+
+    def __get_valid_flag(self, flag, player):
         if not self.board_logic.board.get_flag(flag).is_playable(player.direction):
             flag = next((flag for flag in xrange(1, 10) if self.board_logic.board.get_flag(
                 flag).is_playable(player.direction)), None)
+        return flag
 
-        self.lastMove = flag, card
-        if card and flag:
-            player.remove_from_hand(card)
-            self.board_logic.addCard(
-                flag - 1, player.direction, card)
-            if not self.troop_deck.is_empty():
-                player.add_to_hand(self.troop_deck.draw())
+    def __get_valid_card(self, card, player):
+        if card not in player.hand:
+            card = player.hand[0] if player.hand else None
+        return card
