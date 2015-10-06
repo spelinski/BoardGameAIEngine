@@ -12,8 +12,8 @@ class BattlelinePlayer(object):
 
     def __init__(self, communication, direction):
         """Constructor
-        @param name the player name
         @param communication the communication the player has with a bot
+        @param direction which direction this player is at
         """
         self.hand = []
         self.communication = communication

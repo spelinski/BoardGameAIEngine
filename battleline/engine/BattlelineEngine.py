@@ -77,15 +77,14 @@ class BattlelineEngine(object):
             flag, card = data["value"]
         except InvalidParseError:
             flag, card = 1, None
-        return self.__get_valid_flag(flag, player), self.__get_valid_card(card, player)
+        return self.__get_valid_flag(flag, player.direction), self.__get_valid_card(card, player.hand)
 
-    def __get_valid_flag(self, flag, player):
-        if not self.board_logic.board.get_flag(flag).is_playable(player.direction):
-            flag = next((flag for flag in xrange(1, 10) if self.board_logic.board.get_flag(
-                flag).is_playable(player.direction)), None)
-        return flag
+    def __get_valid_flag(self, flag, direction):
+        if self.board_logic.is_flag_playable(flag - 1, direction):
+            return flag
+        return next((f for f in xrange(1, 10) if self.board_logic.is_flag_playable(f - 1, direction)), None)
 
-    def __get_valid_card(self, card, player):
-        if card not in player.hand:
-            card = player.hand[0] if player.hand else None
-        return card
+    def __get_valid_card(self, card, hand):
+        if card in hand:
+            return card
+        return hand[0] if hand else None

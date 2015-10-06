@@ -99,3 +99,12 @@ class TestBoardLogic(unittest.TestCase):
         self.boardLogic.addCard(5, Identifiers.NORTH, (1, 'yellow'))
         self.assertEqual(self.boardLogic.board.flags[
                          5].claimed, Identifiers.SOUTH)
+
+    def test_flag_is_playable(self):
+        self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
+        self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
+
+        self.boardLogic.board.get_flag(1).sides[Identifiers.NORTH] = [1,2,3]
+
+        self.assertFalse(self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
+        self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))

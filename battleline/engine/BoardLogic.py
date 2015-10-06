@@ -19,6 +19,9 @@ class BoardLogic:
         self.playedCardList.append(card)
         self.checkAllFlags(player)
 
+    def is_flag_playable(self, flag_index, direction):
+        return self.board.flags[flag_index].is_playable(direction)
+
     def checkAllFlags(self, latestPlayer):
         # get the best possible formation for an empty set because there should
         # be a lot of those requested
