@@ -40,21 +40,24 @@ class BoardLogic:
         if len(enemyCards) == 0:
             bestFormationPossible = self.formationLogic.greatestPossibleFormation(
                 [], self.playedCardList)
-            if self.__is_current_player_formation_best(playerCards, bestFormationPossible):
-                flag.claim(player)
+            self.__claim_flag_if_player_formation_is_best()
         else:
             bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
                 enemyCards, self.playedCardList)
-            if self.__is_current_player_formation_best(playerCards, bestEnemyFormation):
-                flag.claim(player)
+            self.__claim_flag_if_player_formation_is_best(
+                playerCards, bestEnemyFormation, flag, player)
+            # if self.__is_current_player_formation_best(playerCards, bestEnemyFormation):
+            #   flag.claim(player)
             # Need to think about changing getTheBetterFormation to not depend
             # on which is passed first to dectect equal strength
             if self.__is_enemy_formation_best(playerCards, bestEnemyFormation) and self.__is_enemy_formation_best(bestEnemyFormation, playerCards):
                 # the latestPlayer loses
-                if latestPlayer == Identifiers.NORTH:
-                    flag.claim(Identifiers.SOUTH)
-                else:
-                    flag.claim(Identifiers.NORTH)
+                if latestPlayer != player:
+                    flag.claim(player)
+
+    def __claim_flag_if_player_formation_is_best(self, playerCards, bestEnemyFormation, flag, player):
+        if self.__is_current_player_formation_best(playerCards, bestEnemyFormation):
+            flag.claim(player)
 
     def __is_current_player_formation_best(self, playerCards, bestEnemyFormation):
         return (self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards)
