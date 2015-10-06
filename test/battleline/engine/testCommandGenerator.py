@@ -124,7 +124,6 @@ class TestCommandGenerator(unittest.TestCase):
             self.mockCommunication, Identifiers.NORTH)
         flagList = [Flag() for _ in xrange(8)]
         lastFlag = Flag()
-        lastFlag.add_card("Player North", TroopCard(1, Identifiers.COLORS[0]))
         lastFlag.add_card("north", TroopCard(1, Identifiers.COLORS[0]))
         flagList.append(lastFlag)
 
