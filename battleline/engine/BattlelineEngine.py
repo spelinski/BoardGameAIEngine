@@ -1,8 +1,8 @@
 from mechanics.Deck import Deck
 from BoardLogic import BoardLogic
 from itertools import product
-from battleline.Identifiers import TroopCard
-
+from battleline.Identifiers import TroopCard, Identifiers
+from CommandParser import ClientCommandParser
 
 class BattlelineEngine(object):
     """
@@ -18,11 +18,11 @@ class BattlelineEngine(object):
         self.player1 = player1
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
-        self.boardLogic = BoardLogic()
+        self.board_logic = BoardLogic()
         self.player1.generator.send_colors()
         self.player2.generator.send_colors()
 
-        self.__make_player_turn_index = 0
+        self.lastMove = None
 
     def initialize(self):
         """
@@ -38,8 +38,7 @@ class BattlelineEngine(object):
         Get the troop cards
         @return A list of all troop cards
         """
-        colors = ["RED", "GREEN", "ORANGE", "YELLOW", "BLUE", "PURPLE"]
-        return [TroopCard(number, color) for color, number in product(colors, range(1, 11))]
+        return [TroopCard(number, color) for color, number in product(Identifiers.COLORS, range(1, 11))]
 
     def progress_turn(self):
         """
@@ -47,13 +46,25 @@ class BattlelineEngine(object):
         """
         self.__make_player_turn(self.player1)
         self.__make_player_turn(self.player2)
-        self.__make_player_turn_index = self.__make_player_turn_index + 1
-        if self.__make_player_turn_index == 9:
-            self.__make_player_turn_index = 0
 
     def __make_player_turn(self, player):
-        player.remove_from_hand(player.hand[0])
-        self.boardLogic.addCard(
-            self.__make_player_turn_index, player.direction, player.hand[0])
-        if not self.troop_deck.is_empty():
-            player.add_to_hand(self.troop_deck.draw())
+        player.generator.send_player_hand(player.hand)
+        player.generator.send_flag_claim_status(self.board_logic.board.flags)
+        player.generator.send_flag_cards(self.board_logic.board.flags)
+        if self.lastMove:
+            player.generator.send_opponent_play(self.lastMove[0], self.lastMove[1])
+        player.generator.send_go_play()
+        data = ClientCommandParser().parse(player.communication.get_response())
+        flag, card = data["value"]
+        if card not in player.hand:
+            card = player.hand[0] if player.hand else None
+        if not self.board_logic.board.get_flag(flag).is_playable(player.direction):
+            flag = next((flag for flag in xrange(1,10) if self.board_logic.board.get_flag(flag).is_playable(player.direction)), None)
+
+        self.lastMove = flag,card
+        if card and flag:
+            player.remove_from_hand(card)
+            self.board_logic.addCard(
+                flag - 1, player.direction, card)
+            if not self.troop_deck.is_empty():
+                player.add_to_hand(self.troop_deck.draw())
