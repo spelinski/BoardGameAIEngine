@@ -25,31 +25,41 @@ class BoardLogic:
     def checkAllFlags(self, latestPlayer):
         # get the best possible formation for an empty set because there should
         # be a lot of those requested
-        bestFormationPossible = self.formationLogic.greatestPossibleFormation(
-            [], self.playedCardList)
         unclaimedFlags = (
             flag for flag in self.board.flags if not flag.is_claimed())
         for flag in unclaimedFlags:
             for player in [Identifiers.NORTH, Identifiers.SOUTH]:
-                if player == Identifiers.NORTH:
-                    enemy = Identifiers.SOUTH
-                else:
-                    enemy = Identifiers.NORTH
-                playerCards = flag.get_cards(player)
-                enemyCards = flag.get_cards(enemy)
                 if len(flag.get_cards(player)) == 3:
-                    # the flag needs to be checked
-                    if len(enemyCards) == 0:
-                        if self.formationLogic.getTheBetterFormation(playerCards, bestFormationPossible) == playerCards:
-                            flag.claim(player)
-                    else:
-                        bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
-                            enemyCards, self.playedCardList)
-                        if self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards:
-                            flag.claim(player)
-                        if self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == bestEnemyFormation and self.formationLogic.getTheBetterFormation(bestEnemyFormation, playerCards) == playerCards:
-                            # the latestPlayer loses
-                            if latestPlayer == Identifiers.NORTH:
-                                flag.claim(Identifiers.SOUTH)
-                            else:
-                                flag.claim(Identifiers.NORTH)
+                    self.__try_to_claim_flag(flag, player, latestPlayer)
+
+    def __try_to_claim_flag(self, flag, player, latestPlayer):
+        enemy = self.__get_enemy(player)
+        playerCards = flag.get_cards(player)
+        enemyCards = flag.get_cards(enemy)
+        # the flag needs to be checked
+        if len(enemyCards) == 0:
+            bestFormationPossible = self.formationLogic.greatestPossibleFormation(
+                [], self.playedCardList)
+            if self.__is_current_player_formation_best(playerCards, bestFormationPossible):
+                flag.claim(player)
+        else:
+            bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
+                enemyCards, self.playedCardList)
+            if self.__is_current_player_formation_best(playerCards, bestEnemyFormation):
+                flag.claim(player)
+            #Need to think about changing getTheBetterFormation to not depend on which is passed first to dectect equal strength
+            if self.__is_enemy_formation_best(playerCards, bestEnemyFormation) and self.__is_enemy_formation_best(bestEnemyFormation, playerCards):
+                # the latestPlayer loses
+                if latestPlayer == Identifiers.NORTH:
+                    flag.claim(Identifiers.SOUTH)
+                else:
+                    flag.claim(Identifiers.NORTH)
+
+    def __is_current_player_formation_best(self,playerCards, bestEnemyFormation):
+        return (self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards)
+
+    def __is_enemy_formation_best(self, playerCards, bestEnemyFormation):
+        return (self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == bestEnemyFormation)
+
+    def __get_enemy(self, player):
+        return Identifiers.SOUTH if (player == Identifiers.NORTH) else Identifiers.NORTH
