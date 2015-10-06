@@ -4,6 +4,7 @@ from itertools import product
 from battleline.Identifiers import TroopCard, Identifiers
 from CommandParser import ClientCommandParser
 
+
 class BattlelineEngine(object):
     """
     An engine that coordinates two players, a board and the decks for battleline
@@ -52,16 +53,18 @@ class BattlelineEngine(object):
         player.generator.send_flag_claim_status(self.board_logic.board.flags)
         player.generator.send_flag_cards(self.board_logic.board.flags)
         if self.lastMove:
-            player.generator.send_opponent_play(self.lastMove[0], self.lastMove[1])
+            player.generator.send_opponent_play(
+                self.lastMove[0], self.lastMove[1])
         player.generator.send_go_play()
         data = ClientCommandParser().parse(player.communication.get_response())
         flag, card = data["value"]
         if card not in player.hand:
             card = player.hand[0] if player.hand else None
         if not self.board_logic.board.get_flag(flag).is_playable(player.direction):
-            flag = next((flag for flag in xrange(1,10) if self.board_logic.board.get_flag(flag).is_playable(player.direction)), None)
+            flag = next((flag for flag in xrange(1, 10) if self.board_logic.board.get_flag(
+                flag).is_playable(player.direction)), None)
 
-        self.lastMove = flag,card
+        self.lastMove = flag, card
         if card and flag:
             player.remove_from_hand(card)
             self.board_logic.addCard(

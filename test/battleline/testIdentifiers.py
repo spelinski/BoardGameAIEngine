@@ -10,5 +10,7 @@ class TestIdentifiers(unittest.TestCase):
         self.assertFalse(Identifiers.is_player_valid("BLAH"))
 
     def test_get_card_string(self):
-        self.assertEquals("RED,1", get_card_string(TroopCard(color="RED", number=1)))
-        self.assertEquals("BLUE,10", get_card_string(TroopCard(color="BLUE", number=10)))
+        self.assertEquals("RED,1", get_card_string(
+            TroopCard(color="RED", number=1)))
+        self.assertEquals("BLUE,10", get_card_string(
+            TroopCard(color="BLUE", number=10)))

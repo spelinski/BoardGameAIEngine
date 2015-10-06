@@ -4,6 +4,7 @@ from mechanics.Deck import Deck
 from battleline.engine.BattlelineEngine import BattlelineEngine, TroopCard
 from battleline.player.BattlelinePlayer import BattlelinePlayer
 from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
+from battleline.Identifiers import Identifiers
 
 
 def get_engine_with_ordered_cards():
@@ -67,7 +68,6 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         player1_hand = [card for card in self.engine.player1.hand]
         player2_hand = [card for card in self.engine.player2.hand]
 
-
         self.engine.player1.communication.add_response("play 1 color1,1")
         self.engine.player2.communication.add_response("play 1 color1,2")
         self.engine.progress_turn()
@@ -79,15 +79,15 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals(1, len(set(old_hand) - set(new_hand)))
         self.assertEquals(1, len(set(new_hand) - set(old_hand)))
 
-    def test_players_hands_diminish_if_deck_runs_out(self):
-        for i in xrange(23):
-            print i
-            self.engine.player1.communication.add_response("play 1 color1,1")
-            self.engine.player2.communication.add_response("play 1 color1,2")
-            self.engine.progress_turn()
+    def __play_turn(self):
         self.engine.player1.communication.add_response("play 1 color1,1")
         self.engine.player2.communication.add_response("play 1 color1,2")
         self.engine.progress_turn()
+
+    def test_players_hands_diminish_if_deck_runs_out(self):
+        for i in xrange(23):
+            self.__play_turn()
+        self.__play_turn()
         self.assertEquals(6, len(self.engine.player1.hand))
         self.assertEquals(6, len(self.engine.player2.hand))
 
@@ -98,25 +98,39 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                           self.engine.player2.communication.messages_received[1:])
 
     def test_information_is_sent_down_on_each_turn(self):
-        self.engine.player1.communication.add_response("play 1 color1,1")
-        self.engine.player2.communication.add_response("play 2 color1,2")
-        self.engine.progress_turn()
+        self.__play_turn()
 
         self.assertEquals(["player north hand color1,1 color1,3 color1,5 color1,7 color1,9 color2,1 color2,3",
-                          "flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed",
-                          "flag 1 cards north", "flag 1 cards south", "flag 2 cards north", "flag 2 cards south",
-                          "flag 3 cards north", "flag 3 cards south", "flag 4 cards north", "flag 4 cards south",
-                          "flag 5 cards north", "flag 5 cards south", "flag 6 cards north", "flag 6 cards south",
-                          "flag 7 cards north", "flag 7 cards south", "flag 8 cards north", "flag 8 cards south",
-                          "flag 9 cards north", "flag 9 cards south", "go play-card"
+                           "flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed",
+                           "flag 1 cards north", "flag 1 cards south", "flag 2 cards north", "flag 2 cards south",
+                           "flag 3 cards north", "flag 3 cards south", "flag 4 cards north", "flag 4 cards south",
+                           "flag 5 cards north", "flag 5 cards south", "flag 6 cards north", "flag 6 cards south",
+                           "flag 7 cards north", "flag 7 cards south", "flag 8 cards north", "flag 8 cards south",
+                           "flag 9 cards north", "flag 9 cards south", "go play-card"
                            ],
-                         self.engine.player1.communication.messages_received[2:])
+                          self.engine.player1.communication.messages_received[2:])
         self.assertEquals(["player south hand color1,2 color1,4 color1,6 color1,8 color1,10 color2,2 color2,4",
-                          "flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed",
-                          "flag 1 cards north color1,1", "flag 1 cards south", "flag 2 cards north", "flag 2 cards south",
-                          "flag 3 cards north", "flag 3 cards south", "flag 4 cards north", "flag 4 cards south",
-                          "flag 5 cards north", "flag 5 cards south", "flag 6 cards north", "flag 6 cards south",
-                          "flag 7 cards north", "flag 7 cards south", "flag 8 cards north", "flag 8 cards south",
-                          "flag 9 cards north", "flag 9 cards south", "opponent play 1 color1,1", "go play-card"
+                           "flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed",
+                           "flag 1 cards north color1,1", "flag 1 cards south", "flag 2 cards north", "flag 2 cards south",
+                           "flag 3 cards north", "flag 3 cards south", "flag 4 cards north", "flag 4 cards south",
+                           "flag 5 cards north", "flag 5 cards south", "flag 6 cards north", "flag 6 cards south",
+                           "flag 7 cards north", "flag 7 cards south", "flag 8 cards north", "flag 8 cards south",
+                           "flag 9 cards north", "flag 9 cards south", "opponent play 1 color1,1", "go play-card"
                            ],
-                         self.engine.player2.communication.messages_received[2:])
+                          self.engine.player2.communication.messages_received[2:])
+
+    def test_invalid_moves_still_produce_a_valid_move(self):
+          for i in xrange(4):
+              self.__play_turn()
+          self.assertEquals([TroopCard(color="color1", number=1),
+                            TroopCard(color="color1", number=3),
+                            TroopCard(color="color1", number=5)],
+                            self.engine.board_logic.board.get_flag(1).sides[Identifiers.NORTH])
+          self.assertEquals([TroopCard(color="color1", number=2),
+                          TroopCard(color="color1", number=4),
+                          TroopCard(color="color1", number=6)],
+                          self.engine.board_logic.board.get_flag(1).sides[Identifiers.SOUTH])
+          self.assertEquals([TroopCard(color="color1", number=7)],
+                            self.engine.board_logic.board.get_flag(2).sides[Identifiers.NORTH])
+          self.assertEquals([TroopCard(color="color1", number=8)],
+                          self.engine.board_logic.board.get_flag(2).sides[Identifiers.SOUTH])
