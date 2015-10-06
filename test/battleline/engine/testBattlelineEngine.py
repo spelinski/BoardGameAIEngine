@@ -120,17 +120,36 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                           self.engine.player2.communication.messages_received[2:])
 
     def test_invalid_moves_still_produce_a_valid_move(self):
-          for i in xrange(4):
-              self.__play_turn()
-          self.assertEquals([TroopCard(color="color1", number=1),
-                            TroopCard(color="color1", number=3),
-                            TroopCard(color="color1", number=5)],
-                            self.engine.board_logic.board.get_flag(1).sides[Identifiers.NORTH])
-          self.assertEquals([TroopCard(color="color1", number=2),
-                          TroopCard(color="color1", number=4),
-                          TroopCard(color="color1", number=6)],
+        for i in xrange(4):
+            self.__play_turn()
+        self.assertEquals([TroopCard(color="color1", number=1),
+                           TroopCard(color="color1", number=3),
+                           TroopCard(color="color1", number=5)],
+                          self.engine.board_logic.board.get_flag(1).sides[Identifiers.NORTH])
+        self.assertEquals([TroopCard(color="color1", number=2),
+                           TroopCard(color="color1", number=4),
+                           TroopCard(color="color1", number=6)],
                           self.engine.board_logic.board.get_flag(1).sides[Identifiers.SOUTH])
-          self.assertEquals([TroopCard(color="color1", number=7)],
-                            self.engine.board_logic.board.get_flag(2).sides[Identifiers.NORTH])
-          self.assertEquals([TroopCard(color="color1", number=8)],
+        self.assertEquals([TroopCard(color="color1", number=7)],
+                          self.engine.board_logic.board.get_flag(2).sides[Identifiers.NORTH])
+        self.assertEquals([TroopCard(color="color1", number=8)],
                           self.engine.board_logic.board.get_flag(2).sides[Identifiers.SOUTH])
+
+
+    def test_invalid_moves_with_flag_and_card(self):
+
+        self.engine.player1.communication.add_response("play 1 blah,1")
+        self.engine.player2.communication.add_response("play 1 color1,11")
+        self.engine.progress_turn()
+
+        self.engine.player1.communication.add_response("")
+        self.engine.player1.communication.add_response("")
+        self.engine.progress_turn()
+
+        self.assertEquals([TroopCard(color="color1", number=1),
+                           TroopCard(color="color1", number=3)],
+                          self.engine.board_logic.board.get_flag(1).sides[Identifiers.NORTH])
+        self.assertEquals([TroopCard(color="color1", number=2),
+                           TroopCard(color="color1", number=4)],
+                          self.engine.board_logic.board.get_flag(1).sides[Identifiers.SOUTH])
+        

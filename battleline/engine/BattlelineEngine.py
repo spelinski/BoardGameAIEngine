@@ -2,7 +2,7 @@ from mechanics.Deck import Deck
 from BoardLogic import BoardLogic
 from itertools import product
 from battleline.Identifiers import TroopCard, Identifiers
-from CommandParser import ClientCommandParser
+from CommandParser import ClientCommandParser, InvalidParseError
 
 
 class BattlelineEngine(object):
@@ -56,8 +56,11 @@ class BattlelineEngine(object):
             player.generator.send_opponent_play(
                 self.lastMove[0], self.lastMove[1])
         player.generator.send_go_play()
-        data = ClientCommandParser().parse(player.communication.get_response())
-        flag, card = data["value"]
+        try:
+            data = ClientCommandParser().parse(player.communication.get_response())
+            flag, card = data["value"]
+        except InvalidParseError:
+            flag,card = 1, None
         if card not in player.hand:
             card = player.hand[0] if player.hand else None
         if not self.board_logic.board.get_flag(flag).is_playable(player.direction):
