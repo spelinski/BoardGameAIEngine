@@ -104,7 +104,8 @@ class TestBoardLogic(unittest.TestCase):
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
 
-        self.boardLogic.board.get_flag(1).sides[Identifiers.NORTH] = [1,2,3]
+        self.boardLogic.board.get_flag(1).sides[Identifiers.NORTH] = [1, 2, 3]
 
-        self.assertFalse(self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
+        self.assertFalse(
+            self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
