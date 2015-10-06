@@ -60,7 +60,7 @@ class BattlelineEngine(object):
             data = ClientCommandParser().parse(player.communication.get_response())
             flag, card = data["value"]
         except InvalidParseError:
-            flag,card = 1, None
+            flag, card = 1, None
         if card not in player.hand:
             card = player.hand[0] if player.hand else None
         if not self.board_logic.board.get_flag(flag).is_playable(player.direction):

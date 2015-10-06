@@ -135,7 +135,6 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals([TroopCard(color="color1", number=8)],
                           self.engine.board_logic.board.get_flag(2).sides[Identifiers.SOUTH])
 
-
     def test_invalid_moves_with_flag_and_card(self):
 
         self.engine.player1.communication.add_response("play 1 blah,1")
@@ -152,4 +151,3 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals([TroopCard(color="color1", number=2),
                            TroopCard(color="color1", number=4)],
                           self.engine.board_logic.board.get_flag(1).sides[Identifiers.SOUTH])
-        
