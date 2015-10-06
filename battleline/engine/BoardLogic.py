@@ -8,29 +8,33 @@ COLORS = Identifiers.COLORS
 
 
 class BoardLogic:
+
     def __init__(self):
         self.playedCardList = []
         self.formationLogic = FormationLogic()
         self.board = Board()
-        self.PLAYER_NORTH = self.board.flags[0].PLAYER_NORTH
-        self.PLAYER_SOUTH = self.board.flags[0].PLAYER_SOUTH
 
-    def addCard(self,flag,player,card):
-        self.board.flags[flag].add_card(player,card)
+    def addCard(self, flag, player, card):
+        self.board.flags[flag].add_card(player, card)
         self.playedCardList.append(card)
         self.checkAllFlags(player)
 
-    def checkAllFlags(self,latestPlayer):
+    def is_flag_playable(self, flag_index, direction):
+        return self.board.flags[flag_index].is_playable(direction)
+
+    def checkAllFlags(self, latestPlayer):
         # get the best possible formation for an empty set because there should
         # be a lot of those requested
-        bestFormationPossible = self.formationLogic.greatestPossibleFormation([], self.playedCardList)
-        unclaimedFlags = (flag for flag in self.board.flags if not flag.is_claimed())
+        bestFormationPossible = self.formationLogic.greatestPossibleFormation(
+            [], self.playedCardList)
+        unclaimedFlags = (
+            flag for flag in self.board.flags if not flag.is_claimed())
         for flag in unclaimedFlags:
-            for player in [self.PLAYER_NORTH, self.PLAYER_SOUTH]:
-                if player == self.PLAYER_NORTH:
-                    enemy = self.PLAYER_SOUTH
+            for player in [Identifiers.NORTH, Identifiers.SOUTH]:
+                if player == Identifiers.NORTH:
+                    enemy = Identifiers.SOUTH
                 else:
-                    enemy = self.PLAYER_NORTH
+                    enemy = Identifiers.NORTH
                 playerCards = flag.get_cards(player)
                 enemyCards = flag.get_cards(enemy)
                 if len(flag.get_cards(player)) == 3:
@@ -39,13 +43,13 @@ class BoardLogic:
                         if self.formationLogic.getTheBetterFormation(playerCards, bestFormationPossible) == playerCards:
                             flag.claim(player)
                     else:
-                        bestEnemyFormation = self.formationLogic.greatestPossibleFormation(enemyCards,self.playedCardList)
-                        if self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation ) == playerCards:
+                        bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
+                            enemyCards, self.playedCardList)
+                        if self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards:
                             flag.claim(player)
-                        if self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation ) == bestEnemyFormation and self.formationLogic.getTheBetterFormation(bestEnemyFormation, playerCards) == playerCards:
-                            #the latestPlayer loses
-                            if latestPlayer == self.PLAYER_NORTH:
-                                flag.claim(self.PLAYER_SOUTH)
+                        if self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == bestEnemyFormation and self.formationLogic.getTheBetterFormation(bestEnemyFormation, playerCards) == playerCards:
+                            # the latestPlayer loses
+                            if latestPlayer == Identifiers.NORTH:
+                                flag.claim(Identifiers.SOUTH)
                             else:
-                                flag.claim(self.PLAYER_NORTH)
-
+                                flag.claim(Identifiers.NORTH)

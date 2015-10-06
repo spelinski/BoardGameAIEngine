@@ -32,7 +32,7 @@ player <north|south> hand <card1> <card2> <card3> <card4> <card5> <card6> <card7
    - Each card is delimited by a space
    - Numbers range from 1 to 10
    - Colors are as defined by the color command
-   - All cards are optional, in the case of the player having less cards (don't think this is possibl, but just incase)
+   - All cards are optional, in the case of the player having less cards (don't think this is possible, but just incase)
 
 flag claim-status <unclaimed|north|south> <unclaimed|north|south> <unclaimed|north|south> <unclaimed|north|south> <unclaimed|north|south> <unclaimed|north|south> <unclaimed|north|south> <unclaimed|north|south> <unclaimed|north|south>
    - claim status for every flag, from left-to-right.  Unclaimed indicates that nobody has claimed yet, and 1 or 2 indicates which player has claimed it

@@ -1,3 +1,7 @@
+from battleline.engine.CommandGenerator import CommandGenerator
+from battleline.engine.CommandParser import ClientCommandParser
+
+
 class BattlelinePlayer(object):
     """
     Player object for Battleline
@@ -6,14 +10,18 @@ class BattlelinePlayer(object):
 
     HAND_LIMIT = 7
 
-    def __init__(self, name, communication):
+    def __init__(self, communication, direction):
         """Constructor
-        @param name the player name
         @param communication the communication the player has with a bot
+        @param direction which direction this player is at
         """
-        self.name = name
         self.hand = []
         self.communication = communication
+        self.generator = CommandGenerator(communication, direction)
+        self.generator.send_player_direction_name()
+        self.name = ClientCommandParser().parse(
+            self.communication.get_response())["value"][1]
+        self.direction = direction
 
     def add_to_hand(self, card):
         """

@@ -84,7 +84,7 @@ class TestCommandGenerator(unittest.TestCase):
             claimStatusString += " unclaimed"
             flagList.append(Flag())
         tempFlag = Flag()
-        tempFlag.claim("Player North")
+        tempFlag.claim("north")
         flagList.append(tempFlag)
         claimStatusString += " north"
         localCommandGenerator.send_flag_claim_status(flagList)
@@ -96,11 +96,11 @@ class TestCommandGenerator(unittest.TestCase):
             self.mockCommunication, Identifiers.NORTH)
         claimStatusString = "flag claim-status"
         flagList = []
-        for _ in range(1, 9):
+        for _ in range(8):
             claimStatusString += " unclaimed"
             flagList.append(Flag())
         tempFlag = Flag()
-        tempFlag.claim("Player South")
+        tempFlag.claim("south")
         flagList.append(tempFlag)
         claimStatusString += " south"
         localCommandGenerator.send_flag_claim_status(flagList)
@@ -124,8 +124,9 @@ class TestCommandGenerator(unittest.TestCase):
             self.mockCommunication, Identifiers.NORTH)
         flagList = [Flag() for _ in xrange(8)]
         lastFlag = Flag()
-        lastFlag.add_card("Player North", TroopCard(1, Identifiers.COLORS[0]))
+        lastFlag.add_card("north", TroopCard(1, Identifiers.COLORS[0]))
         flagList.append(lastFlag)
+
         localCommandGenerator.send_flag_cards(flagList)
         for i, _ in enumerate(flagList, start=1):
             northFlagString = "flag " + str(i) + " cards north"

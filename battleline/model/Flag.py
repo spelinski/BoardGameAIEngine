@@ -1,23 +1,24 @@
+from battleline.Identifiers import Identifiers
+
+
 class Flag(object):
     """A representation of a flag in Battle Line.
     A flag can hold 3 cards for both players.
     """
-    PLAYER_NORTH = "Player North"
-    PLAYER_SOUTH = "Player South"
     MAX_CARDS_PER_SIDE = 3
 
     def __init__(self):
         """
         Constructor
         """
-        self.sides = {self.PLAYER_NORTH: [], self.PLAYER_SOUTH: []}
+        self.sides = {Identifiers.NORTH: [], Identifiers.SOUTH: []}
         self.claimed = None
 
     def is_empty(self):
         """
         Determines if there are any cards played on this flag.
         """
-        return self.is_player_side_empty(self.PLAYER_NORTH) and self.is_player_side_empty(self.PLAYER_SOUTH)
+        return self.is_player_side_empty(Identifiers.NORTH) and self.is_player_side_empty(Identifiers.SOUTH)
 
     def is_player_side_empty(self, player):
         """ Determines if a player side is empty.
