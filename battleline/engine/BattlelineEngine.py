@@ -50,7 +50,7 @@ class BattlelineEngine(object):
 
     def __make_player_turn(self, player):
         self.__send_messages_to_player(player)
-        flag,card = self.__get_flag_and_card_from_player(player)
+        flag, card = self.__get_flag_and_card_from_player(player)
         self.lastMove = flag, card
         if card and flag:
             self.__process_player_turn(player, flag, card)
@@ -71,13 +71,13 @@ class BattlelineEngine(object):
                 self.lastMove[0], self.lastMove[1])
         player.generator.send_go_play()
 
-    def __get_flag_and_card_from_player(self,player):
+    def __get_flag_and_card_from_player(self, player):
         try:
             data = ClientCommandParser().parse(player.communication.get_response())
             flag, card = data["value"]
         except InvalidParseError:
             flag, card = 1, None
-        return self.__get_valid_flag(flag, player),self.__get_valid_card(card, player)
+        return self.__get_valid_flag(flag, player), self.__get_valid_card(card, player)
 
     def __get_valid_flag(self, flag, player):
         if not self.board_logic.board.get_flag(flag).is_playable(player.direction):
