@@ -8,6 +8,7 @@ Global Identifiers
 """
 TroopCard = namedtuple("TroopCard", ["number", "color"])
 
+
 def get_card_string(card):
     return "{},{}".format(card.color, card.number)
 

@@ -60,6 +60,20 @@ class TestFormationLogic(unittest.TestCase):
         self.assertEquals([TroopCard(color="color3", number=1), TroopCard(color="color2", number=1), TroopCard(color="color1", number=1)],
                           self.logic.get_best_formation([], unplayed_cards))
 
+    def test_get_best_formation_battalion(self):
+        unplayed_cards = self.__get_base_cards()
+
+        self.assertEquals([TroopCard(color="color2", number=10), TroopCard(color="color2", number=8), TroopCard(color="color2", number=7)],
+                          self.logic.get_best_formation([TroopCard(color="color2", number=8), TroopCard(color="color2", number=7)], unplayed_cards))
+
+        self.assertEquals([TroopCard(color="color3", number=5), TroopCard(color="color3", number=3), TroopCard(color="color3", number=1)],
+                          self.logic.get_best_formation([TroopCard(color="color3", number=3)], unplayed_cards))
+
+
+        unplayed_cards = [c for c in unplayed_cards if c.number != 1]
+        self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=7), TroopCard(color="color1", number=6)],
+                          self.logic.get_best_formation([], unplayed_cards))
+
     """test_greatestPossibleFormation
 
     test if the greatestPossibleFormation function will give the correct best formation with all available cards
