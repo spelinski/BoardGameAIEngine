@@ -1,6 +1,7 @@
 from Board import Board
-from battleline.Identifiers import Identifiers
+from battleline.Identifiers import Identifiers, TroopCard
 from Formation import Formation
+import itertools
 
 
 class FormationLogic:
@@ -11,8 +12,29 @@ class FormationLogic:
     def getTheBetterFormation(self, formation1, formation2):
         return formation1 if Formation(formation1).is_greater_strength_than(Formation(formation2)) else formation2
 
+
     def is_equivalent_in_strength(self, formation1, formation2):
         return Formation(formation1).is_equivalent_in_strength(Formation(formation2))
+
+    def get_best_formation(self, current_formation, unplayed_cards):
+        return self.__get_best_option([[card] for card in current_formation], unplayed_cards)
+
+    def __get_best_option(self, options, unplayed_cards):
+
+            max_strength_formation = [TroopCard(color=color, number=number) for color,number in itertools.product([Identifiers.COLORS], [1,1,0])]
+            for a in self.__get_options(options, 0, unplayed_cards):
+                next_unplayed_cards = [c for c in unplayed_cards if c != a ]
+                for b in self.__get_options(options, 1, next_unplayed_cards):
+                    still_unplayed_cards = [c for c in next_unplayed_cards if c != b ]
+                    for c in self.__get_options(options, 2, still_unplayed_cards):
+                        formation = a + b + c
+                        if Formation(formation).is_greater_strength_than(Formation(max_strength_formation)):
+                            max_strength_formation = formation
+            return sorted(max_strength_formation, key=lambda x: (
+                x[1], x[0]), reverse=True)
+
+    def __get_options(self, options, index, unplayed_cards):
+        return [options[index - 1]] if len(options) > index else [[c] for c in unplayed_cards]
 
     def greatestPossibleFormation(self, listOfCards, playedCardList):
         if len(listOfCards) == 3:
