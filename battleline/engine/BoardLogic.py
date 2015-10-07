@@ -56,7 +56,7 @@ class BoardLogic:
             bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
                 enemyCards, self.playedCardList)
             if self.formationLogic.is_equivalent_in_strength(playerCards, bestEnemyFormation):
-                if len(enemyCards) != 3 or self.latestPlayer != player:
+                if len(enemyCards) != flag.MAX_CARDS_PER_SIDE or self.latestPlayer != player:
                     flag.claim(player)
             elif self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards:
                 flag.claim(player)
