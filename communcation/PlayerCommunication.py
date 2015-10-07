@@ -62,10 +62,7 @@ class PlayerCommunication(object):
         """
         kill the external process
         """
-        if platform.system() == 'Linux':
-            os.system("pkill -f " + self.programName)
-        else:
-            self.runningPlayer.kill()
+        os.system("pkill -f " + self.programName)
 
 
 class BotCommunicationError(Exception):
