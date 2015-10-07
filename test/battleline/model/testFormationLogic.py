@@ -8,6 +8,15 @@ from itertools import product
 COLORS = Identifiers.COLORS
 
 
+def make_troop_card_list( color_number_tuples):
+    return [TroopCard(number,color) for color,number in color_number_tuples]
+
+def get_base_cards():
+    return make_troop_card_list([("color1", 10), ("color1", 7), ("color1", 6), ("color2", 10),
+                                       ("color1", 3), ("color3", 5), ("color1",2), ("color1", 1),
+                                       ("color2", 1), ("color3", 1)])
+
+
 class TestFormationLogic(unittest.TestCase):
 
     def setUp(self):
@@ -16,22 +25,14 @@ class TestFormationLogic(unittest.TestCase):
         self.fullList = [(number, color)
                          for color, number in product(COLORS, range(1, 11))]
 
-    def __get_base_cards(self):
-        return [TroopCard(color="color1", number=10),
-                TroopCard(color="color1", number=7),
-                TroopCard(color="color1", number=6),
-                TroopCard(color="color2", number=10),
-                TroopCard(color="color1", number=3),
-                TroopCard(color="color3", number=5),
-                TroopCard(color="color1", number=2),
-                TroopCard(color="color1", number=1),
-                TroopCard(color="color2", number=1),
-                TroopCard(color="color3", number=1)]
+    def assert_best_formation(self,expected_cards, given_cards, unplayed_cards):
+        self.assertEquals(make_troop_card_list(expected_cards),
+                           self.logic.get_best_formation(make_troop_card_list(given_cards),
+                          unplayed_cards))
 
     def test_get_best_formation_wedge(self):
-        unplayed_cards = self.__get_base_cards()
-        self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)],
-                          self.logic.get_best_formation([TroopCard(color="color1", number=10), TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)], unplayed_cards))
+        unplayed_cards = get_base_cards()
+        self.assert_best_formation([("color1", 10), ("color1", 9), ("color1", 8)], [("color1", 10), ("color1", 9), ("color1", 8)], unplayed_cards)
 
         self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)],
                           self.logic.get_best_formation([TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)], unplayed_cards))
@@ -48,7 +49,7 @@ class TestFormationLogic(unittest.TestCase):
                           self.logic.get_best_formation([], unplayed_cards))
 
     def test_get_best_formation_phalanax(self):
-        unplayed_cards = self.__get_base_cards()
+        unplayed_cards = get_base_cards()
 
         self.assertEquals([TroopCard(color="color3", number=7), TroopCard(color="color2", number=7), TroopCard(color="color1", number=7)],
                           self.logic.get_best_formation([TroopCard(color="color2", number=7), TroopCard(color="color3", number=7)], unplayed_cards))
@@ -61,14 +62,13 @@ class TestFormationLogic(unittest.TestCase):
                           self.logic.get_best_formation([], unplayed_cards))
 
     def test_get_best_formation_battalion(self):
-        unplayed_cards = self.__get_base_cards()
+        unplayed_cards = get_base_cards()
 
         self.assertEquals([TroopCard(color="color2", number=10), TroopCard(color="color2", number=8), TroopCard(color="color2", number=7)],
                           self.logic.get_best_formation([TroopCard(color="color2", number=8), TroopCard(color="color2", number=7)], unplayed_cards))
 
         self.assertEquals([TroopCard(color="color3", number=5), TroopCard(color="color3", number=3), TroopCard(color="color3", number=1)],
                           self.logic.get_best_formation([TroopCard(color="color3", number=3)], unplayed_cards))
-
 
         unplayed_cards = [c for c in unplayed_cards if c.number != 1]
         self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=7), TroopCard(color="color1", number=6)],
