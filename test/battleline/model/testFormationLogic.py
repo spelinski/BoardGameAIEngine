@@ -26,6 +26,19 @@ class TestFormationLogic(unittest.TestCase):
                           (8, COLORS[0]), (9, COLORS[0]), (10, COLORS[0])])
         self.assertEquals(self.logic.greatestPossibleFormation(
             [(1, COLORS[0]), (2, COLORS[0]), (3, COLORS[0])], []), [(1, COLORS[0]), (2, COLORS[0]), (3, COLORS[0])])
+
+    def test_is_equivalent_in_strength_true(self):
+        formation1 = [(1, COLORS[0]), (2, COLORS[0]), (3, COLORS[0])]
+        formation2 = [(1, COLORS[1]), (2, COLORS[1]), (3, COLORS[1])]
+        self.assertTrue(self.logic.is_equivalent_in_strength(
+            formation1, formation2))
+
+    def test_is_equivalent_in_strength_false(self):
+        formation1 = [(1, COLORS[0]), (2, COLORS[0]), (3, COLORS[0])]
+        formation2 = [(2, COLORS[1]), (3, COLORS[1]), (4, COLORS[1])]
+        self.assertFalse(self.logic.is_equivalent_in_strength(
+            formation1, formation2))
+
     """test_creationFunctions_empty
 
     test if the create function will give the correct formation
