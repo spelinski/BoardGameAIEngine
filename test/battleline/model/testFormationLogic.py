@@ -19,6 +19,7 @@ def get_base_cards():
                                  ("color1", 2), ("color1", 1),
                                  ("color2", 1), ("color3", 1)])
 
+
 class TestFormationLogic(unittest.TestCase):
 
     def setUp(self):
@@ -50,9 +51,9 @@ class TestFormationLogic(unittest.TestCase):
     def test_get_best_formation_phalanax(self):
         unplayed_cards = get_base_cards()
         self.assert_best_formation([("color3", 7), ("color2", 7), ("color1", 7)],
-                                   [ ("color3", 7), ("color2", 7)], unplayed_cards)
+                                   [("color3", 7), ("color2", 7)], unplayed_cards)
         self.assert_best_formation([("color3", 10), ("color2", 10), ("color1", 10)],
-                                   [ ("color3", 10)], unplayed_cards)
+                                   [("color3", 10)], unplayed_cards)
 
         unplayed_cards = [c for c in unplayed_cards if c.number != 2]
         self.assert_best_formation([("color3", 1), ("color2", 1), ("color1", 1)],
@@ -61,13 +62,36 @@ class TestFormationLogic(unittest.TestCase):
     def test_get_best_formation_battalion(self):
         unplayed_cards = get_base_cards()
         self.assert_best_formation([("color2", 10), ("color2", 8), ("color2", 7)],
-                           [ ("color2", 8), ("color2", 7)], unplayed_cards)
+                                   [("color2", 8), ("color2", 7)], unplayed_cards)
         self.assert_best_formation([("color3", 5), ("color3", 3), ("color3", 1)],
-                           [ ("color3", 3)], unplayed_cards)
+                                   [("color3", 3)], unplayed_cards)
 
         unplayed_cards = [c for c in unplayed_cards if c.number != 1]
         self.assert_best_formation([("color1", 10), ("color1", 7), ("color1", 6)],
-                           [], unplayed_cards)
+                                   [], unplayed_cards)
+
+    def test_get_best_formation_skirmish(self):
+        unplayed_cards = get_base_cards()
+
+        self.assert_best_formation([("color4", 9), ("color4", 8), ("color1", 10),],
+                                   [("color4", 9), ("color4", 8)], unplayed_cards)
+        self.assert_best_formation([("color4", 8), ("color1", 7), ("color1", 6)],
+                                   [("color4", 8)], unplayed_cards)
+
+        unplayed_cards = make_troop_card_list([("color1", 10), ("color4", 9), ("color4", 8),
+                                                ("color2", 3), ("color2", 4), ("color3", 5)])
+        self.assert_best_formation([ ("color4", 9), ("color4", 8), ("color1", 10),],
+                                   [], unplayed_cards)
+
+    def test_get_best_formation_host(self):
+        unplayed_cards = make_troop_card_list([("color1", 10), ("color4", 8),
+                                                ("color2", 3),  ("color3", 5)])
+        self.assert_best_formation([("color5",10), ("color5", 8), ("color1", 10)],
+                                   [("color5", 10), ("color5", 8)], unplayed_cards)
+        self.assert_best_formation([("color5",10), ("color4", 8), ("color1", 10)],
+                                   [("color5", 10)], unplayed_cards)
+        self.assert_best_formation([("color4",8), ("color3", 5), ("color1", 10)],
+                                   [], unplayed_cards)
 
     """test_greatestPossibleFormation
 
