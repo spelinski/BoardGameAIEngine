@@ -21,17 +21,19 @@ class FormationLogic:
 
     def __get_best_option(self, options, unplayed_cards):
 
-            max_strength_formation = [TroopCard(color=color, number=number) for color,number in itertools.product([Identifiers.COLORS], [1,1,0])]
-            for a in self.__get_options(options, 0, unplayed_cards):
-                next_unplayed_cards = [c for c in unplayed_cards if c != a ]
-                for b in self.__get_options(options, 1, next_unplayed_cards):
-                    still_unplayed_cards = [c for c in next_unplayed_cards if c != b ]
-                    for c in self.__get_options(options, 2, still_unplayed_cards):
-                        formation = a + b + c
-                        if Formation(formation).is_greater_strength_than(Formation(max_strength_formation)):
-                            max_strength_formation = formation
-            return sorted(max_strength_formation, key=lambda x: (
-                x[1], x[0]), reverse=True)
+        max_strength_formation = [TroopCard(color=color, number=number)
+                                  for color, number in itertools.product([Identifiers.COLORS], [1, 1, 0])]
+        for a in self.__get_options(options, 0, unplayed_cards):
+            next_unplayed_cards = [c for c in unplayed_cards if c != a]
+            for b in self.__get_options(options, 1, next_unplayed_cards):
+                still_unplayed_cards = [
+                    c for c in next_unplayed_cards if c != b]
+                for c in self.__get_options(options, 2, still_unplayed_cards):
+                    formation = a + b + c
+                    if Formation(formation).is_greater_strength_than(Formation(max_strength_formation)):
+                        max_strength_formation = formation
+        return sorted(max_strength_formation, key=lambda x: (
+            x[1], x[0]), reverse=True)
 
     def __get_options(self, options, index, unplayed_cards):
         return [options[index - 1]] if len(options) > index else [[c] for c in unplayed_cards]
