@@ -25,14 +25,15 @@ class FormationLogic:
             max_formation = self.__get_minimum_strength_formation()
             for card in unplayed_cards:
                 new_cards = options + [card]
-                formation = self.__get_best_option(new_cards, self.__filter_out(unplayed_cards, card))
+                formation = self.__get_best_option(
+                    new_cards, self.__filter_out(unplayed_cards, card))
                 if Formation(formation).is_greater_strength_than(Formation(max_formation)):
                     max_formation = formation
         return sorted(max_formation, key=lambda x: (x[1], x[0]), reverse=True)
 
     def __get_minimum_strength_formation(self):
         return [TroopCard(color=color, number=number)
-                                  for color, number in itertools.product([Identifiers.COLORS[0]], [1, 1, 0])]
+                for color, number in itertools.product([Identifiers.COLORS[0]], [1, 1, 0])]
 
     def __filter_out(self, list, item):
         return [c for c in list if c.color != item.color or c.number != item.number]
