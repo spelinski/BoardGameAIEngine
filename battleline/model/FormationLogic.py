@@ -12,7 +12,6 @@ class FormationLogic:
     def getTheBetterFormation(self, formation1, formation2):
         return formation1 if Formation(formation1).is_greater_strength_than(Formation(formation2)) else formation2
 
-
     def is_equivalent_in_strength(self, formation1, formation2):
         return Formation(formation1).is_equivalent_in_strength(Formation(formation2))
 
@@ -20,13 +19,13 @@ class FormationLogic:
         return self.__get_best_option([[card] for card in current_formation], unplayed_cards)
 
     def __get_best_option(self, options, unplayed_cards):
-
         max_strength_formation = [TroopCard(color=color, number=number)
-                                  for color, number in itertools.product([Identifiers.COLORS], [1, 1, 0])]
+                                  for color, number in itertools.product([Identifiers.COLORS[0]], [1, 1, 0])]
         for a in self.__get_options(options, 0, unplayed_cards):
             next_unplayed_cards = self.__filter_out(unplayed_cards, a)
             for b in self.__get_options(options, 1, next_unplayed_cards):
-                still_unplayed_cards = self.__filter_out(next_unplayed_cards, b)
+                still_unplayed_cards = self.__filter_out(
+                    next_unplayed_cards, b)
                 for c in self.__get_options(options, 2, still_unplayed_cards):
                     formation = [a, b, c]
                     if Formation(formation).is_greater_strength_than(Formation(max_strength_formation)):
