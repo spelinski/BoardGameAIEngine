@@ -24,7 +24,9 @@ class TestFormationLogic(unittest.TestCase):
                 TroopCard(color="color1", number=3),
                 TroopCard(color="color3", number=5),
                 TroopCard(color="color1", number=2),
-                TroopCard(color="color1", number=1)]
+                TroopCard(color="color1", number=1),
+                TroopCard(color="color2", number=1),
+                TroopCard(color="color3", number=1)]
 
     def test_get_best_formation_wedge(self):
         unplayed_cards = self.__get_base_cards()
@@ -44,6 +46,17 @@ class TestFormationLogic(unittest.TestCase):
 
         self.assertEquals([TroopCard(color="color1", number=3), TroopCard(color="color1", number=2), TroopCard(color="color1", number=1)],
                           self.logic.get_best_formation([], unplayed_cards))
+
+    def test_get_best_formation_phalanax(self):
+        unplayed_cards = self.__get_base_cards()
+
+        self.assertEquals([TroopCard(color="color3", number=7), TroopCard(color="color2", number=7), TroopCard(color="color1", number=7)],
+                          self.logic.get_best_formation([TroopCard(color="color2", number=7), TroopCard(color="color3", number=7)], unplayed_cards))
+
+        print self.logic.get_best_formation([TroopCard(color="color3", number=10)], unplayed_cards)
+        self.assertEquals([TroopCard(color="color3", number=10), TroopCard(color="color2", number=10), TroopCard(color="color1", number=10)],
+                  self.logic.get_best_formation([TroopCard(color="color3", number=10)], unplayed_cards))
+
 
     """test_greatestPossibleFormation
 
