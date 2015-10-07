@@ -46,6 +46,7 @@ class BoardLogic:
                 self.winner = player
 
     def __check_for_breakthrough(self):
+        #>>> [i for i in [list(g) for k,g in itertools.groupby([1,1,0,0,1,1,1,0,0])] if len(i) >= 3]
         pass
 
     def is_game_over(self):
