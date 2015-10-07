@@ -2,7 +2,7 @@ import unittest
 from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
 from battleline.model.Formation import FormationInvalidError
-from battleline.Identifiers import Identifiers
+from battleline.Identifiers import Identifiers, TroopCard
 from itertools import product
 
 COLORS = Identifiers.COLORS
@@ -15,6 +15,22 @@ class TestFormationLogic(unittest.TestCase):
         self.logic = FormationLogic()
         self.fullList = [(number, color)
                          for color, number in product(COLORS, range(1, 11))]
+
+    def __get_base_cards(self):
+        return  [TroopCard(color="color1", number=10),TroopCard(color="color1", number=7), TroopCard(color="color1", number=6),
+                 TroopCard(color="color2", number=10), TroopCard(color="color1", number=3), TroopCard(color="color3", number=5),
+                 TroopCard(color="color1", number=5)]
+
+    def test_get_best_formation_wedge(self):
+        unplayed_cards = self.__get_base_cards()
+        self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)],
+                      self.logic.get_best_formation([TroopCard(color="color1", number=10), TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)], unplayed_cards))
+
+        self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)],
+                      self.logic.get_best_formation([TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)], unplayed_cards))
+
+        #del unplayed_cards[]
+
 
     """test_greatestPossibleFormation
 
