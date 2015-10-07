@@ -1,4 +1,6 @@
 from collections import namedtuple
+import itertools
+
 """
 Global Identifiers
 
@@ -6,7 +8,6 @@ Global Identifiers
 'tactic' can be any of ['Alexander','Darius','cavalry','shield','traitor','deserter','redeploy','scout','fog','mud']
 """
 TroopCard = namedtuple("TroopCard", ["number", "color"])
-
 
 def get_card_string(card):
     return "{},{}".format(card.color, card.number)
