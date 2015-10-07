@@ -1,69 +1,67 @@
 from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
 from battleline.Identifiers import Identifiers
-from collections import namedtuple
-TroopCard = namedtuple("TroopCard", ["number", "color"])
-
-COLORS = Identifiers.COLORS
+from itertools import product
 
 
 class BoardLogic:
 
     def __init__(self):
+        """
+        Constructor
+        """
         self.playedCardList = []
         self.formationLogic = FormationLogic()
         self.board = Board()
 
     def addCard(self, flag, player, card):
+        """
+        add card to players side of the flag
+        @param flag the flag being added to
+        @param player direction string north/south
+        @param card the card to be added
+        """
         self.board.flags[flag].add_card(player, card)
         self.playedCardList.append(card)
         self.checkAllFlags(player)
 
     def is_flag_playable(self, flag_index, direction):
+        """
+        Check if a flag can be played on
+        @param flag_index the index of the flag being checked
+        @param direction the side of the flag to check
+        """
         return self.board.flags[flag_index].is_playable(direction)
 
     def checkAllFlags(self, latestPlayer):
-        # get the best possible formation for an empty set because there should
-        # be a lot of those requested
-        unclaimedFlags = (
-            flag for flag in self.board.flags if not flag.is_claimed())
-        for flag in unclaimedFlags:
-            for player in [Identifiers.NORTH, Identifiers.SOUTH]:
-                if len(flag.get_cards(player)) == 3:
-                    self.__try_to_claim_flag(flag, player, latestPlayer)
-
-    def __try_to_claim_flag(self, flag, player, latestPlayer):
-        enemy = self.__get_enemy(player)
+        """
+        iterates through all of the unclaimed flags checking to see if anymore can be claimed
+        @param latestPlayer the last player that has played a card
+        """
+        self.latestPlayer = latestPlayer
+        unclaimedFlags = (flag for flag in self.board.flags if not flag.is_claimed())
+        for flag,player in product(unclaimedFlags, [Identifiers.NORTH, Identifiers.SOUTH]):
+            self.__check_individual_flag(flag, player)
+            
+    def __check_individual_flag(self, flag, player):
+        """
+        check if the individual flag is ready to be claimed
+        @param flag the flag to be checked
+        @param player which player to see if they can claim it
+        """
         playerCards = flag.get_cards(player)
-        enemyCards = flag.get_cards(enemy)
-        # the flag needs to be checked
-        if len(enemyCards) == 0:
-            bestFormationPossible = self.formationLogic.greatestPossibleFormation(
-                [], self.playedCardList)
-            self.__claim_flag_if_player_formation_is_best()
-        else:
-            bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
-                enemyCards, self.playedCardList)
-            self.__claim_flag_if_player_formation_is_best(
-                playerCards, bestEnemyFormation, flag, player)
-            # if self.__is_current_player_formation_best(playerCards, bestEnemyFormation):
-            #   flag.claim(player)
-            # Need to think about changing getTheBetterFormation to not depend
-            # on which is passed first to dectect equal strength
-            if self.__is_enemy_formation_best(playerCards, bestEnemyFormation) and self.__is_enemy_formation_best(bestEnemyFormation, playerCards):
-                # the latestPlayer loses
-                if latestPlayer != player:
+        if len(playerCards) == flag.MAX_CARDS_PER_SIDE:
+            enemyCards = flag.get_cards(self.__get_enemy(player))
+            bestEnemyFormation = self.formationLogic.greatestPossibleFormation(enemyCards, self.playedCardList)
+            if self.formationLogic.is_equivalent_in_strength(playerCards, bestEnemyFormation):
+                if len(enemyCards) != 3 or self.latestPlayer != player:
                     flag.claim(player)
-
-    def __claim_flag_if_player_formation_is_best(self, playerCards, bestEnemyFormation, flag, player):
-        if self.__is_current_player_formation_best(playerCards, bestEnemyFormation):
-            flag.claim(player)
-
-    def __is_current_player_formation_best(self, playerCards, bestEnemyFormation):
-        return (self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards)
-
-    def __is_enemy_formation_best(self, playerCards, bestEnemyFormation):
-        return (self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == bestEnemyFormation)
+            elif self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards:
+                flag.claim(player)
 
     def __get_enemy(self, player):
+        """
+        get the other player than the one given
+        @param player
+        """
         return Identifiers.SOUTH if (player == Identifiers.NORTH) else Identifiers.NORTH

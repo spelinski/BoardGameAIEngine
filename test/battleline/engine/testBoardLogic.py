@@ -1,7 +1,7 @@
 import unittest
 from battleline.engine.BoardLogic import BoardLogic
 from battleline.model.FormationLogic import FormationLogic
-from battleline.model.Flag import TooManyCardsOnOneSideError, FlagAlreadyClaimedError
+from battleline.model.Flag import FlagAlreadyClaimedError
 from battleline.Identifiers import Identifiers
 
 
@@ -22,6 +22,31 @@ class TestBoardLogic(unittest.TestCase):
         self.boardLogic.checkAllFlags(Identifiers.NORTH)
         for flag in self.boardLogic.board.flags:
             self.assertEquals(flag.is_claimed(), False)
+            
+    def test_check_all_flags_one_side_empty_no_claim(self):
+        self.boardLogic.addCard(0, Identifiers.NORTH, (1, "blue"))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (3, "green"))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (5, "red"))
+        self.assertNotEqual(self.boardLogic.board.flags[0].claimed, Identifiers.NORTH)
+        self.assertNotEqual(self.boardLogic.board.flags[0].claimed, Identifiers.SOUTH)
+        
+    def test_check_all_flags_one_side_empty_north_winner(self):
+        for i,colors in enumerate(Identifiers.COLORS):
+            if i+1 != len(Identifiers.COLORS):
+                self.boardLogic.addCard(i, Identifiers.NORTH, (8, colors))
+                self.boardLogic.addCard(i, Identifiers.NORTH, (9, colors))
+                self.boardLogic.addCard(i, Identifiers.SOUTH, (10, colors))
+            else:
+                self.boardLogic.addCard(i, Identifiers.NORTH, (8, colors))
+                self.boardLogic.addCard(i, Identifiers.NORTH, (9, colors))
+                self.boardLogic.addCard(i, Identifiers.NORTH, (10, colors))
+        self.assertEqual(self.boardLogic.board.flags[i].claimed, Identifiers.NORTH)
+    
+    def test_check_all_flags_one_side_empty_north_winner_formation_equivalent(self):
+        self.boardLogic.addCard(0, Identifiers.NORTH, (8, Identifiers.COLORS[0]))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (9, Identifiers.COLORS[0]))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (10, Identifiers.COLORS[0]))
+        self.assertEqual(self.boardLogic.board.flags[0].claimed, Identifiers.NORTH)
 
     """test_checkAllFlags_FlagContested_basic
 

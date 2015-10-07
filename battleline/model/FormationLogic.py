@@ -9,6 +9,9 @@ class FormationLogic:
 
     def getTheBetterFormation(self, formation1, formation2):
         return formation1 if Formation(formation1).is_greater_strength_than(Formation(formation2)) else formation2
+    
+    def is_equivalent_in_strength(self, formation1, formation2):
+        return Formation(formation1).is_equivalent_in_strength(Formation(formation2))
 
 
     def greatestPossibleFormation(self, listOfCards, playedCardList):
