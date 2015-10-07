@@ -13,14 +13,35 @@ class BoardLogic:
         self.playedCardList = []
         self.formationLogic = FormationLogic()
         self.board = Board()
+        self.winner = None
 
     def addCard(self, flag, player, card):
         self.board.flags[flag].add_card(player, card)
         self.playedCardList.append(card)
         self.checkAllFlags(player)
+        self.__check_winning_conditions()
 
     def is_flag_playable(self, flag_index, direction):
         return self.board.flags[flag_index].is_playable(direction)
+
+    def __check_winning_conditions(self):
+        self.__check_for_envelopment()
+        self.__check_for_breakthrough()
+
+    def __check_for_envelopment(self):
+        for player in [Identifiers.NORTH, Identifiers.SOUTH]:
+            numClaimedFlags = len(filter( lambda flag: flag.is_claimed_by_player(player), self.board.flags))
+            if numClaimedFlags == 5:
+                self.winner = player
+
+    def __check_for_breakthrough(self):
+        pass
+
+    def is_game_over(self):
+        return self.winner != None
+
+    def get_game_winner(self):
+        return self.winner
 
     def checkAllFlags(self, latestPlayer):
         # get the best possible formation for an empty set because there should
