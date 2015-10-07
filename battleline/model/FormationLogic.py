@@ -32,8 +32,8 @@ class FormationLogic:
         return sorted(max_formation, key=lambda x: (x[1], x[0]), reverse=True)
 
     def __get_minimum_strength_formation(self):
-        return [TroopCard(color=color, number=number)
-                for color, number in itertools.product([Identifiers.COLORS[0]], [1, 1, 0])]
+        return [TroopCard(1, Identifiers.COLORS[0]), TroopCard(1, Identifiers.COLORS[1]), TroopCard(0, Identifiers.COLORS[0])]
+                
 
     def __filter_out(self, list, item):
         return [c for c in list if c.color != item.color or c.number != item.number]
