@@ -151,3 +151,10 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals([TroopCard(color="color1", number=2),
                            TroopCard(color="color1", number=4)],
                           self.engine.board_logic.board.get_flag(1).sides[Identifiers.SOUTH])
+
+    def test_unplayed_cards_after_initialization(self):
+        expected_cards = set(self.engine.get_troop_cards())
+        self.assertEquals(expected_cards, set(self.engine.get_unplayed_cards()))
+        self.__play_turn()
+        expected_cards = expected_cards - set([TroopCard(color="color1", number=1), TroopCard(color="color1", number=2)])
+        self.assertEquals(expected_cards, set(self.engine.get_unplayed_cards()))
