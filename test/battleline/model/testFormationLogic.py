@@ -18,8 +18,8 @@ class TestFormationLogic(unittest.TestCase):
 
     def __get_base_cards(self):
         return [TroopCard(color="color1", number=10),
-               TroopCard(color="color1", number=7),
-               TroopCard(color="color1", number=6),
+                TroopCard(color="color1", number=7),
+                TroopCard(color="color1", number=6),
                 TroopCard(color="color2", number=10),
                 TroopCard(color="color1", number=3),
                 TroopCard(color="color3", number=5),
@@ -39,17 +39,11 @@ class TestFormationLogic(unittest.TestCase):
         self.assertEquals([TroopCard(color="color1", number=9), TroopCard(color="color1", number=8), TroopCard(color="color1", number=7)],
                           self.logic.get_best_formation([TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)], unplayed_cards))
 
-
         self.assertEquals([TroopCard(color="color1", number=8), TroopCard(color="color1", number=7), TroopCard(color="color1", number=6)],
                           self.logic.get_best_formation([TroopCard(color="color1", number=8)], unplayed_cards))
 
-
         self.assertEquals([TroopCard(color="color1", number=3), TroopCard(color="color1", number=2), TroopCard(color="color1", number=1)],
                           self.logic.get_best_formation([], unplayed_cards))
-
-
-
-
 
     """test_greatestPossibleFormation
 
