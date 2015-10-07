@@ -39,10 +39,11 @@ class BoardLogic:
         @param latestPlayer the last player that has played a card
         """
         self.latestPlayer = latestPlayer
-        unclaimedFlags = (flag for flag in self.board.flags if not flag.is_claimed())
-        for flag,player in product(unclaimedFlags, [Identifiers.NORTH, Identifiers.SOUTH]):
+        unclaimedFlags = (
+            flag for flag in self.board.flags if not flag.is_claimed())
+        for flag, player in product(unclaimedFlags, [Identifiers.NORTH, Identifiers.SOUTH]):
             self.__check_individual_flag(flag, player)
-            
+
     def __check_individual_flag(self, flag, player):
         """
         check if the individual flag is ready to be claimed
@@ -52,7 +53,8 @@ class BoardLogic:
         playerCards = flag.get_cards(player)
         if len(playerCards) == flag.MAX_CARDS_PER_SIDE:
             enemyCards = flag.get_cards(self.__get_enemy(player))
-            bestEnemyFormation = self.formationLogic.greatestPossibleFormation(enemyCards, self.playedCardList)
+            bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
+                enemyCards, self.playedCardList)
             if self.formationLogic.is_equivalent_in_strength(playerCards, bestEnemyFormation):
                 if len(enemyCards) != 3 or self.latestPlayer != player:
                     flag.claim(player)
