@@ -164,3 +164,10 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                            "flag 9 cards north", "flag 9 cards south", "go play-card"
                            ],
                           self.engine.player2.communication.messages_received[2:])
+
+    def test_unplayed_cards_after_initialization(self):
+        expected_cards = set(self.engine.get_troop_cards())
+        self.assertEquals(expected_cards, set(self.engine.get_unplayed_cards()))
+        self.__play_turn()
+        expected_cards = expected_cards - set([TroopCard(color="color1", number=1), TroopCard(color="color1", number=2)])
+        self.assertEquals(expected_cards, set(self.engine.get_unplayed_cards()))

@@ -41,6 +41,13 @@ class BattlelineEngine(object):
         """
         return [TroopCard(number, color) for color, number in product(Identifiers.COLORS, range(1, 11))]
 
+    def get_unplayed_cards(self):
+        """
+        get all cards that have not been played yet
+        @return all unplayed cards
+        """
+        return self.troop_deck.deck + self.player1.hand + self.player2.hand
+
     def progress_turn(self):
         """
         Perform one turn
