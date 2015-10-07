@@ -2,6 +2,7 @@ from Board import Board
 from battleline.Identifiers import Identifiers
 from Formation import Formation
 
+
 class FormationLogic:
 
     def __init__(self):
@@ -10,6 +11,8 @@ class FormationLogic:
     def getTheBetterFormation(self, formation1, formation2):
         return formation1 if Formation(formation1).is_greater_strength_than(Formation(formation2)) else formation2
 
+    def is_equivalent_in_strength(self, formation1, formation2):
+        return Formation(formation1).is_equivalent_in_strength(Formation(formation2))
 
     def greatestPossibleFormation(self, listOfCards, playedCardList):
         if len(listOfCards) == 3:
@@ -193,22 +196,24 @@ class FormationLogic:
                 # find a number in any color that is 1 more than the larger one
                 for color in Identifiers.COLORS:
                     if (largerCardNumber - 1, color) not in playedCardList:
-                        return [listOfCards[0],listOfCards[1],(largerCardNumber - 1, color)]
+                        return [listOfCards[0], listOfCards[1], (largerCardNumber - 1, color)]
             elif largerCardNumber == smallerCardNumber + 1:
-                #look for a number 1 larger than largerCardNumber, or 1 smaller than smallerCardNumber
+                # look for a number 1 larger than largerCardNumber, or 1
+                # smaller than smallerCardNumber
                 if largerCardNumber != 10:
-                    # find a number in any color that is 1 more than the larger one
+                    # find a number in any color that is 1 more than the larger
+                    # one
                     for color in Identifiers.COLORS:
                         if (largerCardNumber + 1, color) not in playedCardList:
-                            return [listOfCards[0],listOfCards[1],(largerCardNumber + 1, color)]
+                            return [listOfCards[0], listOfCards[1], (largerCardNumber + 1, color)]
                 if smallerCardNumber != 1:
                     # find a number in any color that is 1 less than the smaller
                     # one
                     for color in Identifiers.COLORS:
                         if (smallerCardNumber - 1, color) not in playedCardList:
-                            return [listOfCards[0],listOfCards[1],(smallerCardNumber - 1, color)]
+                            return [listOfCards[0], listOfCards[1], (smallerCardNumber - 1, color)]
             return []
-                    
+
         if len(listOfCards) == 1:
             number, color = listOfCards[0]
             listOfNeededNumbers = []
