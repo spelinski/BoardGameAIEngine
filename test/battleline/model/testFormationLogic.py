@@ -19,7 +19,6 @@ def get_base_cards():
                                  ("color1", 2), ("color1", 1),
                                  ("color2", 1), ("color3", 1)])
 
-
 class TestFormationLogic(unittest.TestCase):
 
     def setUp(self):
@@ -35,48 +34,40 @@ class TestFormationLogic(unittest.TestCase):
 
     def test_get_best_formation_wedge(self):
         unplayed_cards = get_base_cards()
-        self.assert_best_formation([("color1", 10), ("color1", 9), ("color1", 8)], [
-                                   ("color1", 10), ("color1", 9), ("color1", 8)], unplayed_cards)
-
-        self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)],
-                          self.logic.get_best_formation([TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)], unplayed_cards))
+        self.assert_best_formation([("color1", 10), ("color1", 9), ("color1", 8)],
+                                   [("color1", 10), ("color1", 9), ("color1", 8)], unplayed_cards)
+        self.assert_best_formation([("color1", 10), ("color1", 9), ("color1", 8)],
+                                   [("color1", 9), ("color1", 8)], unplayed_cards)
 
         del unplayed_cards[0]
-
-        self.assertEquals([TroopCard(color="color1", number=9), TroopCard(color="color1", number=8), TroopCard(color="color1", number=7)],
-                          self.logic.get_best_formation([TroopCard(color="color1", number=9), TroopCard(color="color1", number=8)], unplayed_cards))
-
-        self.assertEquals([TroopCard(color="color1", number=8), TroopCard(color="color1", number=7), TroopCard(color="color1", number=6)],
-                          self.logic.get_best_formation([TroopCard(color="color1", number=8)], unplayed_cards))
-
-        self.assertEquals([TroopCard(color="color1", number=3), TroopCard(color="color1", number=2), TroopCard(color="color1", number=1)],
-                          self.logic.get_best_formation([], unplayed_cards))
+        self.assert_best_formation([("color1", 9), ("color1", 8), ("color1", 7)],
+                                   [("color1", 9), ("color1", 8)], unplayed_cards)
+        self.assert_best_formation([("color1", 8), ("color1", 7), ("color1", 6)],
+                                   [("color1", 8)], unplayed_cards)
+        self.assert_best_formation([("color1", 3), ("color1", 2), ("color1", 1)],
+                                   [], unplayed_cards)
 
     def test_get_best_formation_phalanax(self):
         unplayed_cards = get_base_cards()
-
-        self.assertEquals([TroopCard(color="color3", number=7), TroopCard(color="color2", number=7), TroopCard(color="color1", number=7)],
-                          self.logic.get_best_formation([TroopCard(color="color2", number=7), TroopCard(color="color3", number=7)], unplayed_cards))
-
-        self.assertEquals([TroopCard(color="color3", number=10), TroopCard(color="color2", number=10), TroopCard(color="color1", number=10)],
-                          self.logic.get_best_formation([TroopCard(color="color3", number=10)], unplayed_cards))
+        self.assert_best_formation([("color3", 7), ("color2", 7), ("color1", 7)],
+                                   [ ("color3", 7), ("color2", 7)], unplayed_cards)
+        self.assert_best_formation([("color3", 10), ("color2", 10), ("color1", 10)],
+                                   [ ("color3", 10)], unplayed_cards)
 
         unplayed_cards = [c for c in unplayed_cards if c.number != 2]
-        self.assertEquals([TroopCard(color="color3", number=1), TroopCard(color="color2", number=1), TroopCard(color="color1", number=1)],
-                          self.logic.get_best_formation([], unplayed_cards))
+        self.assert_best_formation([("color3", 1), ("color2", 1), ("color1", 1)],
+                                   [], unplayed_cards)
 
     def test_get_best_formation_battalion(self):
         unplayed_cards = get_base_cards()
-
-        self.assertEquals([TroopCard(color="color2", number=10), TroopCard(color="color2", number=8), TroopCard(color="color2", number=7)],
-                          self.logic.get_best_formation([TroopCard(color="color2", number=8), TroopCard(color="color2", number=7)], unplayed_cards))
-
-        self.assertEquals([TroopCard(color="color3", number=5), TroopCard(color="color3", number=3), TroopCard(color="color3", number=1)],
-                          self.logic.get_best_formation([TroopCard(color="color3", number=3)], unplayed_cards))
+        self.assert_best_formation([("color2", 10), ("color2", 8), ("color2", 7)],
+                           [ ("color2", 8), ("color2", 7)], unplayed_cards)
+        self.assert_best_formation([("color3", 5), ("color3", 3), ("color3", 1)],
+                           [ ("color3", 3)], unplayed_cards)
 
         unplayed_cards = [c for c in unplayed_cards if c.number != 1]
-        self.assertEquals([TroopCard(color="color1", number=10), TroopCard(color="color1", number=7), TroopCard(color="color1", number=6)],
-                          self.logic.get_best_formation([], unplayed_cards))
+        self.assert_best_formation([("color1", 10), ("color1", 7), ("color1", 6)],
+                           [], unplayed_cards)
 
     """test_greatestPossibleFormation
 
