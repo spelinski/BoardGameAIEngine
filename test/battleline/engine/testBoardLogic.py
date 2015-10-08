@@ -2,18 +2,22 @@ import unittest
 from battleline.engine.BoardLogic import BoardLogic
 from battleline.model.FormationLogic import FormationLogic
 from battleline.model.Flag import FlagAlreadyClaimedError
-from battleline.Identifiers import Identifiers,TroopCard
+from battleline.Identifiers import Identifiers, TroopCard
 import itertools
 
+
 class MockEngine(object):
+
     def __init__(self):
         self.played_cards = []
 
     def get_unplayed_cards(self):
         return set(get_all_cards()) - set(self.played_cards)
 
+
 def get_all_cards():
-    return [TroopCard(number, color) for number,color in itertools.product(range(1,11), Identifiers.COLORS)]
+    return [TroopCard(number, color) for number, color in itertools.product(range(1, 11), Identifiers.COLORS)]
+
 
 class TestBoardLogic(unittest.TestCase):
 
@@ -25,7 +29,8 @@ class TestBoardLogic(unittest.TestCase):
 
     def addCard(self, flag, player, card):
         self.boardLogic.addCard(flag, player, card)
-        self.engine.played_cards.append(TroopCard(number=card[0], color=card[1]))
+        self.engine.played_cards.append(
+            TroopCard(number=card[0], color=card[1]))
     """test_checkAllFlags_empty
 
     test if the checkAllFlags function will work on an empty board
@@ -62,11 +67,11 @@ class TestBoardLogic(unittest.TestCase):
 
     def test_check_all_flags_one_side_empty_north_winner_formation_equivalent(self):
         self.addCard(0, Identifiers.NORTH,
-                                TroopCard(8, Identifiers.COLORS[0]))
+                     TroopCard(8, Identifiers.COLORS[0]))
         self.addCard(0, Identifiers.NORTH,
-                                TroopCard(9, Identifiers.COLORS[0]))
+                     TroopCard(9, Identifiers.COLORS[0]))
         self.addCard(0, Identifiers.NORTH,
-                                TroopCard(10, Identifiers.COLORS[0]))
+                     TroopCard(10, Identifiers.COLORS[0]))
         self.boardLogic.checkAllFlags()
         self.assertEqual(self.boardLogic.board.flags[
                          0].claimed, Identifiers.NORTH)
@@ -155,7 +160,8 @@ class TestBoardLogic(unittest.TestCase):
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
 
-        self.boardLogic.board.get_flag(1).sides[Identifiers.NORTH] = [TroopCard(1, "color1"), TroopCard(2, "color1"), TroopCard(3, "color1")]
+        self.boardLogic.board.get_flag(1).sides[Identifiers.NORTH] = [TroopCard(
+            1, "color1"), TroopCard(2, "color1"), TroopCard(3, "color1")]
         self.boardLogic.checkAllFlags()
         self.assertFalse(
             self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
