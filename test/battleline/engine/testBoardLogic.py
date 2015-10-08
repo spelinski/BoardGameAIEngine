@@ -1,7 +1,9 @@
 import unittest
 from battleline.engine.BoardLogic import BoardLogic
 from battleline.model.FormationLogic import FormationLogic
-from battleline.model.Flag import TooManyCardsOnOneSideError, FlagAlreadyClaimedError
+from battleline.model.Flag import FlagAlreadyClaimedError
+from battleline.Identifiers import Identifiers
+
 
 class TestBoardLogic(unittest.TestCase):
 
@@ -17,9 +19,41 @@ class TestBoardLogic(unittest.TestCase):
     """
 
     def test_checkAllFlags_empty(self):
-        self.boardLogic.checkAllFlags(self.boardLogic.PLAYER_NORTH)
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         for flag in self.boardLogic.board.flags:
-	        self.assertEquals(flag.is_claimed(),False)
+            self.assertEquals(flag.is_claimed(), False)
+
+    def test_check_all_flags_one_side_empty_no_claim(self):
+        self.boardLogic.addCard(0, Identifiers.NORTH, (1, "blue"))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (3, "green"))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (5, "red"))
+        self.assertNotEqual(self.boardLogic.board.flags[
+                            0].claimed, Identifiers.NORTH)
+        self.assertNotEqual(self.boardLogic.board.flags[
+                            0].claimed, Identifiers.SOUTH)
+
+    def test_check_all_flags_one_side_empty_north_winner(self):
+        for i, colors in enumerate(Identifiers.COLORS):
+            if i + 1 != len(Identifiers.COLORS):
+                self.boardLogic.addCard(i, Identifiers.NORTH, (8, colors))
+                self.boardLogic.addCard(i, Identifiers.NORTH, (9, colors))
+                self.boardLogic.addCard(i, Identifiers.SOUTH, (10, colors))
+            else:
+                self.boardLogic.addCard(i, Identifiers.NORTH, (8, colors))
+                self.boardLogic.addCard(i, Identifiers.NORTH, (9, colors))
+                self.boardLogic.addCard(i, Identifiers.NORTH, (10, colors))
+        self.assertEqual(self.boardLogic.board.flags[
+                         i].claimed, Identifiers.NORTH)
+
+    def test_check_all_flags_one_side_empty_north_winner_formation_equivalent(self):
+        self.boardLogic.addCard(0, Identifiers.NORTH,
+                                (8, Identifiers.COLORS[0]))
+        self.boardLogic.addCard(0, Identifiers.NORTH,
+                                (9, Identifiers.COLORS[0]))
+        self.boardLogic.addCard(0, Identifiers.NORTH,
+                                (10, Identifiers.COLORS[0]))
+        self.assertEqual(self.boardLogic.board.flags[
+                         0].claimed, Identifiers.NORTH)
 
     """test_checkAllFlags_FlagContested_basic
 
@@ -28,42 +62,44 @@ class TestBoardLogic(unittest.TestCase):
 
     def test_checkAllFlags_FlagContested_basic(self):
         # flag 1: 10-9-8 vs 1-2-3
-        self.boardLogic.addCard(0,self.boardLogic.PLAYER_NORTH,(10, 'blue'))
-        self.boardLogic.addCard(0,self.boardLogic.PLAYER_SOUTH,(1, 'blue'))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (10, 'blue'))
+        self.boardLogic.addCard(0, Identifiers.SOUTH, (1, 'blue'))
 
-        self.boardLogic.addCard(0,self.boardLogic.PLAYER_NORTH,(9, 'blue'))
-        self.boardLogic.addCard(0,self.boardLogic.PLAYER_SOUTH,(2, 'blue'))
+        self.boardLogic.addCard(0, Identifiers.NORTH, (9, 'blue'))
+        self.boardLogic.addCard(0, Identifiers.SOUTH, (2, 'blue'))
 
-        self.boardLogic.addCard(0,self.boardLogic.PLAYER_NORTH,(8, 'blue'))
-        with self.assertRaisesRegexp(FlagAlreadyClaimedError, "Player South is attempting to place card on already claimed flag."):
-            self.boardLogic.addCard(0,self.boardLogic.PLAYER_SOUTH,(3, 'blue'))
-        self.assertEqual(self.boardLogic.board.flags[0].claimed, self.boardLogic.PLAYER_NORTH)
+        self.boardLogic.addCard(0, Identifiers.NORTH, (8, 'blue'))
+        with self.assertRaisesRegexp(FlagAlreadyClaimedError, "south is attempting to place card on already claimed flag."):
+            self.boardLogic.addCard(0, Identifiers.SOUTH, (3, 'blue'))
+        self.assertEqual(self.boardLogic.board.flags[
+                         0].claimed, Identifiers.NORTH)
 
         # flag 2: 10R-9R-8R vs 1-2-3
-        self.boardLogic.addCard(1,self.boardLogic.PLAYER_SOUTH,(1, 'red'))
-        self.boardLogic.addCard(1,self.boardLogic.PLAYER_NORTH,(10, 'red'))
+        self.boardLogic.addCard(1, Identifiers.SOUTH, (1, 'red'))
+        self.boardLogic.addCard(1, Identifiers.NORTH, (10, 'red'))
 
-        self.boardLogic.addCard(1,self.boardLogic.PLAYER_SOUTH,(2, 'red'))
-        self.boardLogic.addCard(1,self.boardLogic.PLAYER_NORTH,(9, 'red'))
+        self.boardLogic.addCard(1, Identifiers.SOUTH, (2, 'red'))
+        self.boardLogic.addCard(1, Identifiers.NORTH, (9, 'red'))
 
-        self.boardLogic.addCard(1,self.boardLogic.PLAYER_SOUTH,(3, 'red'))
-        self.boardLogic.addCard(1,self.boardLogic.PLAYER_NORTH,(8, 'red'))
-        self.assertEqual(self.boardLogic.board.flags[1].claimed, self.boardLogic.PLAYER_NORTH)
-
+        self.boardLogic.addCard(1, Identifiers.SOUTH, (3, 'red'))
+        self.boardLogic.addCard(1, Identifiers.NORTH, (8, 'red'))
+        self.assertEqual(self.boardLogic.board.flags[
+                         1].claimed, Identifiers.NORTH)
 
         # flag 3: 10-9-_ vs 1-2-3 (8 is played on flag 9)
-        self.boardLogic.addCard(8,self.boardLogic.PLAYER_SOUTH,(8, 'green'))
+        self.boardLogic.addCard(8, Identifiers.SOUTH, (8, 'green'))
 
-        self.boardLogic.addCard(2,self.boardLogic.PLAYER_NORTH,(10, 'green'))
-        self.boardLogic.addCard(2,self.boardLogic.PLAYER_SOUTH,(1, 'green'))
+        self.boardLogic.addCard(2, Identifiers.NORTH, (10, 'green'))
+        self.boardLogic.addCard(2, Identifiers.SOUTH, (1, 'green'))
 
-        self.boardLogic.addCard(2,self.boardLogic.PLAYER_NORTH,(9, 'green'))
-        self.boardLogic.addCard(2,self.boardLogic.PLAYER_SOUTH,(2, 'green'))
+        self.boardLogic.addCard(2, Identifiers.NORTH, (9, 'green'))
+        self.boardLogic.addCard(2, Identifiers.SOUTH, (2, 'green'))
 
-        self.boardLogic.addCard(8,self.boardLogic.PLAYER_NORTH,(5, 'blue'))
-        self.boardLogic.addCard(2,self.boardLogic.PLAYER_SOUTH,(3, 'green'))
+        self.boardLogic.addCard(8, Identifiers.NORTH, (5, 'blue'))
+        self.boardLogic.addCard(2, Identifiers.SOUTH, (3, 'green'))
 
-        self.assertEqual(self.boardLogic.board.flags[2].claimed, self.boardLogic.PLAYER_SOUTH)
+        self.assertEqual(self.boardLogic.board.flags[
+                         2].claimed, Identifiers.SOUTH)
 
     """test_checkAllFlags_FlagContested_tied
 
@@ -72,25 +108,36 @@ class TestBoardLogic(unittest.TestCase):
 
     def test_checkAllFlags_FlagContested_tied(self):
         # flag 5: 7-6-5(yellow) vs 7-6-5(purple)
-        self.boardLogic.addCard(4,self.boardLogic.PLAYER_NORTH,(7, 'yellow'))
-        self.boardLogic.addCard(4,self.boardLogic.PLAYER_SOUTH,(7, 'purple'))
+        self.boardLogic.addCard(4, Identifiers.NORTH, (7, 'yellow'))
+        self.boardLogic.addCard(4, Identifiers.SOUTH, (7, 'purple'))
 
-        self.boardLogic.addCard(4,self.boardLogic.PLAYER_NORTH,(6, 'yellow'))
-        self.boardLogic.addCard(4,self.boardLogic.PLAYER_SOUTH,(6, 'purple'))
+        self.boardLogic.addCard(4, Identifiers.NORTH, (6, 'yellow'))
+        self.boardLogic.addCard(4, Identifiers.SOUTH, (6, 'purple'))
 
-        self.boardLogic.addCard(4,self.boardLogic.PLAYER_NORTH,(5, 'yellow'))
-        self.boardLogic.addCard(4,self.boardLogic.PLAYER_SOUTH,(5, 'purple'))
+        self.boardLogic.addCard(4, Identifiers.NORTH, (5, 'yellow'))
+        self.boardLogic.addCard(4, Identifiers.SOUTH, (5, 'purple'))
 
-        self.assertEqual(self.boardLogic.board.flags[4].claimed, self.boardLogic.PLAYER_NORTH)
+        self.assertEqual(self.boardLogic.board.flags[
+                         4].claimed, Identifiers.NORTH)
 
         # flag 6: 3-2-1(yellow) vs 3-2-1(purple)
-        self.boardLogic.addCard(5,self.boardLogic.PLAYER_SOUTH,(3, 'purple'))
-        self.boardLogic.addCard(5,self.boardLogic.PLAYER_NORTH,(3, 'yellow'))
+        self.boardLogic.addCard(5, Identifiers.SOUTH, (3, 'purple'))
+        self.boardLogic.addCard(5, Identifiers.NORTH, (3, 'yellow'))
 
-        self.boardLogic.addCard(5,self.boardLogic.PLAYER_SOUTH,(2, 'purple'))
-        self.boardLogic.addCard(5,self.boardLogic.PLAYER_NORTH,(2, 'yellow'))
+        self.boardLogic.addCard(5, Identifiers.SOUTH, (2, 'purple'))
+        self.boardLogic.addCard(5, Identifiers.NORTH, (2, 'yellow'))
 
-        self.boardLogic.addCard(5,self.boardLogic.PLAYER_SOUTH,(1, 'purple'))
-        self.boardLogic.addCard(5,self.boardLogic.PLAYER_NORTH,(1, 'yellow'))
-        self.assertEqual(self.boardLogic.board.flags[5].claimed, self.boardLogic.PLAYER_SOUTH)
+        self.boardLogic.addCard(5, Identifiers.SOUTH, (1, 'purple'))
+        self.boardLogic.addCard(5, Identifiers.NORTH, (1, 'yellow'))
+        self.assertEqual(self.boardLogic.board.flags[
+                         5].claimed, Identifiers.SOUTH)
 
+    def test_flag_is_playable(self):
+        self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
+        self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
+
+        self.boardLogic.board.get_flag(1).sides[Identifiers.NORTH] = [1, 2, 3]
+
+        self.assertFalse(
+            self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
+        self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
