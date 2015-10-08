@@ -5,7 +5,7 @@ import itertools
 
 
 class FormationLogic:
-    """ A classto compare formations and infer what formations are better than others"""
+    """ A class to compare formations and infer what formations are better than others"""
 
     def getTheBetterFormation(self, formation1, formation2):
         """
