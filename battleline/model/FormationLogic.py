@@ -35,36 +35,21 @@ class FormationLogic:
         return self.__get_best_option([card for card in current_formation], unplayed_cards)
 
     def __get_best_option(self, options, unplayed_cards):
-        # this is a recursive algorithm.
-        # Having three cards is the base case
-        # If you have less than three cards, it loops through every unplayed card
-        # and recurses for every best option given each unplayed card.
-        # For each step in the recursion, get the maximum formation possible and
-        # aggregate it to the top
         if len(options) == 3:
             return options
         else:
             return self.__get_max_strength_formation(options, unplayed_cards)
 
     def __get_max_strength_formation(self, options, unplayed_cards):
+        number_of_cards_left = 3 - len(options)
         max_formation = self.__get_minimum_strength_formation()
-        for card in unplayed_cards:
-            formation = self.__get_best_suboption(
-                options, card, unplayed_cards)
-            if Formation(formation).is_greater_strength_than(Formation(max_formation)):
+        max_formation_object = Formation(max_formation)
+        for  combo in itertools.combinations(unplayed_cards, number_of_cards_left):
+            formation = options + list(combo)
+            if Formation(formation).is_greater_strength_than(max_formation_object):
                 max_formation = formation
+                max_formation_object = Formation(formation)
         return max_formation
-
-    def __get_best_suboption(self, options, card, unplayed_cards):
-        new_options = options + [card]
-        remaining_cards = self.__filter_out(unplayed_cards, card)
-        return self.__get_best_option(new_options, remaining_cards)
 
     def __get_minimum_strength_formation(self):
         return [TroopCard(1, Identifiers.COLORS[0]), TroopCard(1, Identifiers.COLORS[1]), TroopCard(0, Identifiers.COLORS[0])]
-
-    def __filter_out(self, list, item):
-        return [c for c in list if c.color != item.color or c.number != item.number]
-
-    def __get_options(self, options, index, unplayed_cards):
-        return options[index - 1] if len(options) > index else unplayed_cards
