@@ -145,36 +145,18 @@ class TestBoardLogic(unittest.TestCase):
     def test_check_breakthrough(self):
         #3 adjacent flags.
         self.assertFalse(self.boardLogic.is_game_over())
-        self.boardLogic.addCard(4, Identifiers.NORTH, (9, 'yellow'))
-        self.boardLogic.addCard(4, Identifiers.NORTH, (8, 'yellow'))
-        self.boardLogic.addCard(4, Identifiers.NORTH, (7, 'yellow'))
-        self.boardLogic.addCard(5, Identifiers.NORTH, (9, 'red'))
-        self.boardLogic.addCard(5, Identifiers.NORTH, (8, 'red'))
-        self.boardLogic.addCard(5, Identifiers.NORTH, (7, 'red'))
-        self.boardLogic.addCard(6, Identifiers.NORTH, (9, 'blue'))
-        self.boardLogic.addCard(6, Identifiers.NORTH, (8, 'blue'))
-        self.boardLogic.addCard(6, Identifiers.NORTH, (7, 'blue'))
+        for flag, colorId in zip([1,2,3], range(0, 3)):
+            for cardValue in range(8, 11):
+                self.boardLogic.addCard(flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
         self.assertTrue(self.boardLogic.is_game_over())
         self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
 
     def test_check_envelopment(self):
         #5 flags.
         self.assertFalse(self.boardLogic.is_game_over())
-        self.boardLogic.addCard(1, Identifiers.NORTH, (9, 'yellow'))
-        self.boardLogic.addCard(1, Identifiers.NORTH, (8, 'yellow'))
-        self.boardLogic.addCard(1, Identifiers.NORTH, (7, 'yellow'))
-        self.boardLogic.addCard(2, Identifiers.NORTH, (9, 'red'))
-        self.boardLogic.addCard(2, Identifiers.NORTH, (8, 'red'))
-        self.boardLogic.addCard(2, Identifiers.NORTH, (7, 'red'))
-        self.boardLogic.addCard(4, Identifiers.NORTH, (9, 'blue'))
-        self.boardLogic.addCard(4, Identifiers.NORTH, (8, 'blue'))
-        self.boardLogic.addCard(4, Identifiers.NORTH, (7, 'blue'))
-        self.boardLogic.addCard(5, Identifiers.NORTH, (9, 'purple'))
-        self.boardLogic.addCard(5, Identifiers.NORTH, (8, 'purple'))
-        self.boardLogic.addCard(5, Identifiers.NORTH, (7, 'purple'))
-        self.boardLogic.addCard(7, Identifiers.NORTH, (9, 'green'))
-        self.boardLogic.addCard(7, Identifiers.NORTH, (8, 'green'))
-        self.boardLogic.addCard(7, Identifiers.NORTH, (7, 'green'))
+        for flag, colorId in zip([1,2,4,5,7], range(0, 5)):
+            for cardValue in range(8, 11):
+                self.boardLogic.addCard(flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
         self.assertTrue(self.boardLogic.is_game_over())
         self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
 

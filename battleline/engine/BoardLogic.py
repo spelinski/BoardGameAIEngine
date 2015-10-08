@@ -1,7 +1,7 @@
 from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
 from battleline.Identifiers import Identifiers
-from itertools import product
+from itertools import product, groupby
 
 
 class BoardLogic:
@@ -46,8 +46,12 @@ class BoardLogic:
                 self.winner = player
 
     def __check_for_breakthrough(self):
-        #>>> [i for i in [list(g) for k,g in itertools.groupby([1,1,0,0,1,1,1,0,0])] if len(i) >= 3]
-        pass
+        for player in [Identifiers.NORTH, Identifiers.SOUTH]:
+            claimedFlags = map( lambda flag: flag.is_claimed_by_player(player), self.board.flags)
+            consecutiveFlags = [i for i in [list(g) for _,g in groupby(claimedFlags)] if len(i) >= 3]
+            consecutiveClaimedFlags = filter( lambda claimed: claimed[0], consecutiveFlags)
+            if len(consecutiveClaimedFlags):
+                self.winner = player
 
     def is_game_over(self):
         return self.winner != None
