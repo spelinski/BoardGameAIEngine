@@ -44,7 +44,7 @@ class FormationLogic:
         number_of_cards_left = 3 - len(options)
         max_formation = self.__get_minimum_strength_formation()
         max_formation_object = Formation(max_formation)
-        for  combo in itertools.combinations(unplayed_cards, number_of_cards_left):
+        for combo in itertools.combinations(unplayed_cards, number_of_cards_left):
             formation = options + list(combo)
             if Formation(formation).is_greater_strength_than(max_formation_object):
                 max_formation = formation
