@@ -17,7 +17,6 @@ class Formation(object):
         self.colors = tuple(x[1] for x in self.troops)
         self.type = self.__get_type()
 
-
     def __get_type(self):
         if self.__is_wedge():
             return "wedge"

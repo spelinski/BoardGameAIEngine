@@ -49,7 +49,8 @@ class FormationLogic:
     def __get_max_strength_formation(self, options, unplayed_cards):
         max_formation = self.__get_minimum_strength_formation()
         for card in unplayed_cards:
-            formation = self.__get_best_suboption(options, card, unplayed_cards)
+            formation = self.__get_best_suboption(
+                options, card, unplayed_cards)
             if Formation(formation).is_greater_strength_than(Formation(max_formation)):
                 max_formation = formation
         return max_formation

@@ -29,7 +29,7 @@ class TestFormationLogic(unittest.TestCase):
     def assert_best_formation(self, expected_cards, given_cards, unplayed_cards):
         self.assertEquals(make_troop_card_list(expected_cards),
                           sorted(self.logic.get_best_formation(make_troop_card_list(given_cards),
-                                                        unplayed_cards), key=lambda x: (x[1], x[0]), reverse=True))
+                                                               unplayed_cards), key=lambda x: (x[1], x[0]), reverse=True))
 
     def test_get_best_formation_wedge(self):
         unplayed_cards = get_base_cards()
