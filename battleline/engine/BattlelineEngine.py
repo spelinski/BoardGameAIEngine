@@ -19,7 +19,7 @@ class BattlelineEngine(object):
         self.player1 = player1
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
-        self.board_logic = BoardLogic()
+        self.board_logic = BoardLogic(self)
         self.player1.generator.send_colors()
         self.player2.generator.send_colors()
 
@@ -63,6 +63,7 @@ class BattlelineEngine(object):
             self.__process_player_turn(player, flag, card)
         else:
             self.lastMove = None
+        self.board_logic.checkAllFlags()
 
     def __process_player_turn(self, player, flag, card):
         player.remove_from_hand(card)
