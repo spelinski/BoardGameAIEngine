@@ -33,7 +33,7 @@ class BoardLogic:
         """
         return self.board.flags[flag_index].is_playable(direction)
 
-    def checkAllFlags(self,):
+    def checkAllFlags(self):
         """
         iterates through all of the unclaimed flags checking to see if anymore can be claimed
         @param latestPlayer the last player that has played a card
