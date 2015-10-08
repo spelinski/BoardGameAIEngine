@@ -54,6 +54,8 @@ class BattlelineEngine(object):
         self.lastMove = flag, card
         if card and flag:
             self.__process_player_turn(player, flag, card)
+        else:
+            self.lastMove = None
 
     def __process_player_turn(self, player, flag, card):
         player.remove_from_hand(card)

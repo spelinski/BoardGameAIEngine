@@ -24,6 +24,7 @@ import os.path
 
 ACTIONS = ['draw', 'play', 'claim', 'win']
 
+
 class Output:
 
     def __init__(self):
