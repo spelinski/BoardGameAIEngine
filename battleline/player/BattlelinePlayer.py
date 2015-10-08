@@ -19,8 +19,12 @@ class BattlelinePlayer(object):
         self.communication = communication
         self.generator = CommandGenerator(communication, direction)
         self.generator.send_player_direction_name()
-        self.name = ClientCommandParser().parse(
-            self.communication.get_response())["value"][1]
+        try:
+            self.name = ClientCommandParser().parse(
+                self.communication.get_response())["value"][1]
+        except:
+            self.name = direction
+
         self.direction = direction
 
     def add_to_hand(self, card):
