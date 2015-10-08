@@ -151,3 +151,16 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals([TroopCard(color="color1", number=2),
                            TroopCard(color="color1", number=4)],
                           self.engine.board_logic.board.get_flag(1).sides[Identifiers.SOUTH])
+
+    def test_opponent_does_not_get_move_if_invalid(self):
+        self.engine.player1.hand = []
+        self.__play_turn()
+        self.assertEquals(["player south hand color1,2 color1,4 color1,6 color1,8 color1,10 color2,2 color2,4",
+                           "flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed",
+                           "flag 1 cards north", "flag 1 cards south", "flag 2 cards north", "flag 2 cards south",
+                           "flag 3 cards north", "flag 3 cards south", "flag 4 cards north", "flag 4 cards south",
+                           "flag 5 cards north", "flag 5 cards south", "flag 6 cards north", "flag 6 cards south",
+                           "flag 7 cards north", "flag 7 cards south", "flag 8 cards north", "flag 8 cards south",
+                           "flag 9 cards north", "flag 9 cards south", "go play-card"
+                           ],
+                          self.engine.player2.communication.messages_received[2:])
