@@ -41,15 +41,19 @@ class BoardLogic:
 
     def __check_for_envelopment(self):
         for player in [Identifiers.NORTH, Identifiers.SOUTH]:
-            numClaimedFlags = len(filter( lambda flag: flag.is_claimed_by_player(player), self.board.flags))
+            numClaimedFlags = len(
+                filter(lambda flag: flag.is_claimed_by_player(player), self.board.flags))
             if numClaimedFlags == 5:
                 self.winner = player
 
     def __check_for_breakthrough(self):
         for player in [Identifiers.NORTH, Identifiers.SOUTH]:
-            claimedFlags = map( lambda flag: flag.is_claimed_by_player(player), self.board.flags)
-            consecutiveFlags = [i for i in [list(g) for _,g in groupby(claimedFlags)] if len(i) >= 3]
-            consecutiveClaimedFlags = filter( lambda claimed: claimed[0], consecutiveFlags)
+            claimedFlags = map(lambda flag: flag.is_claimed_by_player(
+                player), self.board.flags)
+            consecutiveFlags = [i for i in [
+                list(g) for _, g in groupby(claimedFlags)] if len(i) >= 3]
+            consecutiveClaimedFlags = filter(
+                lambda claimed: claimed[0], consecutiveFlags)
             if len(consecutiveClaimedFlags):
                 self.winner = player
 

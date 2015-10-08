@@ -143,21 +143,21 @@ class TestBoardLogic(unittest.TestCase):
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
 
     def test_check_breakthrough(self):
-        #3 adjacent flags.
+        # 3 adjacent flags.
         self.assertFalse(self.boardLogic.is_game_over())
-        for flag, colorId in zip([1,2,3], range(0, 3)):
+        for flag, colorId in zip([1, 2, 3], range(0, 3)):
             for cardValue in range(8, 11):
-                self.boardLogic.addCard(flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
+                self.boardLogic.addCard(
+                    flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
         self.assertTrue(self.boardLogic.is_game_over())
         self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
 
     def test_check_envelopment(self):
-        #5 flags.
+        # 5 flags.
         self.assertFalse(self.boardLogic.is_game_over())
-        for flag, colorId in zip([1,2,4,5,7], range(0, 5)):
+        for flag, colorId in zip([1, 2, 4, 5, 7], range(0, 5)):
             for cardValue in range(8, 11):
-                self.boardLogic.addCard(flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
+                self.boardLogic.addCard(
+                    flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
         self.assertTrue(self.boardLogic.is_game_over())
         self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
-
-
