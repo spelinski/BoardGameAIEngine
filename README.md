@@ -1,3 +1,23 @@
+Battleline AI Engine
+====================
+
+This is a python engine for the board game BattleLine.
+
+Setting up your Environment
+---------------------------
+To install all test dependencies and create a development environment, we recommend the usage of virtualenv.
+
+To install virtualenv:
+
+    > pip install virtualenv
+
+Then to setup a virtualenv for the project which includes all test dependencies:
+
+    > cd <projectdir>
+    > virtualenv venv
+    > source venv/bin/activate
+    > pip install -r test_requirements.txt
+
 Running the Tests
 -----------------
 
