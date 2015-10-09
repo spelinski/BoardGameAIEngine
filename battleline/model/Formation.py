@@ -13,6 +13,8 @@ class Formation(object):
         if len(troops) != 3:
             raise FormationInvalidError
         self.troops = troops
+        self.numbers = tuple(sorted(x[0] for x in self.troops))
+        self.colors = tuple(x[1] for x in self.troops)
         self.type = self.__get_type()
 
     def __get_type(self):
@@ -31,14 +33,14 @@ class Formation(object):
         Return the numbers listed on the cards
         @return the numbers listed on the cards
         """
-        return tuple(sorted(x[0] for x in self.troops))
+        return self.numbers
 
     def get_colors(self):
         """
         Return the colors listed on the cards
         @return the colors listed on the cards
         """
-        return tuple(x[1] for x in self.troops)
+        return self.colors
 
     def get_max_number(self):
         """
@@ -60,20 +62,19 @@ class Formation(object):
         return self.__is_in_order()
 
     def __is_in_order(self):
-        sorted_nums = sorted(self.get_numbers())
-        return sorted_nums[0] == sorted_nums[1] - 1 and sorted_nums[1] == sorted_nums[2] - 1
+        return self.numbers[0] == self.numbers[1] - 1 and self.numbers[1] == self.numbers[2] - 1
 
     def __is_same_color(self):
-        return self.__is_one_value(self.get_colors())
+        return self.__is_one_value(self.colors)
 
     def __is_same_number(self):
-        return self.__is_one_value(self.get_numbers())
+        return self.__is_one_value(self.numbers)
 
     def __is_one_value(self, list):
         return len(set(list)) == 1
 
     def __get_sum(self):
-        return sum(self.get_numbers())
+        return sum(self.numbers)
 
     def __does_match_type(self, other):
         # does not check host values
