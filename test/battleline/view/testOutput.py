@@ -1,12 +1,16 @@
 import unittest
 from collections import namedtuple
 from battleline.view.Output import Output, ACTIONS
+import os
 
 
 class TestOutput(unittest.TestCase):
 
     def setUp(self):
         self.output = Output()
+
+    def tearDown(self):
+        os.remove(self.output.filename)
 
     def test_setup_player_positions(self):
         self.output.setup_player_positions('he', 'here')
@@ -25,3 +29,8 @@ class TestOutput(unittest.TestCase):
         for name, action, card, flag, result in actionList:
             self.output.action(name, action, card, flag)
             self.assertEqual(self.output.outputstring.rstrip(), result)
+
+    def test_find_new_file_name(self):
+        secondOutput = Output()
+        self.assertNotEqual(self.output.filename, secondOutput.filename)
+        os.remove(secondOutput.filename)
