@@ -57,6 +57,7 @@ class BoardLogic:
                 self.winner = player
 
     def is_game_over(self):
+        self.__check_winning_conditions()
         return self.winner != None
 
     def get_game_winner(self):

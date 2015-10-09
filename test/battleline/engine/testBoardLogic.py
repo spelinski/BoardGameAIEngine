@@ -174,6 +174,7 @@ class TestBoardLogic(unittest.TestCase):
             for cardValue in range(8, 11):
                 self.boardLogic.addCard(
                     flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
+        self.boardLogic.checkAllFlags()
         self.assertTrue(self.boardLogic.is_game_over())
         self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
 
@@ -184,5 +185,6 @@ class TestBoardLogic(unittest.TestCase):
             for cardValue in range(8, 11):
                 self.boardLogic.addCard(
                     flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
+        self.boardLogic.checkAllFlags()
         self.assertTrue(self.boardLogic.is_game_over())
         self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
