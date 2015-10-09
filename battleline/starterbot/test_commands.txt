@@ -1,0 +1,68 @@
+# Sample test commands for copy-and-paste bot acceptance testing #
+# Can run entire script at once or single sections, starting with comment and ending with go command #
+
+# Can play any card from hand to any flag #
+
+player north name
+
+colors color1 color2 color3 color4 color5 color6
+ 
+player north hand color2,3 color4,10, color4,9 color1,6 color6,1 color3,1 color2,8
+ 
+flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed
+ 
+flag 2 cards north color1,9
+
+flag 2 cards south color1,10
+
+opponent play 2 color1,10
+
+go play-card
+
+# Can play any card from hand on flag 9 #
+
+player north name
+
+player north hand color2,3 color4,10, color4,9 color1,6 color6,1 color3,1 color2,8
+
+flag claim-status north north north south north south north south unclaimed
+
+flag 2 cards north color1,9 color1,8 color1,9
+
+flag 2 cards south color1,10
+
+go play-card
+
+# Can play any card from hand on flag 7|8 only #
+
+player north name
+
+player north hand color2,3 color4,10, color4,9 color1,6 color6,1 color3,1 color2,8
+
+flag claim-status north unclaimed north south north south unclaimed unclaimed south
+
+flag 2 cards north color1,9 color1,1 color1,2
+
+flag 2 cards south color1,10
+
+go play-card
+
+# Replys 'no moves' only -no open flags #
+
+player north name
+
+player north hand color2,3 color4,10, color4,9 color1,6 color6,1 color3,1 color2,8
+
+flag claim-status north north north south north south north south south
+
+go play-card
+
+# Replys 'no moves' only -no cards in hand #
+
+player north name
+
+player north hand
+
+flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed
+
+go play-card

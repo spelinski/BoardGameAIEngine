@@ -19,7 +19,7 @@ class BattlelineEngine(object):
         self.player1 = player1
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
-        self.board_logic = BoardLogic()
+        self.board_logic = BoardLogic(self)
         self.player1.generator.send_colors()
         self.player2.generator.send_colors()
 
@@ -41,6 +41,13 @@ class BattlelineEngine(object):
         """
         return [TroopCard(number, color) for color, number in product(Identifiers.COLORS, range(1, 11))]
 
+    def get_unplayed_cards(self):
+        """
+        get all cards that have not been played yet
+        @return all unplayed cards
+        """
+        return self.troop_deck.deck + self.player1.hand + self.player2.hand
+
     def progress_turn(self):
         """
         Perform one turn
@@ -54,6 +61,9 @@ class BattlelineEngine(object):
         self.lastMove = flag, card
         if card and flag:
             self.__process_player_turn(player, flag, card)
+        else:
+            self.lastMove = None
+        self.board_logic.checkAllFlags()
 
     def __process_player_turn(self, player, flag, card):
         player.remove_from_hand(card)
