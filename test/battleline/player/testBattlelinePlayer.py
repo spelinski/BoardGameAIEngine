@@ -13,6 +13,11 @@ class TestBattlelinePlayer(unittest.TestCase):
     def test_battleline_player_has_name(self):
         self.assertEquals(self.player.name, "Player1")
 
+    def test_battleline_player_name_timeout(self):
+        emptyCommunication = MockPlayerCommunication()
+        defaultNamePlayer = BattlelinePlayer(emptyCommunication, "north")
+        self.assertEquals(defaultNamePlayer.name, "north")
+
     def test_battleline_player_has_dirction(self):
         self.assertEquals("north", self.player.direction)
         self.communication.add_response("player south Player1")
