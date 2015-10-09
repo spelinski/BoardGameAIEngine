@@ -6,7 +6,7 @@ from itertools import product, groupby
 
 class BoardLogic:
 
-    def __init__(self):
+    def __init__(self, engine):
         """
         Constructor
         """
@@ -14,6 +14,7 @@ class BoardLogic:
         self.formationLogic = FormationLogic()
         self.board = Board()
         self.winner = None
+        self.engine = engine
 
     def addCard(self, flag, player, card):
         """
@@ -23,9 +24,7 @@ class BoardLogic:
         @param card the card to be added
         """
         self.board.flags[flag].add_card(player, card)
-        self.playedCardList.append(card)
-        self.checkAllFlags(player)
-        self.__check_winning_conditions()
+        self.latestPlayer = player
 
     def is_flag_playable(self, flag_index, direction):
         """
@@ -63,12 +62,11 @@ class BoardLogic:
     def get_game_winner(self):
         return self.winner
 
-    def checkAllFlags(self, latestPlayer):
+    def checkAllFlags(self):
         """
         iterates through all of the unclaimed flags checking to see if anymore can be claimed
         @param latestPlayer the last player that has played a card
         """
-        self.latestPlayer = latestPlayer
         unclaimedFlags = (
             flag for flag in self.board.flags if not flag.is_claimed())
         for flag, player in product(unclaimedFlags, [Identifiers.NORTH, Identifiers.SOUTH]):
@@ -83,8 +81,8 @@ class BoardLogic:
         playerCards = flag.get_cards(player)
         if len(playerCards) == flag.MAX_CARDS_PER_SIDE:
             enemyCards = flag.get_cards(self.__get_enemy(player))
-            bestEnemyFormation = self.formationLogic.greatestPossibleFormation(
-                enemyCards, self.playedCardList)
+            bestEnemyFormation = self.formationLogic.get_best_formation(
+                enemyCards, self.engine.get_unplayed_cards())
             if self.formationLogic.is_equivalent_in_strength(playerCards, bestEnemyFormation):
                 if len(enemyCards) != flag.MAX_CARDS_PER_SIDE or self.latestPlayer != player:
                     flag.claim(player)
