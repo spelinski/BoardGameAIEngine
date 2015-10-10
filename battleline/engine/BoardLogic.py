@@ -40,10 +40,11 @@ class BoardLogic:
 
     def __get_flags_claimed_by_player(self, player):
         return [flag.is_claimed_by_player(player) for flag in self.board.flags]
-        
+
     def __check_for_envelopment(self):
         for player in [Identifiers.NORTH, Identifiers.SOUTH]:
-            numClaimedFlags = len( [x for x in self.__get_flags_claimed_by_player(player) if x])
+            numClaimedFlags = len(
+                [x for x in self.__get_flags_claimed_by_player(player) if x])
             if numClaimedFlags >= 5:
                 self.winner = player
 
@@ -52,7 +53,8 @@ class BoardLogic:
             claimedFlags = self.__get_flags_claimed_by_player(player)
             consecutiveFlags = [i for i in [
                 list(g) for _, g in groupby(claimedFlags)] if len(i) >= 3]
-            consecutiveClaimedFlags = [claimed for claimed in consecutiveFlags if claimed[0]]
+            consecutiveClaimedFlags = [
+                claimed for claimed in consecutiveFlags if claimed[0]]
             if len(consecutiveClaimedFlags) > 0:
                 self.winner = player
 
