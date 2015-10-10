@@ -1,6 +1,5 @@
 from random import shuffle
 
-
 class Deck(object):
     """
     Deck object
@@ -31,9 +30,14 @@ class Deck(object):
         @raise DeckEmptyError if the deck is empty
         """
         if self.is_empty():
-            raise DeckEmptyError("draw")
+            return None
         return self.deck.pop()
+    
+    def next(self):
+        return self.draw()
 
+    def __iter__(self):
+        return self
 
 class DeckEmptyError(Exception):
 

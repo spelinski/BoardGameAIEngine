@@ -2,8 +2,6 @@ from mechanics.Deck import Deck
 from BoardLogic import BoardLogic
 from itertools import product
 from battleline.Identifiers import TroopCard, Identifiers
-from CommandParser import ClientCommandParser, InvalidParseError
-
 
 class BattlelineEngine(object):
     """
@@ -20,19 +18,15 @@ class BattlelineEngine(object):
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
         self.board_logic = BoardLogic(self)
-        self.player1.generator.send_colors()
-        self.player2.generator.send_colors()
-
-        self.lastMove = None
 
     def initialize(self):
         """
         Initialize the game
         Deal seven cards to each player
         """
-        for i in xrange(7):
-            self.player1.add_to_hand(self.troop_deck.draw())
-            self.player2.add_to_hand(self.troop_deck.draw())
+        initial_cards = [next(self.troop_deck) for _ in range(14)]
+        self.player1.new_game(Identifiers.NORTH, initial_cards[::2])
+        self.player2.new_game(Identifiers.SOUTH, initial_cards[1::2]) 
 
     def get_troop_cards(self):
         """
@@ -52,49 +46,23 @@ class BattlelineEngine(object):
         """
         Perform one turn
         """
-        self.__make_player_turn(self.player1)
-        self.__make_player_turn(self.player2)
+        self.compute_player_turn(self.player1)
+        self.compute_player_turn(self.player2)
 
-    def __make_player_turn(self, player):
-        self.__send_messages_to_player(player)
-        flag, card = self.__get_flag_and_card_from_player(player)
-        self.lastMove = flag, card
-        if card and flag:
-            self.__process_player_turn(player, flag, card)
-        else:
-            self.lastMove = None
+    def compute_player_turn(self, player):
+        card, flag = player.compute_turn(self.board_logic.board)
+        flag = self.compute_played_flag(flag, player.direction)
+        card = self.compute_played_card(card, player.hand)
+        self.board_logic.addCard(flag - 1, player.direction, card)
+        player.finish_turn(card,next(self.troop_deck)) 
         self.board_logic.checkAllFlags()
 
-    def __process_player_turn(self, player, flag, card):
-        player.remove_from_hand(card)
-        self.board_logic.addCard(
-            flag - 1, player.direction, card)
-        if not self.troop_deck.is_empty():
-            player.add_to_hand(self.troop_deck.draw())
-
-    def __send_messages_to_player(self, player):
-        player.generator.send_player_hand(player.hand)
-        player.generator.send_flag_claim_status(self.board_logic.board.flags)
-        player.generator.send_flag_cards(self.board_logic.board.flags)
-        if self.lastMove:
-            player.generator.send_opponent_play(
-                self.lastMove[0], self.lastMove[1])
-        player.generator.send_go_play()
-
-    def __get_flag_and_card_from_player(self, player):
-        try:
-            data = ClientCommandParser().parse(player.communication.get_response())
-            flag, card = data["value"]
-        except InvalidParseError:
-            flag, card = 1, None
-        return self.__get_valid_flag(flag, player.direction), self.__get_valid_card(card, player.hand)
-
-    def __get_valid_flag(self, flag, direction):
+    def compute_played_flag(self, flag, direction):
         if self.board_logic.is_flag_playable(flag - 1, direction):
             return flag
         return next((f for f in xrange(1, 10) if self.board_logic.is_flag_playable(f - 1, direction)), None)
 
-    def __get_valid_card(self, card, hand):
+    def compute_played_card(self, card, hand):
         if card in hand:
             return card
         return hand[0] if hand else None

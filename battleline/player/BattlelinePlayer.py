@@ -1,6 +1,19 @@
 from battleline.engine.CommandGenerator import CommandGenerator
 from battleline.engine.CommandParser import ClientCommandParser
 
+class Player(object):
+    def new_game(self, direction, initial_hand):
+        self.direction = direction
+        self.hand = initial_hand
+
+    def compute_turn(self,board):
+        raise NotImplementedError
+        # return card, flag
+
+    def finish_turn(self,card_to_remove,next_card):
+        self.hand.remove(card_to_remove)
+        if next_card is not None:
+            self.hand.append(next_card)
 
 class BattlelinePlayer(object):
     """
@@ -8,8 +21,8 @@ class BattlelinePlayer(object):
     Keeps track of a hand
     """
 
-    HAND_LIMIT = 7
 
+    HAND_LIMIT = 7
     def __init__(self, communication, direction):
         """Constructor
         @param communication the communication the player has with a bot

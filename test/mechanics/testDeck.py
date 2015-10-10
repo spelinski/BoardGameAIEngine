@@ -25,12 +25,11 @@ class TestDeck(unittest.TestCase):
         localDeck.draw()
         self.assertTrue(localDeck.is_empty())
 
-    def test_error_thrown_when_drawing_from_empty_deck(self):
+    def test_returns_none_when_drawing_from_empty_deck(self):
         listOfCards = [1]
         localDeck = Deck(listOfCards, False)
-        localDeck.draw()
-        self.assertRaisesRegexp(
-            DeckEmptyError, "Attempted to draw on an empty Deck", localDeck.draw)
+        self.assertIsNotNone(localDeck.draw())
+        self.assertIsNone(localDeck.draw())
 
     def test_deck_shuffle_does_not_change_actual_cards(self):
         listOfCards = list(range(1, 10))
