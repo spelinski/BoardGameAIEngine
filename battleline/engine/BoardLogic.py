@@ -38,30 +38,23 @@ class BoardLogic:
         self.__check_for_envelopment()
         self.__check_for_breakthrough()
 
+    def __get_flags_claimed_by_player(self, player):
+        return [flag.is_claimed_by_player(player) for flag in self.board.flags]
+        
     def __check_for_envelopment(self):
         for player in [Identifiers.NORTH, Identifiers.SOUTH]:
-            numClaimedFlags = len(
-                filter(lambda flag: flag.is_claimed_by_player(player), self.board.flags))
-            if numClaimedFlags == 5:
+            numClaimedFlags = len( [x for x in self.__get_flags_claimed_by_player(player) if x])
+            if numClaimedFlags >= 5:
                 self.winner = player
 
     def __check_for_breakthrough(self):
         for player in [Identifiers.NORTH, Identifiers.SOUTH]:
-            claimedFlags = map(lambda flag: flag.is_claimed_by_player(
-                player), self.board.flags)
+            claimedFlags = self.__get_flags_claimed_by_player(player)
             consecutiveFlags = [i for i in [
                 list(g) for _, g in groupby(claimedFlags)] if len(i) >= 3]
-            consecutiveClaimedFlags = filter(
-                lambda claimed: claimed[0], consecutiveFlags)
-            if len(consecutiveClaimedFlags):
+            consecutiveClaimedFlags = [claimed for claimed in consecutiveFlags if claimed[0]]
+            if len(consecutiveClaimedFlags) > 0:
                 self.winner = player
-
-    def is_game_over(self):
-        self.__check_winning_conditions()
-        return self.winner != None
-
-    def get_game_winner(self):
-        return self.winner
 
     def checkAllFlags(self):
         """
@@ -72,6 +65,7 @@ class BoardLogic:
             flag for flag in self.board.flags if not flag.is_claimed())
         for flag, player in product(unclaimedFlags, [Identifiers.NORTH, Identifiers.SOUTH]):
             self.__check_individual_flag(flag, player)
+        self.__check_winning_conditions()
 
     def __check_individual_flag(self, flag, player):
         """

@@ -169,22 +169,22 @@ class TestBoardLogic(unittest.TestCase):
 
     def test_check_breakthrough(self):
         # 3 adjacent flags.
-        self.assertFalse(self.boardLogic.is_game_over())
         for flag, colorId in zip([1, 2, 3], range(0, 3)):
             for cardValue in range(8, 11):
+                self.boardLogic.checkAllFlags()
+                self.assertIsNone(self.boardLogic.winner)
                 self.boardLogic.addCard(
                     flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
         self.boardLogic.checkAllFlags()
-        self.assertTrue(self.boardLogic.is_game_over())
-        self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
+        self.assertEqual(self.boardLogic.winner, Identifiers.NORTH)
 
     def test_check_envelopment(self):
         # 5 flags.
-        self.assertFalse(self.boardLogic.is_game_over())
         for flag, colorId in zip([1, 2, 4, 5, 7], range(0, 5)):
             for cardValue in range(8, 11):
+                self.boardLogic.checkAllFlags()
+                self.assertIsNone(self.boardLogic.winner)
                 self.boardLogic.addCard(
                     flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
         self.boardLogic.checkAllFlags()
-        self.assertTrue(self.boardLogic.is_game_over())
-        self.assertEqual(self.boardLogic.get_game_winner(), Identifiers.NORTH)
+        self.assertEqual(self.boardLogic.winner, Identifiers.NORTH)
