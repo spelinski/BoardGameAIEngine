@@ -18,6 +18,7 @@ class BattlelineEngine(object):
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
         self.board_logic = BoardLogic(self)
+        self.last_move = None
 
     def initialize(self):
         """
@@ -50,12 +51,13 @@ class BattlelineEngine(object):
         self.compute_player_turn(self.player2)
 
     def compute_player_turn(self, player):
-        card, flag = player.compute_turn(self.board_logic.board)
+        card, flag = player.compute_turn(self.board_logic.board,self.last_move)
         flag = self.compute_played_flag(flag, player.direction)
         card = self.compute_played_card(card, player.hand)
         self.board_logic.addCard(flag - 1, player.direction, card)
         player.finish_turn(card,next(self.troop_deck)) 
         self.board_logic.checkAllFlags()
+        self.last_move = (card,flag)
 
     def compute_played_flag(self, flag, direction):
         if self.board_logic.is_flag_playable(flag - 1, direction):
@@ -66,3 +68,4 @@ class BattlelineEngine(object):
         if card in hand:
             return card
         return hand[0] if hand else None
+

@@ -11,7 +11,7 @@ class MockPlayer(Player):
         self.next_card = next_card
         self.next_flag = next_flag
 
-    def compute_turn(self,board):
+    def compute_turn(self,board,last_move):
         return self.next_card, self.next_flag
 
 def get_engine_with_ordered_cards():

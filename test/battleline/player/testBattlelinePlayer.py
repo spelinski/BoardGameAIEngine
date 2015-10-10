@@ -9,7 +9,7 @@ class TestPlayer(unittest.TestCase):
     def test_player_throws_if_not_implemented(self):
         player = Player()
         with self.assertRaises(NotImplementedError):
-          player.compute_turn(Board())
+          player.compute_turn(Board(),None)
 
 class TestSubprocessPlayer(unittest.TestCase):
 
@@ -55,14 +55,14 @@ class TestSubprocessPlayer(unittest.TestCase):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.communication.clear()
         self.communication.add_response("play 4 color1,7")
-        card, flag = self.player.compute_turn(self.initial_board)
+        card, flag = self.player.compute_turn(self.initial_board,None)
         self.assertEquals(card, TroopCard(number=7,color="color1"))
         self.assertEquals(flag, 4)
     
     def test_player_receives_game_state(self):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.communication.clear()
-        self.player.compute_turn(self.initial_board)
+        self.player.compute_turn(self.initial_board,None)
 
         self.assertEquals(self.communication.messages_received,
           [ "player north hand color1,1 color1,2 color1,3 color1,4 color1,5 color1,6 color1,7",
@@ -85,6 +85,37 @@ class TestSubprocessPlayer(unittest.TestCase):
             "flag 8 cards south",
             "flag 9 cards north",
             "flag 9 cards south",
+            "go play-card"
+          ]
+        )
+    
+    def test_player_receives_game_state_with_last_move(self):
+        self.player.new_game(Identifiers.NORTH, self.initial_hand)
+        self.communication.clear()
+        self.player.compute_turn(self.initial_board,(TroopCard(number=3,color="color4"), 4))
+
+        self.assertEquals(self.communication.messages_received,
+          [ "player north hand color1,1 color1,2 color1,3 color1,4 color1,5 color1,6 color1,7",
+            "flag claim-status unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed unclaimed",
+            "flag 1 cards north",
+            "flag 1 cards south",
+            "flag 2 cards north",
+            "flag 2 cards south",
+            "flag 3 cards north",
+            "flag 3 cards south",
+            "flag 4 cards north",
+            "flag 4 cards south",
+            "flag 5 cards north",
+            "flag 5 cards south",
+            "flag 6 cards north",
+            "flag 6 cards south",
+            "flag 7 cards north",
+            "flag 7 cards south",
+            "flag 8 cards north",
+            "flag 8 cards south",
+            "flag 9 cards north",
+            "flag 9 cards south",
+            "opponent play 4 color4,3",
             "go play-card"
           ]
         )

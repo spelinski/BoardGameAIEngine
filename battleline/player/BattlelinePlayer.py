@@ -10,7 +10,7 @@ class Player(object):
         self.direction = direction
         self.hand = initial_hand
 
-    def compute_turn(self,board):
+    def compute_turn(self,board,last_move):
         raise NotImplementedError
         # return card, flag
 
@@ -38,12 +38,13 @@ class SubprocessPlayer(Player):
         
         self.generator.send_colors()
 
-    def compute_turn(self,board):
+    def compute_turn(self,board,last_move):
         # Send current state to subprocess
         self.generator.send_player_hand(self.hand)
         self.generator.send_flag_claim_status(board.flags)
         self.generator.send_flag_cards(board.flags)
-        # Send last move?
+        if last_move is not None:
+          self.generator.send_opponent_play(last_move[1], last_move[0])
 
         # Tell them to play
         self.generator.send_go_play()
