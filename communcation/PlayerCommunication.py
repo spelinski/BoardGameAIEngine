@@ -5,8 +5,6 @@ Created on Sep 23, 2015
 '''
 from subprocess import Popen, PIPE
 import threading
-import os
-import platform
 
 
 class PlayerCommunication(object):
@@ -19,9 +17,10 @@ class PlayerCommunication(object):
         Constructor
         @param programWithPath relative path to executable
         """
+        global _all_player_communication_instances
         self.programName = programWithPath
-        self.runningPlayer = Popen(
-            "./" + programWithPath, stdin=PIPE, stdout=PIPE, shell=True)
+        self.runningPlayer = Popen(programWithPath, stdin=PIPE, stdout=PIPE, shell=True)
+        _all_player_communication_instances.append(self)
 
     def send_message(self, message):
         """
@@ -62,7 +61,7 @@ class PlayerCommunication(object):
         """
         kill the external process
         """
-        os.system("pkill -f " + self.programName)
+        self.runningPlayer.kill()
 
 
 class BotCommunicationError(Exception):

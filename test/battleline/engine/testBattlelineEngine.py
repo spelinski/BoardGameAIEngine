@@ -5,14 +5,15 @@ from battleline.engine.BattlelineEngine import BattlelineEngine, TroopCard
 from battleline.player.BattlelinePlayer import Player 
 from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
 from battleline.Identifiers import Identifiers
+from battleline.model.Play import Play
 
 class MockPlayer(Player):
-    def provide_next_turn(self,next_card,next_flag):
+    def provide_next_turn(self, next_card, next_flag):
         self.next_card = next_card
         self.next_flag = next_flag
 
-    def compute_turn(self,board,last_move):
-        return self.next_card, self.next_flag
+    def compute_turn(self, board, last_move):
+        return Play(card=self.next_card, flag=self.next_flag)
 
 def get_engine_with_ordered_cards():
     engine = BattlelineEngine(MockPlayer(),MockPlayer())

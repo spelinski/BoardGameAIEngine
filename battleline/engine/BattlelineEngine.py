@@ -2,6 +2,8 @@ from mechanics.Deck import Deck
 from BoardLogic import BoardLogic
 from itertools import product
 from battleline.Identifiers import TroopCard, Identifiers
+from battleline.model.Play import Play
+
 
 class BattlelineEngine(object):
     """
@@ -51,20 +53,48 @@ class BattlelineEngine(object):
         self.compute_player_turn(self.player2)
 
     def compute_player_turn(self, player):
-        card, flag = player.compute_turn(self.board_logic.board,self.last_move)
-        flag = self.compute_played_flag(flag, player.direction)
-        card = self.compute_played_card(card, player.hand)
-        self.board_logic.addCard(flag - 1, player.direction, card)
-        player.finish_turn(card,next(self.troop_deck)) 
+        """
+        For a given player, coordinate with the player to compute its next turn.
+        :param player: The player who is taking a turn.
+        """
+        play = player.compute_turn(self.board_logic.board, self.last_move)
+        real_play = self.compute_real_play(player, play)
+        self.board_logic.addCard(real_play.flag - 1, player.direction, real_play.card)
+        player.finish_turn(real_play.card, next(self.troop_deck))
         self.board_logic.checkAllFlags()
-        self.last_move = (card,flag)
+        self.last_move = real_play
+
+    def compute_real_play(self, player, play):
+        """
+        Compute the "real" play based on an attempted play by player. In the case of
+        an invalid move taken by a player, a move will be chosen at random from the set
+        of valid moves.
+        :param player: The player who is attempting to play
+        :param play: The play attempted by the player
+        :return: A valid play
+        """
+        flag = self.compute_played_flag(play.flag, player.direction)
+        card = self.compute_played_card(play.card, player.hand)
+        return Play(flag=flag, card=card)
 
     def compute_played_flag(self, flag, direction):
+        """
+        Compute the "real" played flag based on an attempted play by the player.
+        :param flag: The flag that is being attempted.
+        :param direction: The direction the player was facing.
+        :return: A guaranteed valid flag.
+        """
         if self.board_logic.is_flag_playable(flag - 1, direction):
             return flag
         return next((f for f in xrange(1, 10) if self.board_logic.is_flag_playable(f - 1, direction)), None)
 
     def compute_played_card(self, card, hand):
+        """
+        Compute the "real" played card based on an attempted play by the player.
+        :param card: The card that is being attempted.
+        :param hand: The players current hand
+        :return: A guaranteed valid card.
+        """
         if card in hand:
             return card
         return hand[0] if hand else None

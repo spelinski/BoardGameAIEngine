@@ -3,6 +3,7 @@ from battleline.player.BattlelinePlayer import Player, SubprocessPlayer
 from battleline.Identifiers import TroopCard, Identifiers
 from battleline.model.Board import Board
 from MockPlayerCommunication import MockPlayerCommunication
+from battleline.model.Play import Play
 
 class TestPlayer(unittest.TestCase):
 
@@ -55,9 +56,9 @@ class TestSubprocessPlayer(unittest.TestCase):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.communication.clear()
         self.communication.add_response("play 4 color1,7")
-        card, flag = self.player.compute_turn(self.initial_board,None)
-        self.assertEquals(card, TroopCard(number=7,color="color1"))
-        self.assertEquals(flag, 4)
+        play = self.player.compute_turn(self.initial_board, None)
+        self.assertEquals(play.card, TroopCard(number=7, color="color1"))
+        self.assertEquals(play.flag, 4)
     
     def test_player_receives_game_state(self):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
@@ -92,7 +93,7 @@ class TestSubprocessPlayer(unittest.TestCase):
     def test_player_receives_game_state_with_last_move(self):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.communication.clear()
-        self.player.compute_turn(self.initial_board,(TroopCard(number=3,color="color4"), 4))
+        self.player.compute_turn(self.initial_board,Play(card=TroopCard(number=3,color="color4"), flag=4))
 
         self.assertEquals(self.communication.messages_received,
           [ "player north hand color1,1 color1,2 color1,3 color1,4 color1,5 color1,6 color1,7",
@@ -131,7 +132,4 @@ class TestSubprocessPlayer(unittest.TestCase):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.player.finish_turn(TroopCard(number=4,color="color1"), None)
         self.assertNotIn(TroopCard(number=4,color="color1"), self.player.hand)
-        self.assertEquals(6,len(self.player.hand))
-        
- 
-    
+        self.assertEquals(6, len(self.player.hand))
