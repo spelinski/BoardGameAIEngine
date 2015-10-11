@@ -6,6 +6,8 @@ Created on Sep 23, 2015
 import unittest
 import sys
 from communcation.PlayerCommunication import PlayerCommunication, BotCommunicationError
+import os
+import time
 
 
 class TestPlayerCommunication(unittest.TestCase):
@@ -44,3 +46,24 @@ class TestPlayerCommunication(unittest.TestCase):
         self.assertRaisesRegexp(
             BotCommunicationError, "Failed to send message because of timeout", localPlayerCommunication.get_response, 0.1)
         localPlayerCommunication.close()
+
+    def test_subprocess_terminated_on_close(self):
+        # Only run the following test on linux (arg!) because the code to check
+        # if a process is still running is super platform specific
+        if "linux" in sys.platform:
+            localPlayerCommunication = PlayerCommunication(self.workingBot)
+            pid = localPlayerCommunication.runningPlayer.pid
+            
+            # Sig 0 doesn't do anything, use it to poke the subprocess
+            os.kill(pid,0)
+            
+            # stop the process and wait a bit
+            localPlayerCommunication.close()
+
+            # An exception will be raised if sig 0 couldn't be delivered
+            # because the process is now gone
+            with self.assertRaises(OSError):
+                os.kill(pid,0)
+        
+      
+

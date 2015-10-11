@@ -60,6 +60,7 @@ class PlayerCommunication(object):
         kill the external process
         """
         self.runningPlayer.kill()
+        self.runningPlayer.wait()
 
 
 class BotCommunicationError(Exception):
