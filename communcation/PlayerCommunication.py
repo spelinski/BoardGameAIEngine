@@ -76,9 +76,9 @@ class PlayerCommunication(object):
         self.runningPlayer.terminate()
 
         # Give the process 5 seconds to shut down
-        countdown = 5/.1 
+        countdown = 5
         while self.runningPlayer.poll() is None:
-            if countdown == 0:
+            if countdown <= 0:
                 return False
             time.sleep(0.1)
             countdown = countdown - 0.1

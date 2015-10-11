@@ -25,10 +25,11 @@ class Bot:
                 if len(line) == 0:
                     continue
 
-                if line == "nahnahstayingalive":
-                    print "MY JAM!"
+                if "nahnahstayingalive" in line:
                     self.staying_alive=True
                     signal.signal(signal.SIGTERM, snuff_signal)
+                    stdout.write("MY JAM!\n")
+                    stdout.flush()
 
                 if line == "testing":
                     try:
