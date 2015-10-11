@@ -128,7 +128,6 @@ class SubprocessPlayer(Player):
         """
         try:
             data = self.parser.parse(self.communication.get_response())
-            print data
             return data["value"]
         except InvalidParseError:
             return default

@@ -5,7 +5,7 @@ Created on Sep 23, 2015
 '''
 import unittest
 import sys
-from communcation.PlayerCommunication import PlayerCommunication, BotCommunicationError, stop_all_programs
+from communcation.PlayerCommunication import PlayerCommunication, BotCommunicationError
 
 
 class TestPlayerCommunication(unittest.TestCase):
@@ -13,10 +13,6 @@ class TestPlayerCommunication(unittest.TestCase):
     def setUp(self):
         self.workingBot = "{} test/mockBot/mockBot.py".format(sys.executable)
         self.nonExistantBot = "{} test/mockBot/dontExist.py".format(sys.executable)
-
-    def tearDown(self):
-
-        stop_all_programs()
 
     def test_should_always_send_without_timout_valid_program(self):
         localPlayerCommunication = PlayerCommunication(self.workingBot)

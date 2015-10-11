@@ -17,10 +17,8 @@ class PlayerCommunication(object):
         Constructor
         @param programWithPath relative path to executable
         """
-        global _all_player_communication_instances
         self.programName = programWithPath
         self.runningPlayer = Popen(programWithPath, stdin=PIPE, stdout=PIPE, shell=True)
-        _all_player_communication_instances.append(self)
 
     def send_message(self, message):
         """
@@ -74,3 +72,4 @@ class BotCommunicationError(Exception):
 
     def __str__(self):
         return "Failed to send message because of {}".format(self.commFailure)
+
