@@ -1,9 +1,11 @@
 from random import shuffle
 
-
 class Deck(object):
     """
-    Deck object
+    A Deck is modeled as an infinite generator that  begins
+    to return None once the deck is empty. Drawing from the 
+    deck is performed by calling next() on the deck as
+    you would any python generator. 
     """
 
     def __init__(self, listOfCards, shuffleDeck=True):
@@ -24,24 +26,16 @@ class Deck(object):
 
     def is_empty(self):
         return self.deck == []
-
-    def draw(self):
+    
+    def next(self):
         """
         draw the next card from the deck
         @raise DeckEmptyError if the deck is empty
         """
         if self.is_empty():
-            raise DeckEmptyError("draw")
+            return None
         return self.deck.pop()
 
+    def __iter__(self):
+        return self
 
-class DeckEmptyError(Exception):
-
-    def __init__(self, attemptedAction):
-        """Create an Exception that the attempted action is not valid
-        @param attemptedAction what was trying to be done on an empty deck
-        """
-        self.attemptedAction = attemptedAction
-
-    def __str__(self):
-        return "Attempted to {} on an empty Deck".format(self.attemptedAction)

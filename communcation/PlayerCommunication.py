@@ -3,11 +3,11 @@ Created on Sep 23, 2015
 
 @author: rohk
 '''
+import subprocess
 from subprocess import Popen, PIPE
 import threading
-import os
-import platform
-
+import shlex
+import time
 
 class PlayerCommunication(object):
     """
@@ -19,17 +19,19 @@ class PlayerCommunication(object):
         Constructor
         @param programWithPath relative path to executable
         """
-        self.programName = programWithPath
-        self.runningPlayer = Popen(
-            "./" + programWithPath, stdin=PIPE, stdout=PIPE, shell=True)
+        shell_command = shlex.split(programWithPath)
+        self.runningPlayer = Popen(shell_command, stdin=PIPE, stdout=PIPE)
 
     def send_message(self, message):
         """
         send a string to the external program
         @param message string to send
         """
-        self.runningPlayer.stdin.write(message + "\n")
-        self.runningPlayer.stdin.flush()
+        if self.runningPlayer.poll() is None: 
+            self.runningPlayer.stdin.write(message + "\n")
+            self.runningPlayer.stdin.flush()
+        else:
+            raise BotCommunicationError("not running, cannot send message")
 
     def get_response(self, timeout=10):
         """
@@ -37,16 +39,19 @@ class PlayerCommunication(object):
         @param timeout amount of time to wait in seconds (default 10)
         @raise BotCommunicationError on a timeout or empty response
         """
-        self.exceptionFromThread = None
-        thread = threading.Thread(target=self.__get_response_thread)
-        thread.daemon = True
-        thread.start()
-        thread.join(timeout)
-        if self.exceptionFromThread is not None:
-            raise self.exceptionFromThread
-        if thread.is_alive():
-            raise BotCommunicationError("timeout")
-        return self.response
+        if self.runningPlayer.poll() is None: 
+            self.exceptionFromThread = None
+            thread = threading.Thread(target=self.__get_response_thread)
+            thread.daemon = True
+            thread.start()
+            thread.join(timeout)
+            if self.exceptionFromThread is not None:
+                raise self.exceptionFromThread
+            if thread.is_alive():
+                raise BotCommunicationError("timeout")
+            return self.response
+        else:
+            raise BotCommunicationError("not running, cannot get response")
 
     def __get_response_thread(self):
         """
@@ -62,7 +67,26 @@ class PlayerCommunication(object):
         """
         kill the external process
         """
-        os.system("pkill -f " + self.programName)
+        if not self.polite_close():
+            self.brutal_close()
+
+
+    def polite_close(self):
+        # Send SIGTERM, to be polite
+        self.runningPlayer.terminate()
+
+        # Give the process 5 seconds to shut down
+        countdown = 5
+        while self.runningPlayer.poll() is None:
+            if countdown <= 0:
+                return False
+            time.sleep(0.1)
+            countdown = countdown - 0.1
+        return True
+
+    def brutal_close(self):
+        self.runningPlayer.kill()
+        self.runningPlayer.wait()
 
 
 class BotCommunicationError(Exception):
@@ -75,3 +99,4 @@ class BotCommunicationError(Exception):
 
     def __str__(self):
         return "Failed to send message because of {}".format(self.commFailure)
+

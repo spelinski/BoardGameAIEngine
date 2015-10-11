@@ -1,5 +1,5 @@
 import unittest
-from mechanics.Deck import Deck, DeckEmptyError
+from mechanics.Deck import Deck 
 
 
 class TestDeck(unittest.TestCase):
@@ -10,27 +10,26 @@ class TestDeck(unittest.TestCase):
 
     def test_can_draw_card_from_deck(self):
         listOfCards = [1]
-        drawnCard = Deck(listOfCards, False).draw()
+        drawnCard = next(Deck(listOfCards, False))
         self.assertEqual(drawnCard, 1)
 
     def test_can_draw_different_cards_from_deck(self):
         listOfCards = [1, 2]
         localDeck = Deck(listOfCards, False)
-        self.assertNotEqual(localDeck.draw(), localDeck.draw())
+        self.assertNotEqual(next(localDeck), next(localDeck))
 
     def test_deck_is_empty_after_drawing_all_cards(self):
         listOfCards = [1, 2]
         localDeck = Deck(listOfCards, False)
-        localDeck.draw()
-        localDeck.draw()
+        next(localDeck)
+        next(localDeck)
         self.assertTrue(localDeck.is_empty())
 
-    def test_error_thrown_when_drawing_from_empty_deck(self):
+    def test_returns_none_when_drawing_from_empty_deck(self):
         listOfCards = [1]
         localDeck = Deck(listOfCards, False)
-        localDeck.draw()
-        self.assertRaisesRegexp(
-            DeckEmptyError, "Attempted to draw on an empty Deck", localDeck.draw)
+        self.assertIsNotNone(next(localDeck))
+        self.assertIsNone(next(localDeck))
 
     def test_deck_shuffle_does_not_change_actual_cards(self):
         listOfCards = list(range(1, 10))
