@@ -1,7 +1,7 @@
 from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
 from battleline.Identifiers import Identifiers
-from itertools import product
+from itertools import product, groupby
 
 
 class BoardLogic:
@@ -13,6 +13,7 @@ class BoardLogic:
         self.playedCardList = []
         self.formationLogic = FormationLogic()
         self.board = Board()
+        self.winner = None
         self.engine = engine
 
     def addCard(self, flag, player, card):
@@ -33,6 +34,30 @@ class BoardLogic:
         """
         return self.board.flags[flag_index].is_playable(direction)
 
+    def __check_winning_conditions(self):
+        self.__check_for_envelopment()
+        self.__check_for_breakthrough()
+
+    def __get_flags_claimed_by_player(self, player):
+        return [flag.is_claimed_by_player(player) for flag in self.board.flags]
+
+    def __check_for_envelopment(self):
+        for player in [Identifiers.NORTH, Identifiers.SOUTH]:
+            numClaimedFlags = len(
+                [x for x in self.__get_flags_claimed_by_player(player) if x])
+            if numClaimedFlags >= 5:
+                self.winner = player
+
+    def __check_for_breakthrough(self):
+        for player in [Identifiers.NORTH, Identifiers.SOUTH]:
+            claimedFlags = self.__get_flags_claimed_by_player(player)
+            consecutiveFlags = [i for i in [
+                list(g) for _, g in groupby(claimedFlags)] if len(i) >= 3]
+            consecutiveClaimedFlags = [
+                claimed for claimed in consecutiveFlags if claimed[0]]
+            if len(consecutiveClaimedFlags) > 0:
+                self.winner = player
+
     def checkAllFlags(self):
         """
         iterates through all of the unclaimed flags checking to see if anymore can be claimed
@@ -42,6 +67,7 @@ class BoardLogic:
             flag for flag in self.board.flags if not flag.is_claimed())
         for flag, player in product(unclaimedFlags, [Identifiers.NORTH, Identifiers.SOUTH]):
             self.__check_individual_flag(flag, player)
+        self.__check_winning_conditions()
 
     def __check_individual_flag(self, flag, player):
         """
