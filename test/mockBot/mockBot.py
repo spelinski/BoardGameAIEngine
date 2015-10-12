@@ -6,9 +6,16 @@ Created on Sep 23, 2015
 '''
 
 from sys import stdin, stdout
+import signal
 
+def snuff_signal(x,y):
+    print "STAYING ALIIIIIIIVE"
+    return 
 
 class Bot:
+
+    def __init__(self):
+        self.staying_alive = False
 
     def run(self):
         while not stdin.closed:
@@ -17,6 +24,12 @@ class Bot:
 
                 if len(line) == 0:
                     continue
+
+                if "nahnahstayingalive" in line:
+                    self.staying_alive=True
+                    signal.signal(signal.SIGTERM, snuff_signal)
+                    stdout.write("MY JAM!\n")
+                    stdout.flush()
 
                 if line == "testing":
                     try:
@@ -27,6 +40,11 @@ class Bot:
 
             except EOFError:
                 return
+            except KeyboardInterrupt:
+                if not self.staying_alive:
+                    raise KeyboardInterrupt()
+                else:
+                    pass
 
     @staticmethod
     def sendMoves(moves):

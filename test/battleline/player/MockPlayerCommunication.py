@@ -7,8 +7,7 @@ class MockPlayerCommunication(object):
         """
         Constructor
         """
-        self.responses = []
-        self.messages_received = []
+        self.clear()
 
     def add_response(self, response):
         self.responses.append(response)
@@ -18,3 +17,8 @@ class MockPlayerCommunication(object):
 
     def get_response(self):
         return self.responses.pop() if self.responses else ""
+
+    def clear(self):
+        self.responses = []
+        self.messages_received = []
+
