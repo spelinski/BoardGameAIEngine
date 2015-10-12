@@ -21,6 +21,7 @@ ACTIONS
 """
 
 import os.path
+from battleline.Identifiers import Identifiers
 
 ACTIONS = ['draw', 'play', 'claim', 'win']
 
@@ -35,17 +36,23 @@ class Output:
         self.fileHandle.close()
 
         self.outputstring = ""
+        self.playerNames= {Identifiers.NORTH:'player1', Identifiers.SOUTH:'player2'}
+
 
     def setup_player_positions(self, playerName, place):
-        self.outputstring = "{} is {}".format(playerName, place)
+        self.playerNames[place] = playerName
+        self.outputstring = "{} is {}".format(self.playerNames[place], place)
         self.__write()
 
-    def action(self, playerName, action, card="", flagNumber=""):
-        self.__set_output_string(playerName, action, card, flagNumber)
+    def action(self, place, action, card="", flagNumber=""):
+        self.__set_output_string(self.playerNames[place], action, card, flagNumber)
         self.__write()
 
     def __set_output_string(self, playerName, action, card, flagNumber):
-        if card == "":
+        if card == None:
+            self.outputstring = "{} {}s nothing".format(
+                playerName, action, flagNumber)
+        elif card == "":
             self.outputstring = "{} {}s {}".format(
                 playerName, action, flagNumber)
         else:

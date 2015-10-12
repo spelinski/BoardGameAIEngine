@@ -1,16 +1,21 @@
-import unittest
+import unittest,itertools,os
 from battleline.engine.BoardLogic import BoardLogic
 from battleline.model.FormationLogic import FormationLogic
 from battleline.model.Flag import FlagAlreadyClaimedError
 from battleline.Identifiers import Identifiers, TroopCard
-import itertools
+from test.battleline.view import testOutput
+from battleline.view.Output import Output
 
-
+class MockOutput(object):
+    def action(self, place, action, card="", flagNumber=""):
+        pass
+    def setup_player_positions(self, playerName, place):
+        pass
 class MockEngine(object):
 
     def __init__(self):
         self.played_cards = []
-
+        self.output_handler = MockOutput()
     def get_unplayed_cards(self):
         return set(get_all_cards()) - set(self.played_cards)
 
@@ -174,7 +179,7 @@ class TestBoardLogic(unittest.TestCase):
                 self.boardLogic.checkAllFlags()
                 self.assertIsNone(self.boardLogic.winner)
                 self.boardLogic.addCard(
-                    flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
+                    flag, Identifiers.NORTH, TroopCard(cardValue, Identifiers.COLORS[colorId]))
         self.boardLogic.checkAllFlags()
         self.assertEqual(self.boardLogic.winner, Identifiers.NORTH)
 
@@ -185,6 +190,6 @@ class TestBoardLogic(unittest.TestCase):
                 self.boardLogic.checkAllFlags()
                 self.assertIsNone(self.boardLogic.winner)
                 self.boardLogic.addCard(
-                    flag, Identifiers.NORTH, (cardValue, Identifiers.COLORS[colorId]))
+                    flag, Identifiers.NORTH, TroopCard(cardValue, Identifiers.COLORS[colorId]))
         self.boardLogic.checkAllFlags()
         self.assertEqual(self.boardLogic.winner, Identifiers.NORTH)

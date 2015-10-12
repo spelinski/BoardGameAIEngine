@@ -3,7 +3,7 @@ from BoardLogic import BoardLogic
 from itertools import product
 from battleline.Identifiers import TroopCard, Identifiers
 from battleline.model.Play import Play
-
+from battleline.view.Output import Output
 
 class BattlelineEngine(object):
     """
@@ -19,17 +19,22 @@ class BattlelineEngine(object):
         self.player1 = player1
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
+        self.output_handler = Output()
         self.board_logic = BoardLogic(self)
         self.last_move = None
-
+        
     def initialize(self):
         """
         Initialize the game
         Deal seven cards to each player
+        Get the names of each player
         """
         initial_cards = [next(self.troop_deck) for _ in range(14)]
         self.player1.new_game(Identifiers.NORTH, initial_cards[::2])
         self.player2.new_game(Identifiers.SOUTH, initial_cards[1::2]) 
+        for i in range(0,14,2):
+            self.output_handler.action(Identifiers.NORTH,"draw",initial_cards[i])
+            self.output_handler.action(Identifiers.SOUTH,"draw",initial_cards[i+1])
 
     def get_troop_cards(self):
         """
@@ -60,7 +65,10 @@ class BattlelineEngine(object):
         play = player.compute_turn(self.board_logic.board, self.last_move)
         real_play = self.compute_real_play(player, play)
         self.board_logic.addCard(real_play.flag - 1, player.direction, real_play.card)
-        player.finish_turn(real_play.card, next(self.troop_deck))
+
+        cardToBeDrawn = next(self.troop_deck)
+        player.finish_turn(real_play.card, cardToBeDrawn)
+        self.output_handler.action(player.direction,"draw",cardToBeDrawn)
         self.board_logic.checkAllFlags()
         self.last_move = real_play
 
