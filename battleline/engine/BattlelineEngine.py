@@ -27,7 +27,6 @@ class BattlelineEngine(object):
         """
         Initialize the game
         Deal seven cards to each player
-        Get the names of each player
         """
         initial_cards = [next(self.troop_deck) for _ in range(14)]
         self.player1.new_game(Identifiers.NORTH, initial_cards[::2])
