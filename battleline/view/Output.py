@@ -17,6 +17,12 @@ ACTIONS
  4. Player wins
 	'name' wins
 
+5 possible commands:
+    <botName> is north
+    <botName> draws <cardNumber> <colorString>
+    <botName> plays <cardNumber> <colorString> <flagNumber>
+    <botName> claims <flagNumber>
+    <botName> wins
 
 """
 
