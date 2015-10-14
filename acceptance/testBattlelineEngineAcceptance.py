@@ -1,7 +1,12 @@
 import unittest
-from battleline.engine.BattlelineEngine import BattlelineEngine
-from test.battleline.engine.testBattlelineEngine import MockPlayer
 from mechanics.Deck import Deck
+from battleline.engine.BattlelineEngine import BattlelineEngine
+from battleline.player.Player import Player
+
+class MockPlayer(Player):
+
+    def compute_turn(self, board, last_move):
+        return Play(card=self.hand[0], flag=self.next_flag)
 
 
 class BattlelineEngineAcceptanceTest(unittest.TestCase):
