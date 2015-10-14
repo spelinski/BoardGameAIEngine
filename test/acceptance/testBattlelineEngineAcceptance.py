@@ -10,6 +10,7 @@ class BattlelineEngineAcceptanceTest(unittest.TestCase):
         engine = BattlelineEngine(MockPlayer(), MockPlayer())
         engine.troop_deck = Deck(sorted(engine.get_troop_cards(), key=lambda x: (
             x[1], x[0]), reverse=True), shuffleDeck=False)
+        engine.run_until_game_end()
         while engine.get_winning_player() == None:
             engine.progress_turn()
         self.assertEquals(engine.get_winning_player(), "Player 1")

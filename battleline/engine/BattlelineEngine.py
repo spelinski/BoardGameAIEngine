@@ -59,6 +59,12 @@ class BattlelineEngine(object):
         """
         return None
 
+    def run_until_game_end(self):
+        """
+        Run until the game ends
+        """
+        pass
+
     def progress_turn(self):
         """
         Perform one turn
