@@ -16,9 +16,10 @@ def main():
         engine.run_until_game_end()
         print "PLAYER : {} HAS WON".format(engine.get_winning_player())
     except:
+        raise
+    finally:
         comm1.close()
         comm2.close()
-        raise
 
 if __name__ == "__main__":
     main()
