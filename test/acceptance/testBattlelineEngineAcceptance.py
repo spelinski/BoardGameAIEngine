@@ -3,6 +3,7 @@ from battleline.engine.BattlelineEngine import BattlelineEngine
 from test.battleline.engine.testBattlelineEngine import MockPlayer
 from mechanics.Deck import Deck
 
+
 class BattlelineEngineAcceptanceTest(unittest.TestCase):
 
     def test_can_run_complete_game(self):
