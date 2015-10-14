@@ -10,5 +10,7 @@ coverage:
 	coverage run --branch -m  unittest discover test -t .
 	coverage run -a --branch -m unittest discover acceptance
 	coverage report -m --skip-covered
+clean-output:
+	rm output*.txt
 test: unit_test acceptance_test
 all: format test coverage
