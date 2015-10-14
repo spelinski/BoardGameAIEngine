@@ -12,6 +12,7 @@ def main():
         player1 = SubprocessPlayer(comm1)
         player2 = SubprocessPlayer(comm2)
         engine = BattlelineEngine(player1, player2)
+        engine.initialize()
         engine.run_until_game_end()
         print "PLAYER : {} HAS WON".format(engine.get_winning_player())
     except:
