@@ -1,12 +1,13 @@
 PY_FILES =$(shell git diff --name-only | grep \.py)
 unit_test:
-	python -m unittest discover test
-acceptance:
-	python -m unittest acceptance_test
+	python -m unittest discover test -t .
+acceptance_test:
+	python -m unittest discover acceptance
 format:
 	@echo $(PY_FILES)
 	autopep8 --in-place --recursive --verbose $(PY_FILES)
 coverage:
-	coverage run --branch -m  unittest discover
+	coverage run --branch -m  unittest discover test -t .
 	coverage report -m --skip-covered
-all: format unit_test coverage
+test: unit_test acceptance_test
+all: format test coverage

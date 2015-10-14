@@ -57,13 +57,14 @@ class BattlelineEngine(object):
         get winning player
         @return the player name that wins, otherwise None
         """
-        return None
+        return self.board_logic.winner
 
     def run_until_game_end(self):
         """
         Run until the game ends
         """
-        pass
+        while self.get_winning_player() is None:
+            self.progress_turn()
 
     def progress_turn(self):
         """
@@ -110,7 +111,7 @@ class BattlelineEngine(object):
         """
         if self.board_logic.is_flag_playable(flag - 1, direction):
             return flag
-        return next((f for f in xrange(1, 10) if self.board_logic.is_flag_playable(f - 1, direction)), None)
+        return self.board_logic.get_first_playable_flag(direction)
 
     def compute_played_card(self, card, hand):
         """
