@@ -2,7 +2,7 @@ import unittest,os
 from itertools import product
 from mechanics.Deck import Deck
 from battleline.engine.BattlelineEngine import BattlelineEngine, TroopCard
-from battleline.player.BattlelinePlayer import Player 
+from battleline.player.BattlelinePlayer import Player
 from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
 from battleline.Identifiers import Identifiers
 from battleline.model.Play import Play
@@ -132,7 +132,12 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                 outputArray.append(move)
         outputArray.append("")
         self.assertEquals(self.__getOutputFileContents(),"\n".join(outputArray))
-        
+
+    def test_winner_can_be_determined(self):
+        for i in xrange(23):
+            self.__play_turn()
+        self.assertEquals("south", self.engine.get_winning_player())
+
 
     def test_invalid_moves_still_produce_a_valid_move(self):
         for i in xrange(4):
@@ -157,12 +162,15 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         outputArray.append("")
         self.assertEquals(self.__getOutputFileContents(),"\n".join(outputArray))
 
+    def test_winner_is_none_to_begin_with(self):
+        self.assertIsNone(self.engine.get_winning_player())
+
     def test_invalid_moves_with_flag_and_card(self):
 
         self.engine.player1.provide_next_turn(TroopCard(1,"blah"), 1)
         self.engine.player2.provide_next_turn(TroopCard(11,"color1"), 1)
         self.engine.progress_turn()
-        
+
         self.assertEquals([TroopCard(color="color1", number=1)],
                           self.engine.board_logic.board.get_flag(1).sides[Identifiers.NORTH])
         self.assertEquals([TroopCard(color="color1", number=2)],
@@ -184,7 +192,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                  TroopCard(color="color1", number=2)])
         self.assertEquals(expected_cards, set(
             self.engine.get_unplayed_cards()))
-    
+
         outputArray=self.startingOutputStringArray
         for move in self.movesList[0]:
             outputArray.append(move)
@@ -199,4 +207,3 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.engine.player1.provide_next_turn(TroopCard(1,"color1"), 1)
         self.engine.player2.provide_next_turn(TroopCard(2,"color1"), 1)
         self.engine.progress_turn()
-
