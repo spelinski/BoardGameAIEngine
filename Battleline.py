@@ -1,3 +1,4 @@
+import argparse
 import sys
 from battleline.engine.BattlelineEngine import BattlelineEngine
 from battleline.player.BattlelinePlayer import SubprocessPlayer
@@ -5,10 +6,10 @@ from communcation.PlayerCommunication import PlayerCommunication
 
 
 def main():
+    args = _get_args()
     try:
-        player1_command, player2_command = sys.argv[1:3]
-        comm1 = PlayerCommunication(player1_command)
-        comm2 = PlayerCommunication(player2_command)
+        comm1 = PlayerCommunication(args.player1)
+        comm2 = PlayerCommunication(args.player2)
         player1 = SubprocessPlayer(comm1)
         player2 = SubprocessPlayer(comm2)
         engine = BattlelineEngine(player1, player2)
@@ -20,6 +21,14 @@ def main():
     finally:
         comm1.close()
         comm2.close()
+
+
+def _get_args():
+    parser = argparse.ArgumentParser(
+        description="Run a Battleline Engine with two bots")
+    parser.add_argument("player1", help="Command to run player 1")
+    parser.add_argument("player2", help="Command to run player 2")
+    return parser.parse_args()
 
 if __name__ == "__main__":
     main()
