@@ -21,8 +21,10 @@ def main():
         comm1.close()
         comm2.close()
 
+
 def _get_args():
-    parser = argparse.ArgumentParser(description="Run a Battleline Engine with two bots")
+    parser = argparse.ArgumentParser(
+        description="Run a Battleline Engine with two bots")
     parser.add_argument("player1", help="Command to run player 1")
     parser.add_argument("player2", help="Command to run player 2")
     return parser.parse_args()
