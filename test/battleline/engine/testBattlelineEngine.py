@@ -154,19 +154,11 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                           "\n".join(outputArray))
 
     def test_players_hands_diminish_if_deck_runs_out(self):
-        for i in xrange(23):
-            self.__play_turn()
+        for _ in xrange(46):
+            next(self.engine.troop_deck)
         self.__play_turn()
         self.assertEquals(6, len(self.engine.player1.hand))
         self.assertEquals(6, len(self.engine.player2.hand))
-        # this hasn't been thouroughly checked, but it seems legit
-        outputArray = self.startingOutputStringArray
-        for turn in self.movesList:
-            for move in turn:
-                outputArray.append(move)
-        outputArray.append("")
-        self.assertEquals(self.__getOutputFileContents(),
-                          "\n".join(outputArray))
 
     def test_winner_can_be_determined(self):
         for i in xrange(23):
@@ -246,3 +238,19 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.engine.player1.provide_next_turn(TroopCard(1, "color1"), 1)
         self.engine.player2.provide_next_turn(TroopCard(2, "color1"), 1)
         self.engine.progress_turn()
+
+    def test_player2_does_not_get_turn_if_player1_wins(self):
+        self.engine.board_logic.addCard(1, Identifiers.NORTH, TroopCard(10, "color1"))
+        self.engine.board_logic.addCard(1, Identifiers.NORTH, TroopCard(9, "color1"))
+        self.engine.board_logic.addCard(1, Identifiers.NORTH, TroopCard(8, "color1"))
+        self.engine.board_logic.addCard(2, Identifiers.NORTH, TroopCard(10, "color4"))
+        self.engine.board_logic.addCard(2, Identifiers.NORTH, TroopCard(9, "color4"))
+        self.engine.board_logic.addCard(2, Identifiers.NORTH, TroopCard(8, "color4"))
+        self.engine.board_logic.addCard(3, Identifiers.NORTH, TroopCard(10, "color3"))
+        self.engine.board_logic.addCard(3, Identifiers.NORTH, TroopCard(9, "color3"))
+        self.engine.board_logic.addCard(3, Identifiers.NORTH, TroopCard(8, "color3"))
+        self.engine.player1.provide_next_turn(TroopCard(1, "color2"), 9)
+        self.engine.player2.provide_next_turn(TroopCard(2, "color2"), 9)
+        self.engine.progress_turn()
+        self.assertEquals(self.engine.last_move.flag,9)
+        self.assertEquals(self.engine.last_move.card, TroopCard(1, "color2"))
