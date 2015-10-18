@@ -240,17 +240,26 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.engine.progress_turn()
 
     def test_player2_does_not_get_turn_if_player1_wins(self):
-        self.engine.board_logic.addCard(1, Identifiers.NORTH, TroopCard(10, "color1"))
-        self.engine.board_logic.addCard(1, Identifiers.NORTH, TroopCard(9, "color1"))
-        self.engine.board_logic.addCard(1, Identifiers.NORTH, TroopCard(8, "color1"))
-        self.engine.board_logic.addCard(2, Identifiers.NORTH, TroopCard(10, "color4"))
-        self.engine.board_logic.addCard(2, Identifiers.NORTH, TroopCard(9, "color4"))
-        self.engine.board_logic.addCard(2, Identifiers.NORTH, TroopCard(8, "color4"))
-        self.engine.board_logic.addCard(3, Identifiers.NORTH, TroopCard(10, "color3"))
-        self.engine.board_logic.addCard(3, Identifiers.NORTH, TroopCard(9, "color3"))
-        self.engine.board_logic.addCard(3, Identifiers.NORTH, TroopCard(8, "color3"))
+        self.engine.board_logic.addCard(
+            1, Identifiers.NORTH, TroopCard(10, "color1"))
+        self.engine.board_logic.addCard(
+            1, Identifiers.NORTH, TroopCard(9, "color1"))
+        self.engine.board_logic.addCard(
+            1, Identifiers.NORTH, TroopCard(8, "color1"))
+        self.engine.board_logic.addCard(
+            2, Identifiers.NORTH, TroopCard(10, "color4"))
+        self.engine.board_logic.addCard(
+            2, Identifiers.NORTH, TroopCard(9, "color4"))
+        self.engine.board_logic.addCard(
+            2, Identifiers.NORTH, TroopCard(8, "color4"))
+        self.engine.board_logic.addCard(
+            3, Identifiers.NORTH, TroopCard(10, "color3"))
+        self.engine.board_logic.addCard(
+            3, Identifiers.NORTH, TroopCard(9, "color3"))
+        self.engine.board_logic.addCard(
+            3, Identifiers.NORTH, TroopCard(8, "color3"))
         self.engine.player1.provide_next_turn(TroopCard(1, "color2"), 9)
         self.engine.player2.provide_next_turn(TroopCard(2, "color2"), 9)
         self.engine.progress_turn()
-        self.assertEquals(self.engine.last_move.flag,9)
+        self.assertEquals(self.engine.last_move.flag, 9)
         self.assertEquals(self.engine.last_move.card, TroopCard(1, "color2"))
