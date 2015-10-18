@@ -246,3 +246,14 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.engine.player1.provide_next_turn(TroopCard(1, "color1"), 1)
         self.engine.player2.provide_next_turn(TroopCard(2, "color1"), 1)
         self.engine.progress_turn()
+
+    def test_player2_does_not_get_turn_if_player1_wins(self):
+        for number in [10, 9, 8]:
+            self.engine.board_logic.addCard(
+                2, Identifiers.NORTH, TroopCard(number, "color1"))
+
+        self.engine.player1.provide_next_turn(TroopCard(1, "color2"), 3)
+        self.engine.player2.provide_next_turn(TroopCard(2, "color2"), 3)
+        self.engine.progress_turn()
+        self.assertEquals(self.engine.last_move.flag, 1)
+        self.assertEquals(self.engine.last_move.card, TroopCard(2, "color2"))
