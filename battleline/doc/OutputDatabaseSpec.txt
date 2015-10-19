@@ -1,0 +1,9 @@
+Game: Capped to 10,000 games
+
+contains
+
+northPlayerName: String
+southPlayerName: String
+actionsTaken: Array of Strings
+winner: String
+date: String
