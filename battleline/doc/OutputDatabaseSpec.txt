@@ -1,0 +1,23 @@
+Game: Capped to 10,000 games
+
+contains
+
+northPlayerName: String
+southPlayerName: String
+actionsTaken: Array of Strings
+winner: String
+date: String
+
+
+Example:
+Game {
+    northPlayerName : "synergyBot",
+    southPlayerName : "chaosBot",
+    actionsTaken : ["player2 plays 9 color2 1",
+                    "player2 draws 8 color3",
+                    "player1 plays 4 color6 4",
+                    "player1 draws 5 color5",
+                    "player2 claims 4"]
+    winner : "synergyBot",
+    date : "2015-10-19T18:02:31.577Z"
+}
