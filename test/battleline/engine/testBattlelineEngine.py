@@ -239,7 +239,6 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.engine.player2.provide_next_turn(TroopCard(2, "color1"), 1)
         self.engine.progress_turn()
 
-<<<<<<< HEAD
     def test_player2_does_not_get_turn_if_player1_wins(self):
         self.engine.board_logic.addCard(
             1, Identifiers.NORTH, TroopCard(10, "color1"))
