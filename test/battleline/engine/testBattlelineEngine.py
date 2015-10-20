@@ -264,7 +264,6 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals(self.engine.last_move.flag, 9)
         self.assertEquals(self.engine.last_move.card, TroopCard(1, "color2"))
 
-
     def test_flag_cannot_be_played_if_already_claimed(self):
         for number in [10, 9, 8]:
             self.engine.board_logic.addCard(
