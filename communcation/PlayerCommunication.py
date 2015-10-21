@@ -72,7 +72,6 @@ class PlayerCommunication(object):
 
 
     def polite_close(self):
-        import sys
         # Send SIGTERM, to be polite
         self.runningPlayer.terminate()
 
