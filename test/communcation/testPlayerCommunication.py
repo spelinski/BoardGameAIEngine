@@ -62,47 +62,48 @@ class TestPlayerCommunication(unittest.TestCase):
 
         
 
-if "linux" in sys.platform:
-    class TestPlayerCommunicationShutdown(unittest.TestCase):
-        
-        def setUp(self):
-            self.workingBot = "{} test/mockBot/mockBot.py".format(sys.executable)
-        
-        def test_subprocess_terminated_on_close(self):
-            localPlayerCommunication = PlayerCommunication(self.workingBot)
-            self.assert_comms_closed(localPlayerCommunication)
-        
-        def test_subprocess_terminated_on_close_with_input(self):
-            localPlayerCommunication = PlayerCommunication(self.workingBot)
-            localPlayerCommunication.send_message("testing")
-            self.assert_comms_closed(localPlayerCommunication)
-        
-        def test_subprocess_terminated_on_close_with_bad_input(self):
-            localPlayerCommunication = PlayerCommunication(self.workingBot)
-            localPlayerCommunication.send_message("fail")
-            self.assert_comms_closed(localPlayerCommunication)
-        
-        def test_subprocess_ignores_sigterm(self):
-            localPlayerCommunication = PlayerCommunication(self.workingBot)
-            localPlayerCommunication.send_message("nahnahstayingalive")
-            responseFromBot = localPlayerCommunication.get_response()
-            self.assertIn("MY JAM!", responseFromBot)
-            self.assert_comms_closed(localPlayerCommunication)
+class TestPlayerCommunicationShutdown(unittest.TestCase):
+    
+    def setUp(self):
+        self.workingBot = "{} test/mockBot/mockBot.py".format(sys.executable)
+    
+    def test_subprocess_terminated_on_close(self):
+        localPlayerCommunication = PlayerCommunication(self.workingBot)
+        self.assert_comms_closed(localPlayerCommunication)
+    
+    def test_subprocess_terminated_on_close_with_input(self):
+        localPlayerCommunication = PlayerCommunication(self.workingBot)
+        localPlayerCommunication.send_message("testing")
+        self.assert_comms_closed(localPlayerCommunication)
+    
+    def test_subprocess_terminated_on_close_with_bad_input(self):
+        localPlayerCommunication = PlayerCommunication(self.workingBot)
+        localPlayerCommunication.send_message("fail")
+        self.assert_comms_closed(localPlayerCommunication)
+    
+    def test_subprocess_ignores_sigterm(self):
+        def fake_terminate():
+            pass
 
-        def assert_comms_closed(self, comms):
-            pid = comms.runningPlayer.pid
-            
-            # Sig 0 doesn't do anything, use it to poke the subprocess
+        localPlayerCommunication = PlayerCommunication(self.workingBot)
+        localPlayerCommunication.runningPlayer.terminate = fake_terminate
+        localPlayerCommunication.send_message("nahnahstayingalive")
+        responseFromBot = localPlayerCommunication.get_response()
+        self.assertIn("MY JAM!", responseFromBot)
+        self.assert_comms_closed(localPlayerCommunication)
+
+    def assert_comms_closed(self, comms):
+        pid = comms.runningPlayer.pid
+        
+        # Sig 0 doesn't do anything, use it to poke the subprocess
+        os.kill(pid,0)
+        
+        # stop the process and wait a bit
+        comms.close()
+
+        # An exception will be raised if sig 0 couldn't be delivered
+        # because the process is now gone
+        with self.assertRaises(OSError):
             os.kill(pid,0)
-            
-            # stop the process and wait a bit
-            comms.close()
-
-            # An exception will be raised if sig 0 couldn't be delivered
-            # because the process is now gone
-            with self.assertRaises(OSError):
-                os.kill(pid,0)
-               
-          
         
 
