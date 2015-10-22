@@ -51,6 +51,9 @@ class Flag(object):
         @param player Player side to check
         """
         self.__raise_error_if_invalid_player(player)
+        return self.__is_under_max_capacity(player) and self.claimed is None
+
+    def __is_under_max_capacity(self, player):
         return len(self.sides[player]) < self.MAX_CARDS_PER_SIDE
 
     def claim(self, player):
@@ -75,7 +78,7 @@ class Flag(object):
             raise InvalidPlayerError(player)
 
     def __raise_error_if_card_can_not_be_played(self, player):
-        if not self.is_playable(player):
+        if not self.__is_under_max_capacity(player):
             raise TooManyCardsOnOneSideError(player)
         if self.is_claimed():
             raise FlagAlreadyClaimedError(player)

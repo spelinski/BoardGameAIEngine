@@ -59,3 +59,8 @@ class TestFlag(unittest.TestCase):
         self.flag.claim(Identifiers.NORTH)
         self.assertRaisesRegexp(FlagAlreadyClaimedError, "south is attempting to place card on already claimed flag.",
                                 self.flag.add_card, Identifiers.SOUTH, self.card)
+
+    def test_flag_is_not_playable_if_claimed(self):
+        self.flag.claim(Identifiers.NORTH)
+        self.assertFalse(self.flag.is_playable(Identifiers.NORTH))
+        self.assertFalse(self.flag.is_playable(Identifiers.SOUTH))
