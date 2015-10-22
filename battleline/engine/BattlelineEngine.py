@@ -71,7 +71,8 @@ class BattlelineEngine(object):
         Perform one turn
         """
         self.compute_player_turn(self.player1)
-        self.compute_player_turn(self.player2)
+        if self.get_winning_player() is None:
+            self.compute_player_turn(self.player2)
 
     def compute_player_turn(self, player):
         """
