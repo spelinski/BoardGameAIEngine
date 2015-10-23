@@ -3,13 +3,13 @@ import os
 from itertools import product
 from mechanics.Deck import Deck
 from battleline.engine.BattlelineEngine import BattlelineEngine, TroopCard
-from battleline.player.BattlelinePlayer import Player
+from battleline.player.BattlelinePlayer import SubprocessPlayer
 from test.battleline.player.MockPlayerCommunication import MockPlayerCommunication
 from battleline.Identifiers import Identifiers
 from battleline.model.Play import Play
 
 
-class MockPlayer(Player):
+class MockPlayer(SubprocessPlayer):
 
     def provide_next_turn(self, next_card, next_flag):
         self.next_card = next_card
@@ -20,7 +20,8 @@ class MockPlayer(Player):
 
 
 def get_engine_with_ordered_cards():
-    engine = BattlelineEngine(MockPlayer(), MockPlayer())
+    communication = MockPlayerCommunication()
+    engine = BattlelineEngine(MockPlayer(communication), MockPlayer(communication))
 
     # reinitialize the deck with a non shuffled deck to make things more reliable
     # don't do this in production code, the deck should be shuffled in real
@@ -50,71 +51,77 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
     def setUp(self):
         self.engine = get_engine_with_ordered_cards()
         self.engine.initialize()
+        # list of identifiers for which bot is in which position, SubprocessPlayer names default to the position name
+        self.moreFirsterThanStartingArray = ["north is north", "south is south"]
         # list of cards that are drawn at the beginning of the game
-        self.startingOutputStringArray = ["player1 draws 1 color1 ", "player2 draws 2 color1 ",
-                                          "player1 draws 3 color1 ", "player2 draws 4 color1 ",
-                                          "player1 draws 5 color1 ", "player2 draws 6 color1 ",
-                                          "player1 draws 7 color1 ", "player2 draws 8 color1 ",
-                                          "player1 draws 9 color1 ", "player2 draws 10 color1 ",
-                                          "player1 draws 1 color2 ", "player2 draws 2 color2 ",
-                                          "player1 draws 3 color2 ", "player2 draws 4 color2 "]
+        self.startingOutputStringArray = ["north draws 1 color1 ", "south draws 2 color1 ",
+                                          "north draws 3 color1 ", "south draws 4 color1 ",
+                                          "north draws 5 color1 ", "south draws 6 color1 ",
+                                          "north draws 7 color1 ", "south draws 8 color1 ",
+                                          "north draws 9 color1 ", "south draws 10 color1 ",
+                                          "north draws 1 color2 ", "south draws 2 color2 ",
+                                          "north draws 3 color2 ", "south draws 4 color2 "]
         # list of moves that all of the tests perform...edit at your own risk
-        self.movesList = [["player1 plays 1 color1 0", "player1 draws 5 color2 ", "player2 plays 2 color1 0", "player2 draws 6 color2 "],
-                          ["player1 plays 3 color1 0", "player1 draws 7 color2 ",
-                              "player2 plays 4 color1 0", "player2 draws 8 color2 "],
-                          ["player1 plays 5 color1 0", "player1 draws 9 color2 ",
-                              "player2 plays 6 color1 0", "player2 draws 10 color2 ", "player2 claims 0"],
-                          ["player1 plays 7 color1 1", "player1 draws 1 color3 ",
-                              "player2 plays 8 color1 1", "player2 draws 2 color3 "],
-                          ["player1 plays 9 color1 1", "player1 draws 3 color3 ",
-                              "player2 plays 10 color1 1", "player2 draws 4 color3 "],
-                          ["player1 plays 1 color2 1", "player1 draws 5 color3 ",
-                              "player2 plays 2 color2 1", "player2 draws 6 color3 ", "player2 claims 1"],
-                          ["player1 plays 3 color2 2", "player1 draws 7 color3 ",
-                              "player2 plays 4 color2 2", "player2 draws 8 color3 "],
-                          ["player1 plays 5 color2 2", "player1 draws 9 color3 ",
-                              "player2 plays 6 color2 2", "player2 draws 10 color3 "],
-                          ["player1 plays 7 color2 2", "player1 draws 1 color4 ", "player2 plays 8 color2 2",
-                              "player2 draws 2 color4 ", "player2 claims 2", "player2 wins "],
-                          ["player1 plays 9 color2 3", "player1 draws 3 color4 ", "player2 wins ",
-                              "player2 plays 10 color2 3", "player2 draws 4 color4 ", "player2 wins "],
-                          ["player1 plays 1 color3 3", "player1 draws 5 color4 ", "player2 wins ",
-                              "player2 plays 2 color3 3", "player2 draws 6 color4 ", "player2 wins "],
-                          ["player1 plays 3 color3 3", "player1 draws 7 color4 ", "player2 wins ",
-                              "player2 plays 4 color3 3", "player2 draws 8 color4 ", "player2 claims 3", "player2 wins "],
-                          ["player1 plays 5 color3 4", "player1 draws 9 color4 ", "player2 wins ",
-                              "player2 plays 6 color3 4", "player2 draws 10 color4 ", "player2 wins "],
-                          ["player1 plays 7 color3 4", "player1 draws 1 color5 ", "player2 wins ",
-                              "player2 plays 8 color3 4", "player2 draws 2 color5 ", "player2 wins "],
-                          ["player1 plays 9 color3 4", "player1 draws 3 color5 ", "player2 wins ", "player2 plays 10 color3 4",
-                              "player2 draws 4 color5 ", "player2 claims 4", "player2 wins ", "player2 wins "],
-                          ["player1 plays 1 color4 5", "player1 draws 5 color5 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 2 color4 5", "player2 draws 6 color5 ", "player2 wins ", "player2 wins "],
-                          ["player1 plays 3 color4 5", "player1 draws 7 color5 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 4 color4 5", "player2 draws 8 color5 ", "player2 wins ", "player2 wins "],
-                          ["player1 plays 5 color4 5", "player1 draws 9 color5 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 6 color4 5", "player2 draws 10 color5 ", "player2 claims 5", "player2 wins ", "player2 wins "],
-                          ["player1 plays 7 color4 6", "player1 draws 1 color6 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 8 color4 6", "player2 draws 2 color6 ", "player2 wins ", "player2 wins "],
-                          ["player1 plays 9 color4 6", "player1 draws 3 color6 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 10 color4 6", "player2 draws 4 color6 ", "player2 wins ", "player2 wins "],
-                          ["player1 plays 1 color5 6", "player1 draws 5 color6 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 2 color5 6", "player2 draws 6 color6 ", "player2 claims 6", "player2 wins ", "player2 wins "],
-                          ["player1 plays 3 color5 7", "player1 draws 7 color6 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 4 color5 7", "player2 draws 8 color6 ", "player2 wins ", "player2 wins "],
-                          ["player1 plays 5 color5 7", "player1 draws 9 color6 ", "player2 wins ", "player2 wins ",
-                              "player2 plays 6 color5 7", "player2 draws 10 color6 ", "player2 wins ", "player2 wins "],
-                          ["player1 plays 7 color5 7", "player1 draws nothing", "player2 wins ", "player2 wins ", "player2 plays 8 color5 7", "player2 draws nothing", "player2 claims 7", "player2 wins ", "player2 wins "]]
+        self.movesList = [["north plays 1 color1 0", "north draws 5 color2 ", "south plays 2 color1 0", "south draws 6 color2 "],
+                          ["north plays 3 color1 0", "north draws 7 color2 ",
+                              "south plays 4 color1 0", "south draws 8 color2 "],
+                          ["north plays 5 color1 0", "north draws 9 color2 ",
+                              "south plays 6 color1 0", "south draws 10 color2 ", "south claims 0"],
+                          ["north plays 7 color1 1", "north draws 1 color3 ",
+                              "south plays 8 color1 1", "south draws 2 color3 "],
+                          ["north plays 9 color1 1", "north draws 3 color3 ",
+                              "south plays 10 color1 1", "south draws 4 color3 "],
+                          ["north plays 1 color2 1", "north draws 5 color3 ",
+                              "south plays 2 color2 1", "south draws 6 color3 ", "south claims 1"],
+                          ["north plays 3 color2 2", "north draws 7 color3 ",
+                              "south plays 4 color2 2", "south draws 8 color3 "],
+                          ["north plays 5 color2 2", "north draws 9 color3 ",
+                              "south plays 6 color2 2", "south draws 10 color3 "],
+                          ["north plays 7 color2 2", "north draws 1 color4 ", "south plays 8 color2 2",
+                              "south draws 2 color4 ", "south claims 2", "south wins "],
+                          ["north plays 9 color2 3", "north draws 3 color4 ", "south wins ",
+                              "south plays 10 color2 3", "south draws 4 color4 ", "south wins "],
+                          ["north plays 1 color3 3", "north draws 5 color4 ", "south wins ",
+                              "south plays 2 color3 3", "south draws 6 color4 ", "south wins "],
+                          ["north plays 3 color3 3", "north draws 7 color4 ", "south wins ",
+                              "south plays 4 color3 3", "south draws 8 color4 ", "south claims 3", "south wins "],
+                          ["north plays 5 color3 4", "north draws 9 color4 ", "south wins ",
+                              "south plays 6 color3 4", "south draws 10 color4 ", "south wins "],
+                          ["north plays 7 color3 4", "north draws 1 color5 ", "south wins ",
+                              "south plays 8 color3 4", "south draws 2 color5 ", "south wins "],
+                          ["north plays 9 color3 4", "north draws 3 color5 ", "south wins ", "south plays 10 color3 4",
+                              "south draws 4 color5 ", "south claims 4", "south wins ", "south wins "],
+                          ["north plays 1 color4 5", "north draws 5 color5 ", "south wins ", "south wins ",
+                              "south plays 2 color4 5", "south draws 6 color5 ", "south wins ", "south wins "],
+                          ["north plays 3 color4 5", "north draws 7 color5 ", "south wins ", "south wins ",
+                              "south plays 4 color4 5", "south draws 8 color5 ", "south wins ", "south wins "],
+                          ["north plays 5 color4 5", "north draws 9 color5 ", "south wins ", "south wins ",
+                              "south plays 6 color4 5", "south draws 10 color5 ", "south claims 5", "south wins ", "south wins "],
+                          ["north plays 7 color4 6", "north draws 1 color6 ", "south wins ", "south wins ",
+                              "south plays 8 color4 6", "south draws 2 color6 ", "south wins ", "south wins "],
+                          ["north plays 9 color4 6", "north draws 3 color6 ", "south wins ", "south wins ",
+                              "south plays 10 color4 6", "south draws 4 color6 ", "south wins ", "south wins "],
+                          ["north plays 1 color5 6", "north draws 5 color6 ", "south wins ", "south wins ",
+                              "south plays 2 color5 6", "south draws 6 color6 ", "south claims 6", "south wins ", "south wins "],
+                          ["north plays 3 color5 7", "north draws 7 color6 ", "south wins ", "south wins ",
+                              "south plays 4 color5 7", "south draws 8 color6 ", "south wins ", "south wins "],
+                          ["north plays 5 color5 7", "north draws 9 color6 ", "south wins ", "south wins ",
+                              "south plays 6 color5 7", "south draws 10 color6 ", "south wins ", "south wins "],
+                          ["north plays 7 color5 7", "north draws nothing", "south wins ", "south wins ", "south plays 8 color5 7", "south draws nothing", "south claims 7", "south wins ", "south wins "]]
 
     def __getOutputFileContents(self):
         with open(self.engine.output_handler.filename) as f:
             data = f.read()
         return data
 
+    def __getStartingString(self):
+        return self.moreFirsterThanStartingArray + self.startingOutputStringArray
+
     def tearDown(self):
         os.remove(self.engine.output_handler.filename)
+        #pass
 
-    def test_each_player_starts_with_7_cards_after_initialization(self):
+    def test_each_player_starts_with_names_and_with_7_cards_after_initialization(self):
         self.assertEquals([TroopCard(1, "color1"),
                            TroopCard(3, "color1"),
                            TroopCard(5, "color1"),
@@ -130,9 +137,14 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
                            TroopCard(2, "color2"),
                            TroopCard(4, "color2")], self.engine.player2.hand)
 
+        trueStartingString = self.__getStartingString()
+        trueStartingString.append("")
+        self.assertEquals(self.__getOutputFileContents(), "\n".join(trueStartingString))
+        '''
         self.startingOutputStringArray.append("")
         self.assertEquals(self.__getOutputFileContents(),
                           "\n".join(self.startingOutputStringArray))
+        '''
 
     def test_one_turn_plays_a_troop_and_draws_new_one(self):
         # make new copies of the hand
@@ -145,7 +157,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertHandsDifferBy1(player2_hand, self.engine.player2.hand)
         self.assertNotIn(TroopCard(1, "color1"), self.engine.player1.hand)
         self.assertNotIn(TroopCard(2, "color1"), self.engine.player1.hand)
-        outputArray = self.startingOutputStringArray
+        outputArray = self.__getStartingString()
         for move in self.movesList[0]:
             outputArray.append(move)
 
@@ -181,7 +193,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals([TroopCard(color="color1", number=8)],
                           self.engine.board_logic.board.get_flag(2).sides[Identifiers.SOUTH])
 
-        outputArray = self.startingOutputStringArray
+        outputArray = self.__getStartingString()
         for turn in self.movesList[:4]:
             for move in turn:
                 outputArray.append(move)
@@ -203,7 +215,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals([TroopCard(color="color1", number=2)],
                           self.engine.board_logic.board.get_flag(1).sides[Identifiers.SOUTH])
 
-        outputArray = self.startingOutputStringArray
+        outputArray = self.__getStartingString()
         for move in self.movesList[0]:
             outputArray.append(move)
 
@@ -222,7 +234,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals(expected_cards, set(
             self.engine.get_unplayed_cards()))
 
-        outputArray = self.startingOutputStringArray
+        outputArray = self.__getStartingString()
         for move in self.movesList[0]:
             outputArray.append(move)
 
