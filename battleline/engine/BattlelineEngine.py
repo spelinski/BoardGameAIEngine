@@ -32,11 +32,13 @@ class BattlelineEngine(object):
         initial_cards = [next(self.troop_deck) for _ in range(14)]
         self.player1.new_game(Identifiers.NORTH, initial_cards[::2])
         self.player2.new_game(Identifiers.SOUTH, initial_cards[1::2])
+        self.output_handler.setup_player_positions(self.player1.name, Identifiers.NORTH)
+        self.output_handler.setup_player_positions(self.player2.name, Identifiers.SOUTH)
         for i in range(0, 14, 2):
             self.output_handler.action(
-                Identifiers.NORTH, "draw", initial_cards[i])
+                self.player1.name, "draw", initial_cards[i])
             self.output_handler.action(
-                Identifiers.SOUTH, "draw", initial_cards[i + 1])
+                self.player2.name, "draw", initial_cards[i + 1])
 
     def get_troop_cards(self):
         """
@@ -86,7 +88,7 @@ class BattlelineEngine(object):
 
         cardToBeDrawn = next(self.troop_deck)
         player.finish_turn(real_play.card, cardToBeDrawn)
-        self.output_handler.action(player.direction, "draw", cardToBeDrawn)
+        self.output_handler.action(player.name, "draw", cardToBeDrawn)
         self.board_logic.checkAllFlags()
         self.last_move = real_play
 
