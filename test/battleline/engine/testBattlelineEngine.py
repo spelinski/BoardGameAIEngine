@@ -264,7 +264,6 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.assertEquals(self.engine.last_move.flag, 9)
         self.assertEquals(self.engine.last_move.card, TroopCard(1, "color2"))
 
-
     def test_flag_cannot_be_played_if_already_claimed(self):
         for number in [10, 9, 8]:
             self.engine.board_logic.addCard(
@@ -275,3 +274,18 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         self.engine.progress_turn()
         self.assertEquals(self.engine.last_move.flag, 1)
         self.assertEquals(self.engine.last_move.card, TroopCard(2, "color2"))
+
+    def test_player2_does_not_get_turn_if_player1_wins(self):
+        for flag in xrange(9):
+            self.engine.board_logic.addCard(
+                flag, Identifiers.SOUTH, TroopCard(1, "color1"))
+            self.engine.board_logic.addCard(
+                flag, Identifiers.SOUTH, TroopCard(2, "color1"))
+            self.engine.board_logic.addCard(
+                flag, Identifiers.SOUTH, TroopCard(3, "color1"))
+
+        self.engine.player1.provide_next_turn(TroopCard(1, "color2"), 9)
+        self.engine.player2.provide_next_turn(TroopCard(2, "color2"), 9)
+        self.engine.progress_turn()
+        self.assertEquals(self.engine.last_move.flag, 9)
+        self.assertEquals(self.engine.last_move.card, TroopCard(1, "color2"))

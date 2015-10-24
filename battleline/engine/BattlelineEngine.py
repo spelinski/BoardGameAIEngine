@@ -81,14 +81,15 @@ class BattlelineEngine(object):
         """
         play = player.compute_turn(self.board_logic.board, self.last_move)
         real_play = self.compute_real_play(player, play)
-        self.board_logic.addCard(
-            real_play.flag - 1, player.direction, real_play.card)
+        if real_play.flag is not None:
+            self.board_logic.addCard(
+                real_play.flag - 1, player.direction, real_play.card)
 
-        cardToBeDrawn = next(self.troop_deck)
-        player.finish_turn(real_play.card, cardToBeDrawn)
-        self.output_handler.action(player.direction, "draw", cardToBeDrawn)
-        self.board_logic.checkAllFlags()
-        self.last_move = real_play
+            cardToBeDrawn = next(self.troop_deck)
+            player.finish_turn(real_play.card, cardToBeDrawn)
+            self.output_handler.action(player.direction, "draw", cardToBeDrawn)
+            self.board_logic.checkAllFlags()
+            self.last_move = real_play
 
     def compute_real_play(self, player, play):
         """
