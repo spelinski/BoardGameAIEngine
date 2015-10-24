@@ -25,7 +25,7 @@ class BoardLogic:
         @param card the card to be added
         """
         self.board.flags[flag].add_card(player, card)
-        self.engine.output_handler.action(player, "play", card, flag)
+        self.engine.output_handler.action(player, "play", card, flag + 1)
         self.latestPlayer = player
 
     def is_flag_playable(self, flag_index, direction):
@@ -89,11 +89,11 @@ class BoardLogic:
                 if len(enemyCards) != flag.MAX_CARDS_PER_SIDE or self.latestPlayer != player:
                     flag.claim(player)
                     self.engine.output_handler.action(
-                        player, "claim", flagNumber=index)
+                        player, "claim", flagNumber=index + 1)
             elif self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards:
                 flag.claim(player)
                 self.engine.output_handler.action(
-                    player, "claim", flagNumber=index)
+                    player, "claim", flagNumber=index + 1)
 
     def __get_enemy(self, player):
         """
