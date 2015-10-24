@@ -146,6 +146,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         trueStartingString.append("")
         self.assertEquals(
             self.__getOutputFileContents(), "\n".join(trueStartingString))
+
         '''
         self.startingOutputStringArray.append("")
         self.assertEquals(self.__getOutputFileContents(),
