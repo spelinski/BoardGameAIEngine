@@ -29,8 +29,6 @@ ACTIONS
 import os.path
 from battleline.Identifiers import Identifiers
 
-ACTIONS = ['draw', 'play', 'claim', 'win']
-
 
 class Output:
 
@@ -42,28 +40,35 @@ class Output:
         self.fileHandle.close()
 
         self.outputstring = ""
-        self.playerNames= {Identifiers.NORTH:'player1', Identifiers.SOUTH:'player2'}
-
+        self.playerNames = {Identifiers.NORTH: 'player1',
+                            Identifiers.SOUTH: 'player2'}
 
     def setup_player_positions(self, playerName, place):
         self.playerNames[place] = playerName
         self.outputstring = "{} is {}".format(self.playerNames[place], place)
         self.__write()
 
-    def action(self, place, action, card="", flagNumber=""):
-        self.__set_output_string(self.playerNames[place], action, card, flagNumber)
+    def play_action(self, place, card, flagNumber):
+        self.outputstring = "{} plays {} {} {}".format(
+            self.playerNames[place], str(card.number), card.color, str(flagNumber))
         self.__write()
 
-    def __set_output_string(self, playerName, action, card, flagNumber):
+    def draw_action(self, place, card):
         if card == None:
-            self.outputstring = "{} {}s nothing".format(
-                playerName, action, flagNumber)
-        elif card == "":
-            self.outputstring = "{} {}s {}".format(
-                playerName, action, flagNumber)
+            self.outputstring = self.playerNames[place] + " plays nothing"
         else:
-            self.outputstring = "{} {}s {} {} {}".format(
-                playerName, action, card.number, card.color, flagNumber)
+            self.outputstring = "{} draws {} {}".format(
+                self.playerNames[place], str(card.number), card.color)
+        self.__write()
+
+    def claim_action(self, place, flagNumber):
+        self.outputstring = self.playerNames[
+            place] + " claims " + str(flagNumber)
+        self.__write()
+
+    def declare_winner(self, place):
+        self.outputstring = self.playerNames[place] + " wins"
+        self.__write()
 
     def __write(self):
         self.fileHandle = open(self.filename, 'a')
