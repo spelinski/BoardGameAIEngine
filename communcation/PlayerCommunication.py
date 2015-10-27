@@ -14,13 +14,13 @@ class PlayerCommunication(object):
     Class to communicate back and forth with an external program
     """
 
-    def __init__(self, programWithPath):
+    def __init__(self, program, workdir=None):
         """
         Constructor
         @param programWithPath relative path to executable
         """
-        shell_command = shlex.split(programWithPath)
-        self.runningPlayer = Popen(shell_command, stdin=PIPE, stdout=PIPE)
+        shell_command = shlex.split(program)
+        self.runningPlayer = Popen(shell_command, cwd=workdir, stdin=PIPE, stdout=PIPE)
 
     def send_message(self, message):
         """
