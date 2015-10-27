@@ -37,6 +37,9 @@ class Bot:
                         stdout.flush()
                     except:
                         pass
+                
+                if line == "die":
+                    exit()
 
             except EOFError:
                 return
