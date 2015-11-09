@@ -27,10 +27,20 @@ class TestOutput(unittest.TestCase):
         self.assertEqual(self.output.outputstring.rstrip(),
                          "player1 draws 1 puce")
 
+    def test_output_draw_none(self):
+        self.output.draw_action(Identifiers.NORTH, None)
+        self.assertEqual(self.output.outputstring.rstrip(),
+                         "player1 draws nothing")
+
     def test_output_play_card(self):
         self.output.play_action(Identifiers.NORTH, TroopCard(1, "puce"), 1)
         self.assertEqual(self.output.outputstring.rstrip(),
                          "player1 plays 1 puce 1")
+
+    def test_output_play_nothing(self):
+        self.output.play_action(Identifiers.NORTH, None, 1)
+        self.assertEqual(self.output.outputstring.rstrip(),
+                         "player1 plays nothing")
 
     def test_output_claim_flag(self):
         self.output.claim_action(Identifiers.NORTH, 1)

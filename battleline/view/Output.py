@@ -49,13 +49,16 @@ class Output:
         self.__write()
 
     def play_action(self, place, card, flagNumber):
-        self.outputstring = "{} plays {} {} {}".format(
-            self.playerNames[place], str(card.number), card.color, str(flagNumber))
+        if card == None:
+            self.outputstring = self.playerNames[place] + " plays nothing"
+        else:
+            self.outputstring = "{} plays {} {} {}".format(
+                self.playerNames[place], str(card.number), card.color, str(flagNumber))
         self.__write()
 
     def draw_action(self, place, card):
         if card == None:
-            self.outputstring = self.playerNames[place] + " plays nothing"
+            self.outputstring = self.playerNames[place] + " draws nothing"
         else:
             self.outputstring = "{} draws {} {}".format(
                 self.playerNames[place], str(card.number), card.color)

@@ -54,5 +54,8 @@ class MockGameEntry(object):
             if name == "$push":
                 for realName in update_json[name]:
                     self.entry_info[realName] = [update_json[name][realName]]
+            elif name == "$set":
+                for realName in update_json[name]:
+                    self.entry_info[realName] = update_json[name][realName]
             else:
                 self.entry_info[name] = update_json[name]

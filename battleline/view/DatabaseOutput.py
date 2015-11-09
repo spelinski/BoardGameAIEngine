@@ -35,7 +35,7 @@ class DatabaseOutput:
 
     def draw_action(self, place, card):
         if card == None:
-            myOutput = self.playerNames[place] + " plays nothing"
+            myOutput = self.playerNames[place] + " draws nothing"
         else:
             myOutput = "{} draws {} {}".format(
                 self.playerNames[place], str(card.number), card.color)
@@ -43,8 +43,11 @@ class DatabaseOutput:
                           '$push': {"actionsTaken": myOutput}})
 
     def play_action(self, place, card, flagNumber):
-        myOutput = "{} plays {} {} {}".format(
-            self.playerNames[place], str(card.number), card.color, str(flagNumber))
+        if card == None:
+            myOutput = self.playerNames[place] + " plays nothing"
+        else:
+            myOutput = "{} plays {} {} {}".format(
+                self.playerNames[place], str(card.number), card.color, str(flagNumber))
         self.games.update({'_id': self.post_id}, {
                           '$push': {"actionsTaken": myOutput}})
 

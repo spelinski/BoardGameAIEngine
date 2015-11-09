@@ -30,11 +30,23 @@ class TestDatabaseOutput(unittest.TestCase):
         self.assertEqual(self.output.games.find({'_id': self.output.post_id}).next()[
                          'actionsTaken'][0], "Synergy draws 1 red")
 
+    def test_drawing_card_none_card(self):
+        self.output.setup_player_positions('Synergy', Identifiers.NORTH)
+        self.output.draw_action(Identifiers.NORTH, None)
+        self.assertEqual(self.output.games.find({'_id': self.output.post_id}).next()[
+                         'actionsTaken'][0], "Synergy draws nothing")
+
     def test_playing_card_north_flag_one(self):
         self.output.setup_player_positions('Synergy', Identifiers.NORTH)
         self.output.play_action(Identifiers.NORTH, TroopCard(1, "red"), 1)
         self.assertEqual(self.output.games.find({'_id': self.output.post_id}).next()[
                          'actionsTaken'][0], "Synergy plays 1 red 1")
+
+    def test_playing_card_north_flag_none_card(self):
+        self.output.setup_player_positions('Synergy', Identifiers.NORTH)
+        self.output.play_action(Identifiers.NORTH, None, 1)
+        self.assertEqual(self.output.games.find({'_id': self.output.post_id}).next()[
+                         'actionsTaken'][0], "Synergy plays nothing")
 
     def test_claiming_flag_one_north(self):
         self.output.setup_player_positions('Synergy', Identifiers.NORTH)
