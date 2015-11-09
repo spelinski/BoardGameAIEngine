@@ -4,6 +4,7 @@ from battleline.engine.BattlelineEngine import BattlelineEngine
 from battleline.engine.BoardLogic import BoardLogic
 from battleline.model.Play import Play
 from battleline.player.BattlelinePlayer import Player
+from battleline.view.Output import Output
 
 
 class MockPlayer(Player):
@@ -20,7 +21,8 @@ class MockPlayer(Player):
 class BattlelineEngineAcceptanceTest(unittest.TestCase):
 
     def test_can_run_complete_game(self):
-        engine = BattlelineEngine(MockPlayer('r2d2'), MockPlayer('bb8'))
+        engine = BattlelineEngine(MockPlayer(
+            'r2d2'), MockPlayer('bb8'), Output())
         engine.troop_deck = Deck(sorted(engine.get_troop_cards(), key=lambda x: (
             x[1], x[0]), reverse=True), shuffleDeck=False)
         engine.initialize()

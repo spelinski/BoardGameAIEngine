@@ -6,6 +6,7 @@ from battleline.engine.BattlelineEngine import BattlelineEngine, TroopCard
 from battleline.player.BattlelinePlayer import Player
 from battleline.Identifiers import Identifiers
 from battleline.model.Play import Play
+from battleline.view.Output import Output
 
 
 class MockPlayer(Player):
@@ -22,7 +23,8 @@ class MockPlayer(Player):
 
 
 def get_engine_with_ordered_cards():
-    engine = BattlelineEngine(MockPlayer("yankeeBot"), MockPlayer("rebelBot"))
+    engine = BattlelineEngine(MockPlayer("yankeeBot"),
+                              MockPlayer("rebelBot"), Output())
 
     # reinitialize the deck with a non shuffled deck to make things more reliable
     # don't do this in production code, the deck should be shuffled in real

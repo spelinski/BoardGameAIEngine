@@ -2,7 +2,6 @@ from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
 from battleline.Identifiers import Identifiers
 from itertools import product, groupby
-from battleline.view.Output import Output
 
 
 class BoardLogic:

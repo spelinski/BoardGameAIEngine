@@ -9,8 +9,7 @@ class DatabaseOutput:
         self.client = pymongo.MongoClient(host, port)
         db = self.client[database_name]
         if not "games" in db.collection_names(include_system_collections=False):
-            db.create_collection("games", capped=True,
-                                 size=100000000, max=10000)
+            db.create_collection("games")
         initPost = {"northPlayerName": "",
                     "southPlayerName": "",
                     "actionsTaken": [],
@@ -29,14 +28,17 @@ class DatabaseOutput:
         self.playerNames[place] = playerName
         if place == "north":
             self.games.update({'_id': self.post_id}, {
-                              "northPlayerName": playerName})
+                              '$set': {"northPlayerName": playerName}})
         else:
             self.games.update({'_id': self.post_id}, {
-                              "southPlayerName": playerName})
+                              '$set': {"southPlayerName": playerName}})
 
     def draw_action(self, place, card):
-        myOutput = "{} draws {} {}".format(
-            self.playerNames[place], str(card.number), card.color)
+        if card == None:
+            myOutput = self.playerNames[place] + " plays nothing"
+        else:
+            myOutput = "{} draws {} {}".format(
+                self.playerNames[place], str(card.number), card.color)
         self.games.update({'_id': self.post_id}, {
                           '$push': {"actionsTaken": myOutput}})
 
@@ -53,4 +55,5 @@ class DatabaseOutput:
 
     def declare_winner(self, place):
         myOutput = self.playerNames[place] + " wins"
-        self.games.update({'_id': self.post_id}, {"winner": myOutput})
+        self.games.update({'_id': self.post_id}, {
+                          '$set': {"winner": myOutput}})

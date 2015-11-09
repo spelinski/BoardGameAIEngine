@@ -3,7 +3,6 @@ from BoardLogic import BoardLogic
 from itertools import product
 from battleline.Identifiers import TroopCard, Identifiers
 from battleline.model.Play import Play
-from battleline.view.Output import Output
 
 
 class BattlelineEngine(object):
@@ -12,7 +11,7 @@ class BattlelineEngine(object):
     An engine that coordinates two players, a board and the decks for battleline
     """
 
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2, output):
         """
         Constructor
         @param player1 the first player
@@ -21,7 +20,7 @@ class BattlelineEngine(object):
         self.player1 = player1
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
-        self.output_handler = Output()
+        self.output_handler = output
         self.board_logic = BoardLogic(self)
         self.last_move = None
 
