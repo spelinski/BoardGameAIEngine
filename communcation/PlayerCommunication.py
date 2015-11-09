@@ -9,6 +9,7 @@ import threading
 import shlex
 import time
 
+
 class PlayerCommunication(object):
     """
     Class to communicate back and forth with an external program
@@ -20,14 +21,15 @@ class PlayerCommunication(object):
         @param programWithPath relative path to executable
         """
         shell_command = shlex.split(program)
-        self.runningPlayer = Popen(shell_command, cwd=workdir, stdin=PIPE, stdout=PIPE)
+        self.runningPlayer = Popen(
+            shell_command, cwd=workdir, stdin=PIPE, stdout=PIPE)
 
     def send_message(self, message):
         """
         send a string to the external program
         @param message string to send
         """
-        if self.runningPlayer.poll() is None: 
+        if self.runningPlayer.poll() is None:
             self.runningPlayer.stdin.write(message + "\n")
             self.runningPlayer.stdin.flush()
         else:
@@ -39,7 +41,7 @@ class PlayerCommunication(object):
         @param timeout amount of time to wait in seconds (default 10)
         @raise BotCommunicationError on a timeout or empty response
         """
-        if self.runningPlayer.poll() is None: 
+        if self.runningPlayer.poll() is None:
             self.exceptionFromThread = None
             thread = threading.Thread(target=self.__get_response_thread)
             thread.daemon = True
@@ -70,7 +72,6 @@ class PlayerCommunication(object):
         if not self.polite_close():
             self.brutal_close()
 
-
     def polite_close(self):
         # Send SIGTERM, to be polite
         self.runningPlayer.terminate()
@@ -99,4 +100,3 @@ class BotCommunicationError(Exception):
 
     def __str__(self):
         return "Failed to send message because of {}".format(self.commFailure)
-
