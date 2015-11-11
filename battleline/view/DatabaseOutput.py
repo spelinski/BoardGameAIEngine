@@ -57,6 +57,6 @@ class DatabaseOutput:
         myOutput = self.playerNames[place] + " wins"
         self.games.update({'_id': self.post_id}, {
                           '$set': {"winner": myOutput}})
-    
+
     def _delete_database(self, database_name):
         self.client.drop_database(database_name)
