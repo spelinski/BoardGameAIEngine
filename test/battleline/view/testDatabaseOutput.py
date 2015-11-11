@@ -12,7 +12,7 @@ class TestDatabaseOutput(unittest.TestCase):
         self.output = DatabaseOutput('localhost', 27017, 'test_database')
 
     def tearDown(self):
-        self.output.delete_database('test_database')
+        self.output._delete_database('test_database')
 
     def test_setup_player_positions_north(self):
         self.output.setup_player_positions('north_side', Identifiers.NORTH)

@@ -1,18 +1,12 @@
 import unittest
 import itertools
-import os
 from battleline.engine.BoardLogic import BoardLogic
 from battleline.model.FormationLogic import FormationLogic
 from battleline.model.Flag import FlagAlreadyClaimedError
 from battleline.Identifiers import Identifiers, TroopCard
-from test.battleline.view import testOutput
-from battleline.view.Output import Output
 
 
 class MockOutput(object):
-
-    def action(self, place, action, card="", flagNumber=""):
-        pass
 
     def play_action(self, place, card, flagNumber):
         pass

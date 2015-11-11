@@ -21,17 +21,14 @@ class DatabaseOutput:
         self.playerNames = {Identifiers.NORTH: 'player1',
                             Identifiers.SOUTH: 'player2'}
 
-    def delete_database(self, database_name):
-        self.client.drop_database(database_name)
-
     def setup_player_positions(self, playerName, place):
         self.playerNames[place] = playerName
         if place == "north":
-            self.games.update({'_id': self.post_id}, {
-                              '$set': {"northPlayerName": playerName}})
+            playerPositionKey = "northPlayerName"
         else:
-            self.games.update({'_id': self.post_id}, {
-                              '$set': {"southPlayerName": playerName}})
+            playerPositionKey = "southPlayerName"
+        self.games.update({'_id': self.post_id}, {
+            '$set': {playerPositionKey: playerName}})
 
     def draw_action(self, place, card):
         if card == None:
@@ -60,3 +57,6 @@ class DatabaseOutput:
         myOutput = self.playerNames[place] + " wins"
         self.games.update({'_id': self.post_id}, {
                           '$set': {"winner": myOutput}})
+    
+    def _delete_database(self, database_name):
+        self.client.drop_database(database_name)

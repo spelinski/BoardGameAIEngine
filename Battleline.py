@@ -14,11 +14,9 @@ def main():
         comm2 = PlayerCommunication(args.player2_cmd, args.player2_workdir)
         player1 = SubprocessPlayer(comm1)
         player2 = SubprocessPlayer(comm2)
-        if args.server:
-            engine = BattlelineEngine(player1, player2, DatabaseOutput(
-                args.host, int(args.port), args.database_name))
-        else:
-            engine = BattlelineEngine(player1, player2, Output())
+        outputer = DatabaseOutput(args.host, int(
+            args.port), args.database_name) if args.server else Output()
+        engine = BattlelineEngine(player1, player2, outputer)
         engine.initialize()
         engine.run_until_game_end()
         print "PLAYER : {} HAS WON".format(engine.get_winning_player())

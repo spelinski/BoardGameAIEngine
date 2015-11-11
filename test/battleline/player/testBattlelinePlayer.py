@@ -10,7 +10,7 @@ class TestPlayer(unittest.TestCase):
     def test_player_throws_if_not_implemented(self):
         player = Player()
         with self.assertRaises(NotImplementedError):
-          player.compute_turn(Board(),None)
+            player.compute_turn(Board(),None)
 
 class TestSubprocessPlayer(unittest.TestCase):
 
