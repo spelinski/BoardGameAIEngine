@@ -1,21 +1,32 @@
-import unittest,itertools,os
+import unittest
+import itertools
 from battleline.engine.BoardLogic import BoardLogic
 from battleline.model.FormationLogic import FormationLogic
 from battleline.model.Flag import FlagAlreadyClaimedError
 from battleline.Identifiers import Identifiers, TroopCard
-from test.battleline.view import testOutput
-from battleline.view.Output import Output
+
 
 class MockOutput(object):
-    def action(self, place, action, card="", flagNumber=""):
+
+    def play_action(self, place, card, flagNumber):
         pass
+
+    def claim_action(self, place, flagNumber):
+        pass
+
+    def declare_winner(self, place):
+        pass
+
     def setup_player_positions(self, playerName, place):
         pass
+
+
 class MockEngine(object):
 
     def __init__(self):
         self.played_cards = []
         self.output_handler = MockOutput()
+
     def get_unplayed_cards(self):
         return set(get_all_cards()) - set(self.played_cards)
 

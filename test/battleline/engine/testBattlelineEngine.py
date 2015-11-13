@@ -6,6 +6,7 @@ from battleline.engine.BattlelineEngine import BattlelineEngine, TroopCard
 from battleline.player.BattlelinePlayer import Player
 from battleline.Identifiers import Identifiers
 from battleline.model.Play import Play
+from battleline.view.Output import Output
 
 
 class MockPlayer(Player):
@@ -22,7 +23,8 @@ class MockPlayer(Player):
 
 
 def get_engine_with_ordered_cards():
-    engine = BattlelineEngine(MockPlayer("yankeeBot"), MockPlayer("rebelBot"))
+    engine = BattlelineEngine(MockPlayer("yankeeBot"),
+                              MockPlayer("rebelBot"), Output())
 
     # reinitialize the deck with a non shuffled deck to make things more reliable
     # don't do this in production code, the deck should be shuffled in real
@@ -58,62 +60,62 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
             "yankeeBot is north", "rebelBot is south"]
         # list of cards that are drawn at the beginning of the game
         self.startingOutputStringArray = [
-            "yankeeBot draws 1 color1 ", "rebelBot draws 2 color1 ",
-            "yankeeBot draws 3 color1 ", "rebelBot draws 4 color1 ",
-            "yankeeBot draws 5 color1 ", "rebelBot draws 6 color1 ",
-            "yankeeBot draws 7 color1 ", "rebelBot draws 8 color1 ",
-            "yankeeBot draws 9 color1 ", "rebelBot draws 10 color1 ",
-            "yankeeBot draws 1 color2 ", "rebelBot draws 2 color2 ",
-            "yankeeBot draws 3 color2 ", "rebelBot draws 4 color2 "]
+            "yankeeBot draws 1 color1", "rebelBot draws 2 color1",
+            "yankeeBot draws 3 color1", "rebelBot draws 4 color1",
+            "yankeeBot draws 5 color1", "rebelBot draws 6 color1",
+            "yankeeBot draws 7 color1", "rebelBot draws 8 color1",
+            "yankeeBot draws 9 color1", "rebelBot draws 10 color1",
+            "yankeeBot draws 1 color2", "rebelBot draws 2 color2",
+            "yankeeBot draws 3 color2", "rebelBot draws 4 color2"]
         # list of moves that all of the tests perform...edit at your own risk
         self.movesList = [
-            ["yankeeBot plays 1 color1 1", "yankeeBot draws 5 color2 ",
-                "rebelBot plays 2 color1 1", "rebelBot draws 6 color2 "],
-            ["yankeeBot plays 3 color1 1", "yankeeBot draws 7 color2 ",
-             "rebelBot plays 4 color1 1", "rebelBot draws 8 color2 "],
-            ["yankeeBot plays 5 color1 1", "yankeeBot draws 9 color2 ",
-             "rebelBot plays 6 color1 1", "rebelBot draws 10 color2 ", "rebelBot claims 1"],
-            ["yankeeBot plays 7 color1 2", "yankeeBot draws 1 color3 ",
-             "rebelBot plays 8 color1 2", "rebelBot draws 2 color3 "],
-            ["yankeeBot plays 9 color1 2", "yankeeBot draws 3 color3 ",
-             "rebelBot plays 10 color1 2", "rebelBot draws 4 color3 "],
-            ["yankeeBot plays 1 color2 2", "yankeeBot draws 5 color3 ",
-             "rebelBot plays 2 color2 2", "rebelBot draws 6 color3 ", "rebelBot claims 2"],
-            ["yankeeBot plays 3 color2 3", "yankeeBot draws 7 color3 ",
-             "rebelBot plays 4 color2 3", "rebelBot draws 8 color3 "],
-            ["yankeeBot plays 5 color2 3", "yankeeBot draws 9 color3 ",
-             "rebelBot plays 6 color2 3", "rebelBot draws 10 color3 "],
-            ["yankeeBot plays 7 color2 3", "yankeeBot draws 1 color4 ", "rebelBot plays 8 color2 3",
-             "rebelBot draws 2 color4 ", "rebelBot claims 3", "rebelBot wins "],
-            ["yankeeBot plays 9 color2 4", "yankeeBot draws 3 color4 ", "rebelBot wins ",
-             "rebelBot plays 10 color2 4", "rebelBot draws 4 color4 ", "rebelBot wins "],
-            ["yankeeBot plays 1 color3 4", "yankeeBot draws 5 color4 ", "rebelBot wins ",
-             "rebelBot plays 2 color3 4", "rebelBot draws 6 color4 ", "rebelBot wins "],
-            ["yankeeBot plays 3 color3 4", "yankeeBot draws 7 color4 ", "rebelBot wins ",
-             "rebelBot plays 4 color3 4", "rebelBot draws 8 color4 ", "rebelBot claims 4", "rebelBot wins "],
-            ["yankeeBot plays 5 color3 5", "yankeeBot draws 9 color4 ", "rebelBot wins ",
-             "rebelBot plays 6 color3 5", "rebelBot draws 10 color4 ", "rebelBot wins "],
-            ["yankeeBot plays 7 color3 5", "yankeeBot draws 1 color5 ", "rebelBot wins ",
-             "rebelBot plays 8 color3 5", "rebelBot draws 2 color5 ", "rebelBot wins "],
-            ["yankeeBot plays 9 color3 5", "yankeeBot draws 3 color5 ", "rebelBot wins ", "rebelBot plays 10 color3 5",
-             "rebelBot draws 4 color5 ", "rebelBot claims 5", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 1 color4 6", "yankeeBot draws 5 color5 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 2 color4 6", "rebelBot draws 6 color5 ", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 3 color4 6", "yankeeBot draws 7 color5 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 4 color4 6", "rebelBot draws 8 color5 ", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 5 color4 6", "yankeeBot draws 9 color5 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 6 color4 6", "rebelBot draws 10 color5 ", "rebelBot claims 6", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 7 color4 7", "yankeeBot draws 1 color6 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 8 color4 7", "rebelBot draws 2 color6 ", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 9 color4 7", "yankeeBot draws 3 color6 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 10 color4 7", "rebelBot draws 4 color6 ", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 1 color5 7", "yankeeBot draws 5 color6 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 2 color5 7", "rebelBot draws 6 color6 ", "rebelBot claims 7", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 3 color5 8", "yankeeBot draws 7 color6 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 4 color5 8", "rebelBot draws 8 color6 ", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 5 color5 8", "yankeeBot draws 9 color6 ", "rebelBot wins ", "rebelBot wins ",
-             "rebelBot plays 6 color5 8", "rebelBot draws 10 color6 ", "rebelBot wins ", "rebelBot wins "],
-            ["yankeeBot plays 7 color5 8", "yankeeBot draws nothing", "rebelBot wins ", "rebelBot wins ", "rebelBot plays 8 color5 8", "rebelBot draws nothing", "rebelBot claims 8", "rebelBot wins ", "rebelBot wins "]]
+            ["yankeeBot plays 1 color1 1", "yankeeBot draws 5 color2",
+                "rebelBot plays 2 color1 1", "rebelBot draws 6 color2"],
+            ["yankeeBot plays 3 color1 1", "yankeeBot draws 7 color2",
+             "rebelBot plays 4 color1 1", "rebelBot draws 8 color2"],
+            ["yankeeBot plays 5 color1 1", "yankeeBot draws 9 color2",
+             "rebelBot plays 6 color1 1", "rebelBot draws 10 color2", "rebelBot claims 1"],
+            ["yankeeBot plays 7 color1 2", "yankeeBot draws 1 color3",
+             "rebelBot plays 8 color1 2", "rebelBot draws 2 color3"],
+            ["yankeeBot plays 9 color1 2", "yankeeBot draws 3 color3",
+             "rebelBot plays 10 color1 2", "rebelBot draws 4 color3"],
+            ["yankeeBot plays 1 color2 2", "yankeeBot draws 5 color3",
+             "rebelBot plays 2 color2 2", "rebelBot draws 6 color3", "rebelBot claims 2"],
+            ["yankeeBot plays 3 color2 3", "yankeeBot draws 7 color3",
+             "rebelBot plays 4 color2 3", "rebelBot draws 8 color3"],
+            ["yankeeBot plays 5 color2 3", "yankeeBot draws 9 color3",
+             "rebelBot plays 6 color2 3", "rebelBot draws 10 color3"],
+            ["yankeeBot plays 7 color2 3", "yankeeBot draws 1 color4", "rebelBot plays 8 color2 3",
+             "rebelBot draws 2 color4", "rebelBot claims 3", "rebelBot wins "],
+            ["yankeeBot plays 9 color2 4", "yankeeBot draws 3 color4", "rebelBot wins",
+             "rebelBot plays 10 color2 4", "rebelBot draws 4 color4", "rebelBot wins"],
+            ["yankeeBot plays 1 color3 4", "yankeeBot draws 5 color4", "rebelBot wins",
+             "rebelBot plays 2 color3 4", "rebelBot draws 6 color4", "rebelBot wins"],
+            ["yankeeBot plays 3 color3 4", "yankeeBot draws 7 color4", "rebelBot wins",
+             "rebelBot plays 4 color3 4", "rebelBot draws 8 color4", "rebelBot claims 4", "rebelBot wins"],
+            ["yankeeBot plays 5 color3 5", "yankeeBot draws 9 color4", "rebelBot wins",
+             "rebelBot plays 6 color3 5", "rebelBot draws 10 color4", "rebelBot wins"],
+            ["yankeeBot plays 7 color3 5", "yankeeBot draws 1 color5", "rebelBot wins",
+             "rebelBot plays 8 color3 5", "rebelBot draws 2 color5", "rebelBot wins"],
+            ["yankeeBot plays 9 color3 5", "yankeeBot draws 3 color5", "rebelBot wins", "rebelBot plays 10 color3 5",
+             "rebelBot draws 4 color5 ", "rebelBot claims 5", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 1 color4 6", "yankeeBot draws 5 color5", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 2 color4 6", "rebelBot draws 6 color5", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 3 color4 6", "yankeeBot draws 7 color5", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 4 color4 6", "rebelBot draws 8 color5", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 5 color4 6", "yankeeBot draws 9 color5", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 6 color4 6", "rebelBot draws 10 color5", "rebelBot claims 6", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 7 color4 7", "yankeeBot draws 1 color6", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 8 color4 7", "rebelBot draws 2 color6", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 9 color4 7", "yankeeBot draws 3 color6", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 10 color4 7", "rebelBot draws 4 color6", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 1 color5 7", "yankeeBot draws 5 color6", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 2 color5 7", "rebelBot draws 6 color6", "rebelBot claims 7", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 3 color5 8", "yankeeBot draws 7 color6", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 4 color5 8", "rebelBot draws 8 color6", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 5 color5 8", "yankeeBot draws 9 color6", "rebelBot wins", "rebelBot wins",
+             "rebelBot plays 6 color5 8", "rebelBot draws 10 color6", "rebelBot wins", "rebelBot wins"],
+            ["yankeeBot plays 7 color5 8", "yankeeBot draws nothing", "rebelBot wins", "rebelBot wins", "rebelBot plays 8 color5 8", "rebelBot draws nothing", "rebelBot claims 8", "rebelBot wins", "rebelBot wins"]]
 
     def __getOutputFileContents(self):
         with open(self.engine.output_handler.filename) as f:

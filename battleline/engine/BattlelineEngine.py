@@ -3,7 +3,6 @@ from BoardLogic import BoardLogic
 from itertools import product
 from battleline.Identifiers import TroopCard, Identifiers
 from battleline.model.Play import Play
-from battleline.view.Output import Output
 
 
 class BattlelineEngine(object):
@@ -12,7 +11,7 @@ class BattlelineEngine(object):
     An engine that coordinates two players, a board and the decks for battleline
     """
 
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2, output):
         """
         Constructor
         @param player1 the first player
@@ -21,7 +20,7 @@ class BattlelineEngine(object):
         self.player1 = player1
         self.player2 = player2
         self.troop_deck = Deck(self.get_troop_cards())
-        self.output_handler = Output()
+        self.output_handler = output
         self.board_logic = BoardLogic(self)
         self.last_move = None
 
@@ -40,10 +39,10 @@ class BattlelineEngine(object):
             self.player2.name, Identifiers.SOUTH)
 
         for i in range(0, 14, 2):
-            self.output_handler.action(
-                self.player1.direction, "draw", initial_cards[i])
-            self.output_handler.action(
-                self.player2.direction, "draw", initial_cards[i + 1])
+            self.output_handler.draw_action(
+                self.player1.direction, initial_cards[i])
+            self.output_handler.draw_action(
+                self.player2.direction, initial_cards[i + 1])
 
     def get_troop_cards(self):
         """
@@ -94,7 +93,7 @@ class BattlelineEngine(object):
 
             cardToBeDrawn = next(self.troop_deck)
             player.finish_turn(real_play.card, cardToBeDrawn)
-            self.output_handler.action(player.direction, "draw", cardToBeDrawn)
+            self.output_handler.draw_action(player.direction, cardToBeDrawn)
             self.board_logic.checkAllFlags()
             self.last_move = real_play
 

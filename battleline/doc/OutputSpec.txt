@@ -1,0 +1,23 @@
+This document should outline what gets output for user's to see from the engine
+
+Format of this document
+<x> will indicate a parameter
+<x|y> will indicate that either x|y will be output
+card is in format "number color"
+
+setup:
+<player name> is <north|south>
+
+drawing card:
+<player name> draws <card>
+<player name> draws nothing
+
+playing card:
+<player name> plays <card> <flag number>
+<player name> plays nothing
+
+claiming flag:
+<player name> claims <flag number>
+
+winning:
+<player name> wins

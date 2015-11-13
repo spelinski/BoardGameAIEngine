@@ -1,3 +1,6 @@
+Where actionsTaken format is taken from OutputSpec.txt sections:
+drawing card, playing card, and claiming flag
+
 Game: Capped to 10,000 games
 
 contains

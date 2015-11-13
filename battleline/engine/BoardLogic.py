@@ -2,7 +2,6 @@ from battleline.model.Board import Board
 from battleline.model.FormationLogic import FormationLogic
 from battleline.Identifiers import Identifiers
 from itertools import product, groupby
-from battleline.view.Output import Output
 
 
 class BoardLogic:
@@ -25,7 +24,7 @@ class BoardLogic:
         @param card the card to be added
         """
         self.board.flags[flag].add_card(player, card)
-        self.engine.output_handler.action(player, "play", card, flag + 1)
+        self.engine.output_handler.play_action(player, card, flag + 1)
         self.latestPlayer = player
 
     def is_flag_playable(self, flag_index, direction):
@@ -49,7 +48,7 @@ class BoardLogic:
                 [x for x in self.__get_flags_claimed_by_player(player) if x])
             if numClaimedFlags >= 5:
                 self.winner = player
-                self.engine.output_handler.action(player, "win")
+                self.engine.output_handler.declare_winner(player)
 
     def __check_for_breakthrough(self):
         for player in [Identifiers.NORTH, Identifiers.SOUTH]:
@@ -60,7 +59,7 @@ class BoardLogic:
                 claimed for claimed in consecutiveFlags if claimed[0]]
             if len(consecutiveClaimedFlags) > 0:
                 self.winner = player
-                self.engine.output_handler.action(player, "win")
+                self.engine.output_handler.declare_winner(player)
 
     def checkAllFlags(self):
         """
@@ -88,12 +87,12 @@ class BoardLogic:
             if self.formationLogic.is_equivalent_in_strength(playerCards, bestEnemyFormation):
                 if len(enemyCards) != flag.MAX_CARDS_PER_SIDE or self.latestPlayer != player:
                     flag.claim(player)
-                    self.engine.output_handler.action(
-                        player, "claim", flagNumber=index + 1)
+                    self.engine.output_handler.claim_action(
+                        player, flagNumber=index + 1)
             elif self.formationLogic.getTheBetterFormation(playerCards, bestEnemyFormation) == playerCards:
                 flag.claim(player)
-                self.engine.output_handler.action(
-                    player, "claim", flagNumber=index + 1)
+                self.engine.output_handler.claim_action(
+                    player, flagNumber=index + 1)
 
     def __get_enemy(self, player):
         """
