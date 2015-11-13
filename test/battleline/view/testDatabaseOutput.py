@@ -14,6 +14,9 @@ class TestDatabaseOutput(unittest.TestCase):
     def tearDown(self):
         self.output._delete_database('test_database')
 
+    def test_no_exception_second_create(self):
+        DatabaseOutput('localhost', 27017, 'test_database')
+
     def test_setup_player_positions_north(self):
         self.output.setup_player_positions('north_side', Identifiers.NORTH)
         self.assertEqual(self.output.games.find({'_id': self.output.post_id}).next()[
