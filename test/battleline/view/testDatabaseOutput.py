@@ -14,6 +14,7 @@ class TestDatabaseOutput(unittest.TestCase):
     def tearDown(self):
         self.output._delete_database('test_database')
 
+    @patch('battleline.view.DatabaseOutput.pymongo.MongoClient', MockMongoClient)
     def test_no_exception_second_create(self):
         DatabaseOutput('localhost', 27017, 'test_database')
 
