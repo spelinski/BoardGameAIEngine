@@ -1,10 +1,18 @@
+listOfDatabases = []
+
+
 class MockMongoClient(object):
 
     def __init__(self, host, port):
         pass
 
     def __getitem__(self, database_name):
-        return MockDatabase(database_name)
+        for instance in listOfDatabases:
+            if instance.name == database_name:
+                return instance
+        newDatabase = MockDatabase(database_name)
+        listOfDatabases.append(newDatabase)
+        return newDatabase
 
     def drop_database(self, database_name):
         pass
