@@ -185,6 +185,7 @@ class TestBattlelineInitializedEngine(unittest.TestCase):
         for i in xrange(23):
             self.__play_turn()
         self.assertEquals("south", self.engine.get_winning_player())
+        self.assertEquals("rebelBot", self.engine.get_winning_player_name())
 
     def test_invalid_moves_still_produce_a_valid_move(self):
         for i in xrange(4):

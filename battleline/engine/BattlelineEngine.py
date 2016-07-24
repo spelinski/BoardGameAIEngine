@@ -64,6 +64,15 @@ class BattlelineEngine(object):
         @return the player name that wins, otherwise None
         """
         return self.board_logic.winner
+    
+    def get_winning_player_name(self):
+        """
+        get the winning player name
+        @return the inning player name
+        """
+        if self.get_winning_player() == Identifiers.NORTH: return self.player1.name
+        if self.get_winning_player() == Identifiers.SOUTH: return self.player2.name
+        return None
 
     def run_until_game_end(self):
         """

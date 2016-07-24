@@ -19,7 +19,7 @@ def main():
         engine = BattlelineEngine(player1, player2, outputer)
         engine.initialize()
         engine.run_until_game_end()
-        print "PLAYER : {} HAS WON".format(engine.get_winning_player())
+        print "PLAYER : {} -> {} HAS WON".format(engine.get_winning_player(), engine.get_winning_player_name())
     except:
         raise
     finally:
