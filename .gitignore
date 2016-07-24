@@ -5,3 +5,5 @@ htmlcov
 .coverage
 *.py~
 venv
+.project
+.pydevproject
