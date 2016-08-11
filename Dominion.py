@@ -32,7 +32,7 @@ def _get_args():
     parser.add_argument(
         "--player3-cmd", help="Command to run player 3", default=default_bot)
     parser.add_argument(
-        "--player3-workdir", help="Set the working directory for player 13", default=None)
+        "--player3-workdir", help="Set the working directory for player 3", default=None)
     parser.add_argument(
         "--player4-cmd", help="Command to run player 4", default=default_bot)
     parser.add_argument(
@@ -45,7 +45,7 @@ def _get_args():
     parser.add_argument(
         "--port", help="database host port default is 27017", default="27017")
     parser.add_argument(
-        "--database_name", help="database name default is battleline", default="battleline")
+        "--database_name", help="database name default is dominion", default="dominion")
     return parser.parse_args()
 
 if __name__ == "__main__":
