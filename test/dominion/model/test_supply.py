@@ -22,30 +22,30 @@ class TestSupply(unittest.TestCase):
         self.assertEquals(30, supply.get_number_of_treasure_cards("Gold"))
 
     def test_first_set_two_players(self):
-        supply = Supply(2, "first_set")
+        supply = Supply(2, "First Game")
         self.check_first_set_kingdom_and_treasure_cards(supply)
 
-        self.assertEquals(8, supply.get_number_of_victory_cards("Estate"))
+        self.assertEquals(14, supply.get_number_of_victory_cards("Estate"))
         self.assertEquals(8, supply.get_number_of_victory_cards("Duchy"))
         self.assertEquals(8, supply.get_number_of_victory_cards("Province"))
 
         self.assertEquals(10, supply.get_number_of_curse_cards())
 
     def test_first_set_three_players(self):
-        supply = Supply(3, "first_set")
+        supply = Supply(3, "First Game")
         self.check_first_set_kingdom_and_treasure_cards(supply)
 
-        self.assertEquals(12, supply.get_number_of_victory_cards("Estate"))
+        self.assertEquals(21, supply.get_number_of_victory_cards("Estate"))
         self.assertEquals(12, supply.get_number_of_victory_cards("Duchy"))
         self.assertEquals(12, supply.get_number_of_victory_cards("Province"))
 
         self.assertEquals(20, supply.get_number_of_curse_cards())
 
     def test_first_set_three_players(self):
-        supply = Supply(4, "first_set")
+        supply = Supply(4, "First Game")
         self.check_first_set_kingdom_and_treasure_cards(supply)
 
-        self.assertEquals(12, supply.get_number_of_victory_cards("Estate"))
+        self.assertEquals(24, supply.get_number_of_victory_cards("Estate"))
         self.assertEquals(12, supply.get_number_of_victory_cards("Duchy"))
         self.assertEquals(12, supply.get_number_of_victory_cards("Province"))
 
