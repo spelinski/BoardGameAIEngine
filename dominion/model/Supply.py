@@ -37,4 +37,28 @@ class Supply(object):
         return self.supply[card]
 
     def take(self, card):
+        if card not in self.supply: raise CardNotInSupplyException(card)
+        if self.supply[card] == 0: raise PileEmptyException(card)
         self.supply[card] = self.supply[card] - 1
+
+class CardNotInSupplyException(Exception):
+
+    def __init__(self, card):
+        """Create an Exception that the player is trying to take a card that isn't in the supply
+        @param card the card we tried to take
+        """
+        self.card = card
+
+    def __str__(self):
+        return "{} is not in the supply.".format(self.card)
+
+class PileEmptyException(Exception):
+
+    def __init__(self, card):
+        """Create an Exception that the player is trying to take a card from an empty pile
+        @param card the card we tried to take
+        """
+        self.card = card
+
+    def __str__(self):
+        return "{}'s pile is empty'.".format(self.card)
