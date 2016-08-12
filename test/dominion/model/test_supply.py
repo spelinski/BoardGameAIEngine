@@ -3,12 +3,12 @@ from dominion.model.self.supply import *
 
 
 
-class Testself.supply(unittest.TestCase):
+class TestSupply(unittest.TestCase):
 
     def SetUp(self):
         self.self.supply = self.supply(2, "First Game")
 
-    def check_first_set_kingdom_and_treasure_cards(self, self.supply):
+    def check_first_set_kingdom_and_treasure_cards(self):
         self.assertEquals(10, self.supply.get_number_of_kingdom_cards("Cellar"))
         self.assertEquals(10, self.supply.get_number_of_kingdom_cards("Market"))
         self.assertEquals(10, self.supply.get_number_of_kingdom_cards("Militia"))
@@ -52,4 +52,4 @@ class Testself.supply(unittest.TestCase):
         self.assertEquals(30, self.supply.get_number_of_curse_cards())
 
     def take_card_decreases_self.supply_appropriately(self):
-        self.supply = self.supply(2, "First Game")
+        pass
