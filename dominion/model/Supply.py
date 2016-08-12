@@ -37,9 +37,20 @@ class Supply(object):
         return self.supply[card]
 
     def take(self, card):
+        """ Take a card from the pile
+           @param card the card we want to take
+           @raise CardNotInSupplyException if the card is invalid
+           @raise PileEmptyException if the pile is empty
+        """
         if card not in self.supply: raise CardNotInSupplyException(card)
         if self.supply[card] == 0: raise PileEmptyException(card)
         self.supply[card] = self.supply[card] - 1
+
+    def get_number_of_empty_piles(self):
+        """Return the number of empty piles
+        @return the number of empty piles in the supply
+        """
+        return len([key for key,value in self.supply.items() if value == 0])
 
 class CardNotInSupplyException(Exception):
 

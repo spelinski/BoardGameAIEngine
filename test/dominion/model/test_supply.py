@@ -67,3 +67,15 @@ class TestSupply(unittest.TestCase):
             supply.take("Duchy")
         with self.assertRaises(PileEmptyException):
             supply.take("Duchy")
+
+    def test_no_piiles_are_empty_to_start(self):
+        supply = Supply(2, "First Game")
+        self.assertEquals(0, supply.get_number_of_empty_piles())
+
+    def test_can_empty_piles(self):
+        supply = Supply(2, "First Game")
+        for _ in range(10):
+            supply.take("Moat")
+            supply.take("Remodel")
+            supply.take("Market")
+        self.assertEquals(3, supply.get_number_of_empty_piles())
