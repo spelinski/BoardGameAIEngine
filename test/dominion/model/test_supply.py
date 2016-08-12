@@ -55,3 +55,15 @@ class TestSupply(unittest.TestCase):
         supply = Supply(2, "First Game")
         supply.take("Province")
         self.assertEquals(7, supply.get_number_of_cards("Province"))
+
+    def test_cant_take_card_not_in_supply(self):
+        supply = Supply(2, "First Game")
+        with self.assertRaises(CardNotInSupplyException):
+            supply.take("Feast")
+
+    def test_cant_take_card_not_if_pile_is_empty(self):
+        supply = Supply(2, "First Game")
+        for _ in range(8):
+            supply.take("Duchy")
+        with self.assertRaises(PileEmptyException):
+            supply.take("Duchy")
