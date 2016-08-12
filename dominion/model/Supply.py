@@ -1,5 +1,15 @@
 class Supply(object):
+    """
+    The common supply that players can gain/buy cards from
+    """
+
     def __init__(self, number_of_players, set):
+        """
+            Constructor
+            @param number_of_players  the number of players in the game
+            @param set the set of cards to choose.  Valid picks are "First Game"
+        """
+        assert set == "First Game"
         self.supply = self.__create_supply(number_of_players, set)
 
     def __create_supply(self, number_of_players, set):
@@ -34,6 +44,11 @@ class Supply(object):
         return (number_of_players - 1) * 10
 
     def get_number_of_cards(self, card):
+        """
+           Get the number of cards left in the supply
+           @param card to get from the supply
+           @return the number of cards in the supply for the particular card
+        """
         return self.supply[card]
 
     def take(self, card):
