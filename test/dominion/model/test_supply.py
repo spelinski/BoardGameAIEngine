@@ -51,5 +51,4 @@ class TestSupply(unittest.TestCase):
 
         self.assertEquals(30, self.supply.get_number_of_curse_cards())
 
-    def take_card_decreases_self.supply_appropriately(self):
-        pass
+    def take_card_decreases_supply_appropriately(self):
