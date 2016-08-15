@@ -11,7 +11,7 @@ class Supply(object):
             @param number_of_players  the number of players in the game
             @param set the set of cards to choose.  Valid picks are "First Game"
         """
-        assert set == "First Game"
+        assert set == Identifiers.FIRST_GAME
         self.supply = self.__create_supply(number_of_players, set)
 
     def __create_supply(self, number_of_players, set):

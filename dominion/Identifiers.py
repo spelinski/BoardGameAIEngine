@@ -1,3 +1,4 @@
+#cards
 COPPER = "copper"
 SILVER = "silver"
 GOLD = "gold"
@@ -19,3 +20,7 @@ SMITHY = "smithy"
 VILLAGE = "village"
 WORKSHOP = "workshop"
 WOODCUTTER = "woodcutter"
+
+
+# game sets
+FIRST_GAME = "First Game"
