@@ -1,3 +1,5 @@
+from dominion import Identifiers
+
 class Supply(object):
     """
     The common supply that players can gain/buy cards from
@@ -13,31 +15,34 @@ class Supply(object):
         self.supply = self.__create_supply(number_of_players, set)
 
     def __create_supply(self, number_of_players, set):
-        kingdom_cards = ["Cellar", "Market", "Militia", "Mine", "Moat", "Remodel", "Smithy", "Village", "Woodcutter", "Workshop"]
-        other_supply_cards = ["Copper", "Silver", "Gold", "Estate", "Duchy", "Province", "Curse"]
+        kingdom_cards = [Identifiers.CELLAR, Identifiers.MARKET, Identifiers.MILITIA, Identifiers.MINE, Identifiers.MOAT,
+                         Identifiers.REMODEL, Identifiers.SMITHY, Identifiers.VILLAGE, Identifiers.WOODCUTTER, Identifiers.WORKSHOP]
+        other_supply_cards = [Identifiers.COPPER, Identifiers.SILVER, Identifiers.GOLD,
+                              Identifiers.ESTATE, Identifiers.DUCHY, Identifiers.PROVINCE,
+                              Identifiers.CURSE]
         cards = kingdom_cards + other_supply_cards
         return  {card: self.__get_initial_number_of_cards(card, number_of_players) for card in cards}
 
     def __get_initial_number_of_cards(self, card, number_of_players):
         if self.__is_victory_card(card):
             return self.__get_victory_card_count(card, number_of_players)
-        elif card == "Curse":
+        elif card == Identifiers.CURSE:
             return self.__get_curse_card_count(number_of_players)
-        elif card == "Copper":
+        elif card == Identifiers.COPPER:
             return 60
-        elif card == "Silver":
+        elif card == Identifiers.SILVER:
             return 40
-        elif card == "Gold":
+        elif card == Identifiers.GOLD:
             return 30
         else:
             return 10
 
     def __is_victory_card(self,card):
-        return card in ["Estate", "Duchy", "Province"]
+        return card in [Identifiers.ESTATE, Identifiers.DUCHY, Identifiers.PROVINCE]
 
     def __get_victory_card_count(self, card, number_of_players):
         victory_cards =  8 if number_of_players == 2 else 12
-        victory_cards += (3*number_of_players) if card == "Estate" else 0
+        victory_cards += (3*number_of_players) if card == Identifiers.ESTATE else 0
         return victory_cards
 
     def __get_curse_card_count(self, number_of_players):
