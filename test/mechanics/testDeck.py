@@ -1,5 +1,5 @@
 import unittest
-from mechanics.Deck import Deck 
+from mechanics.Deck import Deck
 
 
 class TestDeck(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestDeck(unittest.TestCase):
 
     def test_can_draw_card_from_deck(self):
         listOfCards = [1]
-        drawnCard = next(Deck(listOfCards, False))
+        drawnCard = Deck(listOfCards, False).draw()
         self.assertEqual(drawnCard, 1)
 
     def test_can_draw_different_cards_from_deck(self):
@@ -39,3 +39,10 @@ class TestDeck(unittest.TestCase):
 
     def test_raise_type_error_if_no_list(self):
         self.assertRaisesRegexp(TypeError, "", Deck, "")
+
+    def test_can_replenish_deck(self):
+        replenisher = Deck([2])
+        deck = Deck([1])
+        deck.set_replenisher(replenisher)
+        self.assertEqual(1, deck.draw())
+        self.assertEqual(2, deck.draw())
