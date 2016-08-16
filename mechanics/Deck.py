@@ -53,7 +53,6 @@ class Deck(object):
     def __nonzero__(self):
         return not self.is_empty()
 
-
     def set_replenisher(self, replenisher):
         """
         Set a collection to replenish from if this deck is empty

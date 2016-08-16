@@ -46,3 +46,19 @@ class TestDeck(unittest.TestCase):
         deck.set_replenisher(replenisher)
         self.assertEqual(1, deck.draw())
         self.assertEqual(2, deck.draw())
+        self.assertIsNone(deck.draw())
+
+    def test_deck_is_empty_before_replenish(self):
+        replenisher = Deck([2])
+        deck = Deck([1])
+        deck.set_replenisher(replenisher)
+        self.assertEqual(1, deck.draw())
+        self.assertTrue(deck.is_empty())
+
+    def test_deck_replenisher_is_empty_after_after_replenish(self):
+        replenisher = Deck([2,3,4])
+        deck = Deck([1])
+        deck.set_replenisher(replenisher)
+        self.assertEqual(1, deck.draw())
+        deck.draw()
+        self.assertTrue(replenisher.is_empty())
