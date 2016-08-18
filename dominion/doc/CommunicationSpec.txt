@@ -1,0 +1,133 @@
+Version 1
+---------
+
+This document should outline what communication happens down to the bot
+
+Format of this document
+<x> will indicate a parameter
+<x|y> will indicate that either x|y will be sent
+<x-y> will indicate that the range x to y will be sent (inclusive on both ends)
+
+
+If a bot ever does not respond, it is disqualified from the match.
+
+Initial Messages
+---------------
+
+player [player1|player2|player3|player4] name
+  - This indicates which player you are
+  - This is also a request to name your bot
+  - The bot must return with player <playerN> <bot-name> where <playerN> is the player that was passed down, and <bot-name> is a name the player may choose
+  - If the bot responds with anything else, the name will automatically be assigned as PLAYERN
+
+player <playerN> version <version>
+  - This is to inform the bot of which version of the spec we are using
+  - <playerN> is the player number (such as player1, or player4)
+  - <version> is the version of the spec (1 is the only supported version as of today)
+  - The player must reply back with the exact same message if it supports the version, otherwise, the server will exit
+
+Board Information Message
+-------------------------
+
+  These messages are informational, and require no response
+
+supply <card1> <count1> <card2> <count2> .... <card17> <count17>
+  - There are 17 cards that are considered part of the supply
+  - <cardN> is the name of the card (all lowercase) and <countN> is the number of cards that remain in the supply
+  - In version 1, the supported cards are: curse, copper, silver, gold, estate, duchy, province, cellar, market, militia, mine, moat, remodel, smithy, village, woodcutter and workshop
+
+<playerN> gained <card1> <card2> ... <cardN>
+   - this is a list of cards that the player has gained
+   - <playerN> indicates player number, such as <player1>
+   - <cardN> is the lower case identifier for which cards the player gained
+
+<playerN> discarded <card1> <card2> ... <cardN>
+   - this is a list of cards the player played (which includes cards cleaned up at the end of the turn)
+   - in Dominion, technically you don't see all the cards the player discards, but  for this version of the spec, you will.
+   - <cardN> is the card that the player played or discarded
+
+Action Requests
+---------------
+
+action-request play-turn actions <actions> buys <buys> extra-money <money> hand <card1> <card2> <card3> .... <cardN>
+   - this is a request for a bot to take its turn (given a hand)
+   - this may be sent multiple times per player turn (for example, if a smithy (+3 cards) is played, the request will be sent again with 0 actions, 1 buy, 0 extra-money, and 7 cards (instead of 5) )
+   - <actions> is the number of actions left (by default it is 1)
+   - <buys> is the number of buys left (by default it is 1)
+   - <money> is the extra money available for buy
+   - <cardN> is the lower case identifier for a card in the players hand.  There is no limit on how many can be in a hand (can be zero)
+
+   - the appropriate responses are the following:
+   - action-reply pass
+      - this passes the players turn
+   - action-reply buy <card1> <card2> ... <cardN>
+       - this buys the cards for the player, then ends their turn
+       - if there are more cards than buys, or if the card value exceeds remaining money, the possible cards will be bought left to right
+       - on the first card that can't be bought (from left to right order), the player's turn ends.
+       - if no card could be bought, the player's turn ends
+   - action-reply play <card>
+       - this is a reply to play a card
+       - if the player had no actions left or if the player's does not have the card or an invalid message, the player's turn ends.
+       - <card> is the card that is played.  This may have different results, described below
+
+
+       -action-reply play cellar <card1> <card2> .. <cardN>
+         - cellar allows a player to discard N cards, draw N cards, and get an extra action
+         - plays a cellar card with the associated cards to discard
+         - the server will respond with another action-request play-turn message
+         - if the player specifies a card they do not have, cellar will discard all the cards up to that (evaluated left to right)
+         - if the player specifies no valid cards, then the cellar is consumed, the action is consumed, and the action-request play-turn message is sent to the player
+
+        -action-reply play market
+          - market gives +1 card, +1 money, +1 buy, and +1 action
+          - the server will respond with another action-request play-turn message
+
+        -action-reply play militia
+          - militia gives + 2 money and forces other players to discard down to three
+          - every other player that does not have a moat in their hand will receive the following message:
+              - action-request attack discard <number-to-discard> hand <card1> <card2> ... <cardN>
+                  - this is a request to discard from your hand
+                  - <number-to-discard> is the number of cards to discard
+                  - <card1> <card2> ... <cardN> is the number of cards in your hand.
+                  - each player must respond with action-reply discard <card1> <card2> .. <cardN>
+                     - the number of cards must match the original number to discard
+                     - if the number doesn't match, or if there is an invalid message, the engine picks two cards at random
+                - after each discard, a <playerN> discarded <cards> message is sent
+            - in Dominion, revealing a moat is optional, but for simplicity it is assumed it is revealed.
+          - after every other player responds, the current player gets another action-request play-turn message
+
+        -action-reply play mine <card> <desired-card>
+           - mine lets you trash a treasure card and allows you to pick a card up to 3 more than it.
+           - <card> is the card you are trashing
+           - <desired-card> is the card you wish to acquire
+           - both card and desired-card must be a treasure card and desired-card must be available in the supply, or else the action is consumed without any other effect.
+           - if there are no possible desired-cards, it can be left off, and the original <card> can still be trashed.  However if there is a card that can be gained, the action is consumed without <card> being trashed
+           - the server then replies with action-request play-turn message
+
+       -action-reply play moat
+           - moat lets you draw 2 cards.  The reaction ability on moat (protect from attack) is done automatically
+           - the server then replies with action-request play-turn message
+
+      - action-reply play remodel <card> <desired-card>
+          - remodel lets you trash a card and gain a card up to 2 more than the desired-card
+          - card must be a card in your hand, otherwise the action is consumed with no effect
+          - desired-card must be a card that exists in the supply and worth no more than two more than card
+          - desired-card may be empty if there are no valid cards in the supply.
+          - the server then replies with action-request play-turn message
+
+      - action-reply play smithy
+         - smithy gives the player 3 extra cards
+         - the server then replies with action-request play-turn message
+
+      - action-reply play village
+         - village gives the playe 1 card and 2 actions
+         - the server then replies with action-request play-turn message
+
+     - action-reply play woodcutter
+        - woodcutter gives the player an extra buy and 2 extra money
+        - the server then replies with action-request play-turn message
+
+      -action-reply workshop <desired-card>
+          - workshop lets a player gain a card costing up to 4
+          - desired card must be a card in the supply costing up to 4, or else the action is consumed without effect
+          - the server then replies with action-request play-turn message
