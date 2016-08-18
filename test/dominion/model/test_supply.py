@@ -68,7 +68,7 @@ class TestSupply(unittest.TestCase):
         with self.assertRaises(PileEmptyException):
             supply.take(Identifiers.DUCHY)
 
-    def test_no_piiles_are_empty_to_start(self):
+    def test_no_piles_are_empty_to_start(self):
         supply = Supply(2, Identifiers.FIRST_GAME)
         self.assertEquals(0, supply.get_number_of_empty_piles())
 
