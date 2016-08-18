@@ -39,27 +39,29 @@ Board Information Message
 
 supply <card1> <count1> <card2> <count2> .... <card17> <count17>
   - There are 17 cards that are considered part of the supply
+  - This is sent before each turn
   - <cardN> is the name of the card (all lowercase) and <countN> is the number of cards that remain in the supply
   - In version 1, the supported cards are: curse, copper, silver, gold, estate, duchy, province, cellar, market, militia, mine, moat, remodel, smithy, village, woodcutter and workshop
 
 <playerN> gained <card1> <card2> ... <cardN>
-   - this is a list of cards that the player has gained
+   - this is a list of cards that the player has gained (through gaining or buying)  (and emitted after each player turn)
    - <playerN> indicates player number, such as <player1>
    - <cardN> is the lower case identifier for which cards the player gained
 
 <playerN> played <card1> <card2> ... <cardN>
-   - this is a list of cards the player played (which does not includes cards cleaned up at the end of the turn)
+   - this is a list of cards the player played (which does not includes cards cleaned up at the end of the turn) (and emitted after each player turn)
    - <cardN> is one of the cards that the player played
    
-<playerN> discarded <card1> <card2> ... <cardN>
-   - this is a list of cards the player discarded (such as when a militia occurs).  This is not for the cleanup phase
-   - <cardN> is one of the cards that the player discarded
    
 <playerN> top-discard <card>
    - in Dominion, technically you don't see all the cards the player discards, but the top card is always shown
+   - this is sent out whenever a player discards card (such as militia or cleanup phase)
    - the engine picks this card, and it will be a card the player played (an action or a treasure), if possible
-   - if the player did not play any cards, the engine picks a card to show.
+   - if the player did not play any cards, the engine picks a card to show.  The engine will try to who victory cards first, treasure cards second, and action cards third.
    
+<playerN> revealed hand <card>
+   - this is emitted whenever a player reveals a card from their hand (such as a moat in response to a militia)
+   - card is the card revealed
    
 
 Action Requests
