@@ -100,7 +100,7 @@ action-request play-turn actions <actions> buys <buys> extra-money <money> hand 
 
         -action-reply play militia
           - militia gives + 2 money and forces other players to discard down to three
-          - every other player  will receive the following message:
+          - every other player with more than 3 cards will receive the following message:
               - action-request attack discard <number-to-discard> hand <card1> <card2> ... <cardN>
                   - this is a request to discard from your hand
                   - <number-to-discard> is the number of cards to discard
