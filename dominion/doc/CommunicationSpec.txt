@@ -25,6 +25,12 @@ player <playerN> version <version>
   - <playerN> is the player number (such as player1, or player4)
   - <version> is the version of the spec (1 is the only supported version as of today)
   - The player must reply back with the exact same message if it supports the version, otherwise, the server will exit
+  
+game kingdom-cards <card1> <card2> <card3> .. <card10>
+  - This is to inform which kingdom cards are in the deck
+  - <cardN> is the lower case identifier for the card
+  - In version 1, the supported cards are: cellar, market, militia, mine, moat, remodel, smithy, village, woodcutter and workshop
+
 
 Board Information Message
 -------------------------
@@ -41,10 +47,20 @@ supply <card1> <count1> <card2> <count2> .... <card17> <count17>
    - <playerN> indicates player number, such as <player1>
    - <cardN> is the lower case identifier for which cards the player gained
 
+<playerN> played <card1> <card2> ... <cardN>
+   - this is a list of cards the player played (which does not includes cards cleaned up at the end of the turn)
+   - <cardN> is one of the cards that the player played
+   
 <playerN> discarded <card1> <card2> ... <cardN>
-   - this is a list of cards the player played (which includes cards cleaned up at the end of the turn)
-   - in Dominion, technically you don't see all the cards the player discards, but  for this version of the spec, you will.
-   - <cardN> is the card that the player played or discarded
+   - this is a list of cards the player discarded (such as when a militia occurs).  This is not for the cleanup phase
+   - <cardN> is one of the cards that the player discarded
+   
+<playerN> top-discard <card>
+   - in Dominion, technically you don't see all the cards the player discards, but the top card is always shown
+   - the engine picks this card, and it will be a card the player played (an action or a treasure), if possible
+   - if the player did not play any cards, the engine picks a card to show.
+   
+   
 
 Action Requests
 ---------------
@@ -84,7 +100,7 @@ action-request play-turn actions <actions> buys <buys> extra-money <money> hand 
 
         -action-reply play militia
           - militia gives + 2 money and forces other players to discard down to three
-          - every other player that does not have a moat in their hand will receive the following message:
+          - every other player  will receive the following message:
               - action-request attack discard <number-to-discard> hand <card1> <card2> ... <cardN>
                   - this is a request to discard from your hand
                   - <number-to-discard> is the number of cards to discard
@@ -92,8 +108,11 @@ action-request play-turn actions <actions> buys <buys> extra-money <money> hand 
                   - each player must respond with action-reply discard <card1> <card2> .. <cardN>
                      - the number of cards must match the original number to discard
                      - if the number doesn't match, or if there is an invalid message, the engine picks two cards at random
+                  - if the attacked player has a moat they are able to respond with:
+                    "action-reply moat"
+                    - this prevents the discard
+                    - if the player does not have a moat or sends an invalid message, the engine picks two cards at random to discard
                 - after each discard, a <playerN> discarded <cards> message is sent
-            - in Dominion, revealing a moat is optional, but for simplicity it is assumed it is revealed.
           - after every other player responds, the current player gets another action-request play-turn message
 
         -action-reply play mine <card> <desired-card>
