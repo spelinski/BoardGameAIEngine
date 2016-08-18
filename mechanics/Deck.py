@@ -3,9 +3,9 @@ from random import shuffle
 class Deck(object):
     """
     A Deck is modeled as an infinite generator that  begins
-    to return None once the deck is empty. Drawing from the 
+    to return None once the deck is empty. Drawing from the
     deck is performed by calling next() on the deck as
-    you would any python generator. 
+    you would any python generator.
     """
 
     def __init__(self, listOfCards, shuffleDeck=True):
@@ -20,22 +20,47 @@ class Deck(object):
         self.deck = listOfCards
         if shuffleDeck:
             self.shuffle()
+        self.replenisher = None
 
     def shuffle(self):
         shuffle(self.deck)
 
     def is_empty(self):
         return self.deck == []
-    
+
+    def draw(self):
+        """providing a better named function for decks"""
+        return self.next()
+
     def next(self):
         """
         draw the next card from the deck
-        @raise DeckEmptyError if the deck is empty
+        @return None if the deck is empty, or a card from the deck if it is not
+                the deck will shuffle in the replenisher.
         """
+        if self.is_empty():
+            self.__replenish()
         if self.is_empty():
             return None
         return self.deck.pop()
 
+    def __replenish(self):
+        if self.replenisher:
+            while self.replenisher:
+                self.deck.append(next(self.replenisher))
+            self.shuffle()
+
+    def __nonzero__(self):
+        return not self.is_empty()
+
+    def set_replenisher(self, replenisher):
+        """
+        Set a collection to replenish from if this deck is empty
+        @param replenisher the iterable to replenish from if we draw from an empty deck
+               the replenisher must support a next() method
+        """
+        self.replenisher = replenisher
+
+
     def __iter__(self):
         return self
-
