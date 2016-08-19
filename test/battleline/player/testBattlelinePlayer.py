@@ -11,7 +11,7 @@ class TestPlayer(unittest.TestCase):
     def test_player_throws_if_not_implemented(self):
         player = Player()
         with self.assertRaises(NotImplementedError):
-            player.compute_turn(Board(), None)
+            player.compute_turn(Board(), True, None)
 
 
 class TestSubprocessPlayer(unittest.TestCase):
@@ -56,14 +56,14 @@ class TestSubprocessPlayer(unittest.TestCase):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.communication.clear()
         self.communication.add_response("play 4 color1,7")
-        play = self.player.compute_turn(self.initial_board, None)
+        play = self.player.compute_turn(self.initial_board,True, None)
         self.assertEquals(play.card, TroopCard(number=7, color="color1"))
         self.assertEquals(play.flag, 4)
 
     def test_player_receives_game_state(self):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.communication.clear()
-        self.player.compute_turn(self.initial_board, None)
+        self.player.compute_turn(self.initial_board,True, None)
 
         self.assertEquals(self.communication.messages_received,
                           ["player north hand color1,1 color1,2 color1,3 color1,4 color1,5 color1,6 color1,7",
@@ -93,7 +93,7 @@ class TestSubprocessPlayer(unittest.TestCase):
     def test_player_receives_game_state_with_last_move(self):
         self.player.new_game(Identifiers.NORTH, self.initial_hand)
         self.communication.clear()
-        self.player.compute_turn(self.initial_board, Play(
+        self.player.compute_turn(self.initial_board, True,Play(
             card=TroopCard(number=3, color="color4"), flag=4))
 
         self.assertEquals(self.communication.messages_received,
