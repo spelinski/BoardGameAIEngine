@@ -126,7 +126,7 @@ action-request play-turn actions <actions> buys <buys> extra-money <money> hand 
            - the server then replies with action-request play-turn message
 
        -action-reply play moat
-           - moat lets you draw 2 cards.  The reaction ability on moat (protect from attack) is done automatically
+           - moat lets you draw 2 cards.  This is not the reaction ability on moat (protect from attack), --- see militia.
            - the server then replies with action-request play-turn message
 
       - action-reply play remodel <card> <desired-card>
@@ -148,7 +148,7 @@ action-request play-turn actions <actions> buys <buys> extra-money <money> hand 
         - woodcutter gives the player an extra buy and 2 extra money
         - the server then replies with action-request play-turn message
 
-      -action-reply workshop <desired-card>
+      -action-reply play workshop <desired-card>
           - workshop lets a player gain a card costing up to 4
           - desired card must be a card in the supply costing up to 4, or else the action is consumed without effect
           - the server then replies with action-request play-turn message
