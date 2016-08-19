@@ -183,6 +183,15 @@ class TestBoardLogic(unittest.TestCase):
             self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
 
+    def test_flag_is_all_flags_playable(self):
+        self.assertTrue(self.boardLogic.is_any_flag_playable(Identifiers.NORTH))
+        for flag in xrange(1,10):
+            self.boardLogic.board.get_flag(flag).sides[Identifiers.NORTH] = [TroopCard(
+                1, "color1"), TroopCard(2, "color1"), TroopCard(3, "color1")]
+        self.assertFalse(
+            self.boardLogic.is_any_flag_playable(Identifiers.NORTH))
+        self.assertTrue(self.boardLogic.is_any_flag_playable(Identifiers.SOUTH))
+
     def test_check_breakthrough(self):
         # 3 adjacent flags.
         for flag, colorId in zip([1, 2, 3], range(0, 3)):

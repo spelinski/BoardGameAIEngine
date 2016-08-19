@@ -32,11 +32,12 @@ class Player(object):
         self.direction = direction
         self.hand = initial_hand
 
-    def compute_turn(self,board,last_move):
+    def compute_turn(self,board, are_flags_open, last_move):
         """
         Implement this method in a derived class to provide the special
         logic for your player.
         :param board: The current game board state.
+        :param are_flags_open: if there are flags open to play
         :param last_move: The previous move taken by the opponent. None if
             this is the first turn (and thus no previous move)
         :return: A Play to be performed on the board
@@ -88,16 +89,17 @@ class SubprocessPlayer(Player):
         self.name = self.__get_response_or_default((None, direction))[1]
         self.generator.send_colors()
 
-    def compute_turn(self, board, last_move):
+    def compute_turn(self, board, are_flags_open, last_move):
         """
         Provide the current game state to the supprocess and then ask the
         subprocess for its next move. See Player.compute_turn for more information.
         :param board: The current game board state.
+        :param are_flags_open: if there are flags open to play
         :param last_move: The last move taken by the opponent.
         :return: The next Play taken by the subprocess.
         """
         self.__send_game_state(board, last_move)
-        return self.__request_next_move()
+        return self.__request_next_move() if are_flags_open else (1,None)
 
     def __send_game_state(self, board, last_move):
         """
