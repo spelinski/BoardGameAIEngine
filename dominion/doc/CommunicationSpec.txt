@@ -53,6 +53,10 @@ supply <card1> <count1> <card2> <count2> .... <card17> <count17>
    - this is a list of cards the player played (which does not includes cards cleaned up at the end of the turn) (and emitted after each player turn)
    - if the player played nothing, this message is not sent
    - <cardN> is one of the cards that the player played
+ 
+ <playerN> trashed <card1> <card2> ... <cardN>
+   - this is a list of cards the player trashed (and emitted after each trashing )
+   - <cardN> is one of the cards that the player trashed
    
    
 <playerN> top-discard <card>
