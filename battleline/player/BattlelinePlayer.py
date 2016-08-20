@@ -99,7 +99,7 @@ class SubprocessPlayer(Player):
         :return: The next Play taken by the subprocess.
         """
         self.__send_game_state(board, last_move)
-        return self.__request_next_move() if are_flags_open else (1,None)
+        return self.__request_next_move() if are_flags_open else Play.from_tuple((1,None))
 
     def __send_game_state(self, board, last_move):
         """
