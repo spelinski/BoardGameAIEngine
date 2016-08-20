@@ -74,7 +74,7 @@ supply <card1> <count1> <card2> <count2> .... <card17> <count17>
 Action Requests
 ---------------
 
-action-request play-turn actions <actions> buys <buys> extra-money <money> hand <card1> <card2> <card3> .... <cardN>
+play-request play-turn actions <actions> buys <buys> extra-money <money> hand <card1> <card2> <card3> .... <cardN>
    - this is a request for a bot to take its turn (given a hand)
    - this may be sent multiple times per player turn (for example, if a smithy (+3 cards) is played, the request will be sent again with 0 actions, 1 buy, 0 extra-money, and 7 cards (instead of 5) )
    - <actions> is the number of actions left (by default it is 1)
@@ -83,79 +83,73 @@ action-request play-turn actions <actions> buys <buys> extra-money <money> hand 
    - <cardN> is the lower case identifier for a card in the players hand.  There is no limit on how many can be in a hand (can be zero)
 
    - the appropriate responses are the following:
-   - action-reply pass
+   - play-reply pass
       - this passes the players turn
-   - action-reply buy <card1> <card2> ... <cardN>
+   - play-reply buy <card1> <card2> ... <cardN>
        - this buys the cards for the player, then ends their turn
        - if there are more cards than buys, or if the card value exceeds remaining money, the possible cards will be bought left to right
        - on the first card that can't be bought (from left to right order), the player's turn ends.
        - if no card could be bought, the player's turn ends
-   - action-reply play <card>
+   - play-reply action <card>
        - this is a reply to play a card
-       - if the player had no actions left or if the player's does not have the card or an invalid message, the player's turn ends.
+       - if the player had no actions left, the player's turn ends
+       - if the player had actions left,  and the player sends an invalid message, 1 action is consumed and the play-request message is sent again
+       - once the action is fully resolved, the play-request play-turn message is sent again with updated information.
        - <card> is the card that is played.  This may have different results, described below
+       
 
 
-       -action-reply play cellar <card1> <card2> .. <cardN>
+       -play-reply action cellar <card1> <card2> .. <cardN>
          - cellar allows a player to discard N cards, draw N cards, and get an extra action
          - plays a cellar card with the associated cards to discard
          - the server will respond with another action-request play-turn message
          - if the player specifies a card they do not have, cellar will discard all the cards up to that (evaluated left to right)
          - if the player specifies no valid cards, then the cellar is consumed, the action is consumed, and the action-request play-turn message is sent to the player
 
-        -action-reply play market
+        -play-reply action market
           - market gives +1 card, +1 money, +1 buy, and +1 action
-          - the server will respond with another action-request play-turn message
 
-        -action-reply play militia
+        -play-reply action militia
           - militia gives + 2 money and forces other players to discard down to three
           - every other player with more than 3 cards will receive the following message:
-              - action-request attack discard <number-to-discard> hand <card1> <card2> ... <cardN>
+              - play-request attack discard <number-to-discard> hand <card1> <card2> ... <cardN>
                   - this is a request to discard from your hand
                   - <number-to-discard> is the number of cards to discard
                   - <card1> <card2> ... <cardN> is the number of cards in your hand.
-                  - each player must respond with action-reply discard <card1> <card2> .. <cardN>
+                  - each player must respond with play-reply discard <card1> <card2> .. <cardN>
                      - the number of cards must match the original number to discard
                      - if the number doesn't match, or if there is an invalid message, the engine picks two cards at random
                   - if the attacked player has a moat they are able to respond with:
-                    "action-reply moat"
+                    "play-reply reaction moat"
                     - this prevents the discard
                     - if the player does not have a moat or sends an invalid message, the engine picks two cards at random to discard
                 - after each discard, a <playerN> discarded <cards> message is sent
-          - after every other player responds, the current player gets another action-request play-turn message
 
-        -action-reply play mine <card> <desired-card>
+        -play-reply action mine <card> <desired-card>
            - mine lets you trash a treasure card and allows you to pick a card up to 3 more than it.
            - <card> is the card you are trashing
            - <desired-card> is the card you wish to acquire
            - both card and desired-card must be a treasure card and desired-card must be available in the supply, or else the action is consumed without any other effect.
            - if there are no possible desired-cards, it can be left off, and the original <card> can still be trashed.  However if there is a card that can be gained, the action is consumed without <card> being trashed
-           - the server then replies with action-request play-turn message
 
-       -action-reply play moat
+       -play-reply action moat
            - moat lets you draw 2 cards.  This is not the reaction ability on moat (protect from attack), --- see militia.
-           - the server then replies with action-request play-turn message
 
-      - action-reply play remodel <card> <desired-card>
+      - play-reply action remodel <card> <desired-card>
           - remodel lets you trash a card and gain a card up to 2 more than the desired-card
           - card must be a card in your hand, otherwise the action is consumed with no effect
-          - desired-card must be a card that exists in the supply and worth no more than two more than card
+          - desired-card must be a card that exists in the supply and worth no more than two more than card, otherwise the action is consumed with no effect
           - desired-card may be empty if there are no valid cards in the supply.
-          - the server then replies with action-request play-turn message
 
-      - action-reply play smithy
+      - play-reply action smithy
          - smithy gives the player 3 extra cards
-         - the server then replies with action-request play-turn message
 
-      - action-reply play village
+      - play-reply action village
          - village gives the playe 1 card and 2 actions
-         - the server then replies with action-request play-turn message
 
-     - action-reply play woodcutter
+     - play-reply action woodcutter
         - woodcutter gives the player an extra buy and 2 extra money
-        - the server then replies with action-request play-turn message
 
-      -action-reply play workshop <desired-card>
+      -play-reply reply workshop <desired-card>
           - workshop lets a player gain a card costing up to 4
           - desired card must be a card in the supply costing up to 4, or else the action is consumed without effect
-          - the server then replies with action-request play-turn message
