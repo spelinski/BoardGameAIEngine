@@ -22,7 +22,10 @@ class Player(object):
             card = self.deck.draw()
             if card is None:
                 break
-            self.hand.append(card)
+            self.add_to_hand(card)
+
+    def add_to_hand(self, card):
+        self.hand.append(card)
 
     def get_hand(self):
         return self.hand
