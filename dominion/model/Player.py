@@ -44,6 +44,11 @@ class Player(object):
         self.discard_pile.add(card)
         self.hand.remove(card)
 
+    def trash(self, card):
+        if card not in self.hand:
+            raise CardNotInHandException(card)
+        self.hand.remove(card)
+
 
 class CardNotInHandException(Exception):
 

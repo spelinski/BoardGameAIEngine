@@ -90,3 +90,18 @@ class TestPlayerModel(unittest.TestCase):
         self.player.add_to_hand(5)
         with self.assertRaises(CardNotInHandException):
             self.player.discard(4)
+
+    def test_trashing_card_from_hand(self):
+        self.player.add_to_hand(2)
+        self.player.add_to_hand(3)
+        self.player.trash(2)
+        self.assertEquals([], self.player.get_discard_pile())
+        self.assertEquals([3], self.player.get_hand())
+
+    def test_trash_throws_exception_if_card_not_in_hand(self):
+        with self.assertRaises(CardNotInHandException):
+            self.player.trash(4)
+
+        self.player.add_to_hand(5)
+        with self.assertRaises(CardNotInHandException):
+            self.player.trash(4)
