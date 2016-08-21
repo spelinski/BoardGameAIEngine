@@ -4,6 +4,9 @@ from mechanics.Deck import Deck
 
 class TestDeck(unittest.TestCase):
 
+    def test_empty_deck_is_empty(self):
+        self.assertTrue(Deck().is_empty())
+
     def test_deck_is_not_empty_by_default(self):
         listOfCards = [1]
         self.assertFalse(Deck(listOfCards, False).is_empty())
@@ -62,3 +65,17 @@ class TestDeck(unittest.TestCase):
         self.assertEqual(1, deck.draw())
         deck.draw()
         self.assertTrue(replenisher.is_empty())
+
+    def test_can_add_to_deck(self):
+        deck = Deck([1])
+        deck.add(2)
+        self.assertEqual([1,2], deck.get_cards())
+        self.assertEqual(2, deck.draw())
+        self.assertEqual(1, deck.draw())
+
+    def test_getting_cards_returns_copy(self):
+        deck = Deck([1,2,3], shuffleDeck=False)
+        cards = deck.get_cards()
+        self.assertEquals([1,2,3], cards)
+        deck.draw()
+        self.assertEquals([1,2,3], cards)
