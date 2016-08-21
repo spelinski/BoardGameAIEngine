@@ -28,12 +28,30 @@ class Player(object):
         self.hand.append(card)
 
     def get_hand(self):
-        return self.hand
+        return [card for card in self.hand]
 
     def get_deck_cards(self):
         return self.deck.get_cards()
 
     def cleanup(self):
-        for card in self.hand:
-            self.discard_pile.add(card)
-        self.hand = []
+        for card in self.get_hand():
+            self.discard(card)
+        assert self.hand == []
+
+    def discard(self, card):
+        if card not in self.hand:
+            raise CardNotInHandException(card)
+        self.discard_pile.add(card)
+        self.hand.remove(card)
+
+
+class CardNotInHandException(Exception):
+
+    def __init__(self, card):
+        """Create an Exception that the player is trying to take a card that isn't in the hand
+        @param card the card that was expected to be in the hand
+        """
+        self.card = card
+
+    def __str__(self):
+        return "{} is not in the hand.".format(self.card)

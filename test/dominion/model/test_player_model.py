@@ -1,5 +1,5 @@
 import unittest
-from dominion.model.Player import Player
+from dominion.model.Player import Player, CardNotInHandException
 
 class TestPlayerModel(unittest.TestCase):
 
@@ -71,7 +71,22 @@ class TestPlayerModel(unittest.TestCase):
 
         self.assertEquals(range(20), sorted(self.player.get_hand() + self.player.get_discard_pile() + self.player.get_deck_cards()))
 
-    def test_player_can_gain_to_hand(self):
+    def test_player_can_add_to_hand(self):
         self.player.add_to_hand(2)
         self.player.add_to_hand(3)
         self.assertEquals([2,3], self.player.get_hand())
+
+    def test_discard_puts_card_from_hand_to_discard_pile(self):
+        self.player.add_to_hand(2)
+        self.player.add_to_hand(3)
+        self.player.discard(2)
+        self.assertEquals([2], self.player.get_discard_pile())
+        self.assertEquals([3], self.player.get_hand())
+
+    def test_discard_throws_exception_if_card_not_in_hand(self):
+        with self.assertRaises(CardNotInHandException):
+            self.player.discard(4)
+
+        self.player.add_to_hand(5)
+        with self.assertRaises(CardNotInHandException):
+            self.player.discard(4)
