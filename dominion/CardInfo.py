@@ -24,3 +24,4 @@ def get_cost(card):
     if card in [Identifiers.MINE, Identifiers.MARKET, Identifiers.DUCHY] : return 5
     if card in [Identifiers.GOLD]: return 6
     if card in [Identifiers.PROVINCE] : return 8
+    raise ValueError("card not recognized")

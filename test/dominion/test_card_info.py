@@ -40,3 +40,7 @@ class TestCardInfo(unittest.TestCase):
         self.assertEquals(5, get_cost(Identifiers.DUCHY))
         self.assertEquals(6, get_cost(Identifiers.GOLD))
         self.assertEquals(8, get_cost(Identifiers.PROVINCE))
+
+    def test_cost_throws_exception_if_invalid_card(self):
+        with self.assertRaises(ValueError):
+            get_cost("Bad Name")
