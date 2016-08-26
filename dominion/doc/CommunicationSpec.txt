@@ -133,12 +133,15 @@ Action Requests
    - {
        type: "play-reply",
        phase: "buy",
+       played_treasures: [<played-card1>, <played-card2>, ... <played-cardN>]
        cards_to_buy: [<card1>, <card2>, ... <cardN>]
      }
        - this buys the cards for the player
        - if there are more cards than buys, or if the card value exceeds remaining money, the possible cards will be bought left to right
        - on the first card that can't be bought (from left to right order), the player's turn ends.
-       - if no card could be bought, the player's turn ends
+       - <cardN> is the card you are trying to buy
+       - <played-card1> is the card that you have played as treasure.  If a played treasured card is not a treasure or not in the hand, all buys are consumed
+       - if no card could be bought, all buys are consumed.
    -  {
        type: "play-reply",
        phase: "action",
