@@ -31,9 +31,7 @@ class Deck(object):
         return self.deck == []
 
     def add(self, card):
-        """lass TestPlayerModel(unittest.TestCase):
-
-
+        """
         Add a card to the deck
         @param the card to add to the deck
         """
