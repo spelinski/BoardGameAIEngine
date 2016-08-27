@@ -165,3 +165,7 @@ class TestPlayerModel(unittest.TestCase):
         self.player.play_card("copper")
         self.assertEquals([], self.player.get_hand())
         self.assertEquals(["copper"], self.player.get_played_cards())
+
+    def test_player_can_only_play_cards_from_hand(self):
+        with self.assertRaises(CardNotInHandException):
+            self.player.play_card("copper")

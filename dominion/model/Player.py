@@ -57,6 +57,8 @@ class Player(object):
         self.hand.remove(card)
 
     def play_card(self, card):
+        if card not in self.hand:
+            raise CardNotInHandException(card)
         self.hand.remove(card)
         self.played.append(card)
 
