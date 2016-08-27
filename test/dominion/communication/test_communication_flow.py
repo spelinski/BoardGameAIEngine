@@ -34,3 +34,19 @@ class TestCommunicationFlow(unittest.TestCase):
         player = create_player(invalid_message)
         with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
             send_player_info(player, 1, 1)
+
+    def test_player_request_aborts_if_type_not_supplied(self):
+        def invalid_message( json_message):
+            return json.dumps({})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Message was not correct type: Not Present"):
+            send_player_info(player, 1, 1)
+
+    def test_player_request_aborts_if_not_right_message(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "nope"})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
+            send_player_info(player, 1, 1)
