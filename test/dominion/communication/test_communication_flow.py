@@ -50,3 +50,35 @@ class TestCommunicationFlow(unittest.TestCase):
         player = create_player(invalid_message)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
             send_player_info(player, 1, 1)
+
+    def test_player_request_aborts_if_version_is_lower(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "player-name-reply", "name": "bot", "version": 0})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Version mismatch: 0"):
+            send_player_info(player, 1, 1)
+
+    def test_player_request_aborts_if_version_is_absent(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "player-name-reply", "name": "bot"})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Version mismatch: Not Present"):
+            send_player_info(player, 1, 1)
+
+    def test_player_request_aborts_if_player_number_is_wrong(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "player-name-reply", "name": "bot", "version": 1, "player_number": "player1"})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Player Number Mismatch: player2 != player1"):
+            send_player_info(player, 2, 1)
+
+    def test_player_request_aborts_if_player_number_is_absent(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "player-name-reply", "name": "bot", "version": 1})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Player Number Mismatch: player2 != Not Present"):
+            send_player_info(player, 2, 1)
