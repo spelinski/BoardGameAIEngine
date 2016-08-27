@@ -8,16 +8,18 @@ class Deck(object):
     you would any python generator.
     """
 
-    def __init__(self, listOfCards, shuffleDeck=True):
+    def __init__(self, listOfCards=[], shuffleDeck=True):
         """
         Constructor
         @param listOfCards list of the cards that start in the deck
         @param shuffleDeck go ahead and shuffle the deck (default True)
         @raise TypeError if the first parameter is not a list
         """
+
         if not isinstance(listOfCards, list):
             raise TypeError
-        self.deck = listOfCards
+        #need a new copy of a list if not valid
+        self.deck = listOfCards if listOfCards else []
         if shuffleDeck:
             self.shuffle()
         self.replenisher = None
@@ -27,6 +29,19 @@ class Deck(object):
 
     def is_empty(self):
         return self.deck == []
+
+    def add(self, card):
+        """
+        Add a card to the deck
+        @param the card to add to the deck
+        """
+        self.deck.append(card)
+
+    def get_cards(self):
+        """
+        Get a list  (copy) of cards in the deck
+        """
+        return [card for card in self.deck]
 
     def draw(self):
         """providing a better named function for decks"""
