@@ -20,7 +20,8 @@ def send_turn_request(player, actions=1, buys=1, extra_money=0):
     response = __get_json_message(json_response)
     __assert_message_type_is_correct(response, "play-reply")
     __assert_field_matches(response, "phase", lambda p: p == "cleanup", "Invalid Phase")
-    player.cleanup()
+    top_discard = response.get("top_discard", "")
+    player.cleanup(top_discard)
     player.draw_cards(5)
 
 def __get_json_message(json_response):

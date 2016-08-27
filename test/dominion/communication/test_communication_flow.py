@@ -165,3 +165,53 @@ class TestCommunicationFlow(unittest.TestCase):
         player = create_player(invalid_message)
         with self.assertRaisesRegexp(Exception, "Invalid Phase: nope"):
             send_turn_request(player)
+
+    def test_player_can_specify_top_discard_card(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            self.assertEquals(["silver", "copper", "copper", "copper", "copper", "copper"], message["hand"])
+            return json.dumps({
+               "type": "play-reply",
+               "phase": "cleanup",
+               "top_discard" : "silver"
+               })
+        player = create_player(send_and_respond)
+        player.add_to_hand("silver")
+        for _ in range(5):
+            player.add_to_hand("copper")
+            player.put_card_on_top_of_deck("gold")
+        send_turn_request(player)
+        self.assertEquals("silver", player.get_top_discard_card())
+
+    def test_player_doesnt_have_to_specify_top_discard_card(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            self.assertEquals(["silver", "copper", "copper", "copper", "copper", "copper"], message["hand"])
+            return json.dumps({
+               "type": "play-reply",
+               "phase": "cleanup",
+               })
+        player = create_player(send_and_respond)
+        player.add_to_hand("silver")
+        for _ in range(5):
+            player.add_to_hand("copper")
+            player.put_card_on_top_of_deck("gold")
+        send_turn_request(player)
+        self.assertTrue( player.get_top_discard_card() in ["copper", "silver"])
+
+    def test_player_can_specify_top_card_not_in_hand(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            self.assertEquals(["silver", "copper", "copper", "copper", "copper", "copper"], message["hand"])
+            return json.dumps({
+               "type": "play-reply",
+               "phase": "cleanup",
+               "top-discard": "gold"
+               })
+        player = create_player(send_and_respond)
+        player.add_to_hand("silver")
+        for _ in range(5):
+            player.add_to_hand("copper")
+            player.put_card_on_top_of_deck("gold")
+        send_turn_request(player)
+        self.assertTrue( player.get_top_discard_card() in ["copper", "silver"])

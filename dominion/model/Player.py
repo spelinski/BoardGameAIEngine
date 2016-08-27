@@ -7,6 +7,7 @@ class Player(object):
         self.hand = []
         self.deck = Deck()
         self.deck.set_replenisher(self.discard_pile)
+        self.played = []
 
     def gain_card(self, card):
         self.discard_pile.add(card)
@@ -36,7 +37,10 @@ class Player(object):
     def get_deck_cards(self):
         return self.deck.get_cards()
 
-    def cleanup(self):
+    def cleanup(self, top_discard = ""):
+        for card in self.get_hand():
+            if card != top_discard:
+                self.discard(card)
         for card in self.get_hand():
             self.discard(card)
         assert self.hand == []
@@ -51,6 +55,13 @@ class Player(object):
         if card not in self.hand:
             raise CardNotInHandException(card)
         self.hand.remove(card)
+
+    def play_card(self, card):
+        self.hand.remove(card)
+        self.played.append(card)
+
+    def get_played_cards(self):
+        return self.played
 
 
 class CardNotInHandException(Exception):

@@ -113,3 +113,55 @@ class TestPlayerModel(unittest.TestCase):
         self.player.put_card_on_top_of_deck("silver")
         self.player.draw_cards(1)
         self.assertEquals(["copper", "copper", "copper", "copper", "copper", "silver"], self.player.get_hand())
+
+    def test_can_specify_top_card_when_cleaning_up(self):
+        for _ in range(5):
+            self.player.put_card_on_top_of_deck("copper")
+        self.player.add_to_hand("silver")
+        self.player.add_to_hand("gold")
+        self.player.add_to_hand("province")
+        self.player.cleanup("gold")
+        self.assertEquals("gold", self.player.get_top_discard_card())
+
+    def test_can_specify_different_top_card_when_cleaning_up(self):
+        for _ in range(5):
+            self.player.put_card_on_top_of_deck("copper")
+        self.player.add_to_hand("silver")
+        self.player.add_to_hand("gold")
+        self.player.add_to_hand("province")
+        self.player.cleanup("silver")
+        self.assertEquals("silver", self.player.get_top_discard_card())
+
+    def test_card_is_picked_if_top_not_specified_on_cleanup(self):
+        for _ in range(5):
+            self.player.put_card_on_top_of_deck("copper")
+        self.player.add_to_hand("silver")
+        self.player.add_to_hand("gold")
+        self.player.add_to_hand("province")
+        self.player.cleanup()
+        self.assertTrue(self.player.get_top_discard_card() in ["silver", "gold", "province"])
+
+    def test_card_is_picked_if_top_not_in_hand_on_cleanup(self):
+        for _ in range(5):
+            self.player.put_card_on_top_of_deck("copper")
+        self.player.add_to_hand("silver")
+        self.player.add_to_hand("gold")
+        self.player.add_to_hand("province")
+        self.player.cleanup("copper")
+        self.assertTrue(self.player.get_top_discard_card() in ["silver", "gold", "province"])
+
+    def test_card_is_picked_if_top_has_multiples(self):
+        for _ in range(5):
+            self.player.put_card_on_top_of_deck("copper")
+        self.player.add_to_hand("silver")
+        self.player.add_to_hand("silver")
+        self.player.add_to_hand("gold")
+        self.player.add_to_hand("province")
+        self.player.cleanup("silver")
+        self.assertTrue("silver" == self.player.get_top_discard_card())
+
+    def test_player_can_play_cards(self):
+        self.player.add_to_hand("copper")
+        self.player.play_card("copper")
+        self.assertEquals([], self.player.get_hand())
+        self.assertEquals(["copper"], self.player.get_played_cards())
