@@ -37,19 +37,27 @@ class Player(object):
     def get_deck_cards(self):
         return self.deck.get_cards()
 
+    def __get_cards_to_discard(self):
+        return [card for card in self.hand+self.played]
+
     def cleanup(self, top_discard = ""):
-        for card in self.get_hand():
+        for card in self.__get_cards_to_discard():
             if card != top_discard:
                 self.discard(card)
-        for card in self.get_hand():
+        for card in self.__get_cards_to_discard():
             self.discard(card)
         assert self.hand == []
+        assert self.played == []
 
     def discard(self, card):
-        if card not in self.hand:
+        if card not in self.hand and card not in self.played:
             raise CardNotInHandException(card)
         self.discard_pile.add(card)
-        self.hand.remove(card)
+        if card in self.hand:
+            self.hand.remove(card)
+        if card in self.played:
+            self.played.remove(card)
+
 
     def trash(self, card):
         if card not in self.hand:

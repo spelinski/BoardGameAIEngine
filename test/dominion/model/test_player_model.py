@@ -169,3 +169,14 @@ class TestPlayerModel(unittest.TestCase):
     def test_player_can_only_play_cards_from_hand(self):
         with self.assertRaises(CardNotInHandException):
             self.player.play_card("copper")
+
+    def test_player_can_cleanup_from_played_cards(self):
+        for _ in range(5):
+            self.player.put_card_on_top_of_deck("copper")
+        self.player.add_to_hand("silver")
+        self.player.add_to_hand("gold")
+        self.player.add_to_hand("province")
+        self.player.play_card("silver")
+        self.player.cleanup("silver")
+        self.assertEquals("silver", self.player.get_top_discard_card())
+        self.assertEquals([], self.player.get_played_cards())
