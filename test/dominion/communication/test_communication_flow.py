@@ -12,6 +12,15 @@ def create_player(func):
     player.send_message = func
     return player
 
+def return_string(json_message):
+    return "nope"
+
+def return_invalid_json(json_message):
+    return json.dumps({})
+
+def return_invalid_type( json_message):
+    return json.dumps({"type": "nope"})
+
 class TestCommunicationFlow(unittest.TestCase):
 
     def test_can_handle_player_request(self):
@@ -31,26 +40,17 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals("test-bot", player.name)
 
     def test_player_request_aborts_if_not_json(self):
-        def invalid_message( json_message):
-            return "nope"
-
-        player = create_player(invalid_message)
+        player = create_player(return_string)
         with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
             send_player_info(player, 1, 1)
 
     def test_player_request_aborts_if_type_not_supplied(self):
-        def invalid_message( json_message):
-            return json.dumps({})
-
-        player = create_player(invalid_message)
+        player = create_player(return_invalid_json)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: Not Present"):
             send_player_info(player, 1, 1)
 
     def test_player_request_aborts_if_not_right_message(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "nope"})
-
-        player = create_player(invalid_message)
+        player = create_player(return_invalid_message)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
             send_player_info(player, 1, 1)
 
@@ -127,26 +127,17 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals(player.get_hand(), ["silver", "silver", "silver", "silver", "silver"])
 
     def test_play_turn_aborts_if_not_json(self):
-        def invalid_message( json_message):
-            return "nope"
-
-        player = create_player(invalid_message)
+        player = create_player(return_string)
         with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
             send_turn_request(player)
 
     def test_play_turn_aborts_if_missing_type(self):
-        def invalid_message( json_message):
-            return json.dumps({})
-
-        player = create_player(invalid_message)
+        player = create_player(return_invalid_json)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: Not Present"):
             send_turn_request(player)
 
     def test_player_request_aborts_if_not_right_message(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "nope"})
-
-        player = create_player(invalid_message)
+        player = create_player(return_invalid_type)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
             send_turn_request(player)
 
