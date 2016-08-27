@@ -114,7 +114,7 @@ class TestCommunicationFlow(unittest.TestCase):
             self.assertEquals(0, message["extra_money"])
             self.assertEquals([], message["cards_played"])
             return json.dumps({
-               "type": "play-turn",
+               "type": "play-reply",
                "phase": "cleanup",
                "top-discard" : "copper"
                })
@@ -132,4 +132,20 @@ class TestCommunicationFlow(unittest.TestCase):
 
         player = create_player(invalid_message)
         with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
+            send_turn_request(player)
+
+    def test_play_turn_aborts_if_missing_type(self):
+        def invalid_message( json_message):
+            return json.dumps({})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Message was not correct type: Not Present"):
+            send_turn_request(player)
+
+    def test_player_request_aborts_if_not_right_message(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "nope"})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
             send_turn_request(player)
