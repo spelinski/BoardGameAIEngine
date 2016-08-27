@@ -1,4 +1,5 @@
 from dominion import Identifiers
+from dominion.CardInfo import is_victory_card
 
 class Supply(object):
     """
@@ -24,7 +25,7 @@ class Supply(object):
         return  {card: self.__get_initial_number_of_cards(card, number_of_players) for card in cards}
 
     def __get_initial_number_of_cards(self, card, number_of_players):
-        if self.__is_victory_card(card):
+        if is_victory_card(card):
             return self.__get_victory_card_count(card, number_of_players)
         elif card == Identifiers.CURSE:
             return self.__get_curse_card_count(number_of_players)
@@ -37,8 +38,6 @@ class Supply(object):
         else:
             return 10
 
-    def __is_victory_card(self,card):
-        return card in [Identifiers.ESTATE, Identifiers.DUCHY, Identifiers.PROVINCE]
 
     def __get_victory_card_count(self, card, number_of_players):
         victory_cards =  8 if number_of_players == 2 else 12
