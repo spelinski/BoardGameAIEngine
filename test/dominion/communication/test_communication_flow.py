@@ -125,3 +125,11 @@ class TestCommunicationFlow(unittest.TestCase):
         send_turn_request(player)
         self.assertEquals(player.get_discard_pile(), ["copper", "copper", "copper", "copper", "copper"])
         self.assertEquals(player.get_hand(), ["silver", "silver", "silver", "silver", "silver"])
+
+    def test_play_turn_aborts_if_not_json(self):
+        def invalid_message( json_message):
+            return "nope"
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
+            send_turn_request(player)

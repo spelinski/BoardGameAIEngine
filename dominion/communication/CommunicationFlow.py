@@ -4,10 +4,7 @@ import json
 def send_player_info(player, player_number, version):
     player_info_request = CommandGenerator().create_player_info_request(player_number, version)
     json_response = player.send_message_and_await_response(json.dumps(player_info_request))
-    try:
-        response = json.loads(json_response)
-    except:
-        raise Exception("Message was not JSON: {}".format(json_response))
+    response = __get_json_message(json_response)
     response_type = response["type"] if "type" in response else "Not Present"
     if response_type != "player-name-reply":
         raise Exception("Message was not correct type: {}".format(response_type))
@@ -26,6 +23,12 @@ def send_supply_info(player, supply):
 def send_turn_request(player, actions=1, buys=1, extra_money=0):
     play_turn_request = CommandGenerator().create_play_turn_request(actions, buys, extra_money, player.hand, [])
     json_response = player.send_message_and_await_response(json.dumps(play_turn_request))
-    response = json.loads(json_response)
+    response = __get_json_message(json_response)
     player.cleanup()
     player.draw_cards(5)
+
+def __get_json_message(json_response):
+    try:
+        return json.loads(json_response)
+    except:
+        raise Exception("Message was not JSON: {}".format(json_response))
