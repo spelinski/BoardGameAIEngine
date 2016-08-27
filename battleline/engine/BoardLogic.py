@@ -69,15 +69,15 @@ class BoardLogic:
                 self.winner = player
                 self.engine.output_handler.declare_winner(player)
 
-    def checkAllFlags(self):
+    def checkAllFlags(self, latest_player):
         """
         iterates through all of the unclaimed flags checking to see if anymore can be claimed
         @param latestPlayer the last player that has played a card
         """
         unclaimedFlags = (
             (index, flag) for index, flag in enumerate(self.board.flags) if not flag.is_claimed())
-        for indexed_flag, player in product(unclaimedFlags, [Identifiers.NORTH, Identifiers.SOUTH]):
-            self.__check_individual_flag(indexed_flag, player)
+        for indexed_flag in unclaimedFlags:
+            self.__check_individual_flag(indexed_flag, latest_player)
         self.__check_winning_conditions()
 
     def __check_individual_flag(self, indexed_flag, player):
