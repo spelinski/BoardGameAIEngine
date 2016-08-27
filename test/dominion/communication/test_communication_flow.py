@@ -75,7 +75,7 @@ class TestCommunicationFlow(unittest.TestCase):
             return json.dumps({"type": "player-name-reply", "name": "bot", "version": 1, "player_number": "player1"})
 
         player = create_player(invalid_message)
-        with self.assertRaisesRegexp(Exception, "Player Number Mismatch: player2 != player1"):
+        with self.assertRaisesRegexp(Exception, "Player Number Mismatch: player1"):
             send_player_info(player, 2, 1)
 
     def test_player_request_aborts_if_player_number_is_absent(self):
@@ -83,7 +83,7 @@ class TestCommunicationFlow(unittest.TestCase):
             return json.dumps({"type": "player-name-reply", "name": "bot", "version": 1})
 
         player = create_player(invalid_message)
-        with self.assertRaisesRegexp(Exception, "Player Number Mismatch: player2 != Not Present"):
+        with self.assertRaisesRegexp(Exception, "Player Number Mismatch: Not Present"):
             send_player_info(player, 2, 1)
 
     def test_player_request_auto_fills_name(self):
@@ -148,4 +148,20 @@ class TestCommunicationFlow(unittest.TestCase):
 
         player = create_player(invalid_message)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
+            send_turn_request(player)
+
+    def test_player_request_aborts_if_phase_missing(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "play-reply"})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Invalid Phase: Not Present"):
+            send_turn_request(player)
+
+    def test_player_request_aborts_if_phase_is_wrong(self):
+        def invalid_message( json_message):
+            return json.dumps({"type": "play-reply", "phase" : "nope"})
+
+        player = create_player(invalid_message)
+        with self.assertRaisesRegexp(Exception, "Invalid Phase: nope"):
             send_turn_request(player)
