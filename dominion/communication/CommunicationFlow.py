@@ -18,3 +18,7 @@ def send_player_info(player, player_number, version):
     if player_number != player_info_request["player_number"]:
         raise Exception("Player Number Mismatch: {} != {}".format(player_info_request["player_number"],player_number))
     player.name = response["name"] if "name" in response else player_info_request["player_number"].upper()
+
+def send_supply_info(player, supply):
+    supply_info_message = CommandGenerator().create_supply_info_message(supply.supply)
+    player.send_message(json.dumps(supply_info_message))

@@ -1,12 +1,14 @@
 import unittest
 from mock import Mock
+from dominion.model.Supply import *
 import json
 
 from dominion.communication.CommunicationFlow import *
 
-def create_player(send_and_wait_func):
+def create_player(func):
     player = Mock()
-    player.send_message_and_await_response = send_and_wait_func
+    player.send_message_and_await_response = func
+    player.send_message = func
     return player
 
 class TestCommunicationFlow(unittest.TestCase):
@@ -90,3 +92,13 @@ class TestCommunicationFlow(unittest.TestCase):
         player = create_player(missing_name)
         send_player_info(player, 2, 1)
         self.assertEquals("PLAYER2", player.name)
+
+    def test_player_supply_message(self):
+        supply = Supply(2, Identifiers.FIRST_GAME)
+        def receive( json_message):
+            message = json.loads(json_message)
+            self.assertEquals("supply-info", message["type"])
+            self.assertEquals(supply.supply, message["cards"])
+
+        player = create_player(receive)
+        send_supply_info(player, supply)
