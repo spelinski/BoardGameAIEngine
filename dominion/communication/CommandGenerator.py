@@ -5,3 +5,9 @@ class CommandGenerator(object):
                  "player_number" : "player" + str(player_number),
                  "version" : version
                 }
+
+    def create_supply_info_message(self, supply):
+        return {
+          "type" : "supply-info",
+          "cards" : supply
+        }
