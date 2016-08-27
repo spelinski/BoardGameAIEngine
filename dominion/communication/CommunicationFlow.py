@@ -17,4 +17,4 @@ def send_player_info(player, player_number, version):
     player_number = response["player_number"] if "player_number" in  response else "Not Present"
     if player_number != player_info_request["player_number"]:
         raise Exception("Player Number Mismatch: {} != {}".format(player_info_request["player_number"],player_number))
-    player.name = response["name"]
+    player.name = response["name"] if "name" in response else player_info_request["player_number"].upper()

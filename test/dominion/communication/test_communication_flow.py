@@ -82,3 +82,11 @@ class TestCommunicationFlow(unittest.TestCase):
         player = create_player(invalid_message)
         with self.assertRaisesRegexp(Exception, "Player Number Mismatch: player2 != Not Present"):
             send_player_info(player, 2, 1)
+
+    def test_player_request_auto_fills_name(self):
+        def missing_name( json_message):
+            return json.dumps({"type": "player-name-reply", "player_number": "player2", "version": 1})
+
+        player = create_player(missing_name)
+        send_player_info(player, 2, 1)
+        self.assertEquals("PLAYER2", player.name)
