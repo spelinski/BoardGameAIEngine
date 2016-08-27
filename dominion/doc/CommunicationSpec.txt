@@ -27,7 +27,7 @@ Initial Messages
   - The bot must return with player
           {
             type: "player-name-reply",
-            playerNumber: <playerN>,
+            player_number: <playerN>,
             name: "bot-name",
             version: <version
           }
