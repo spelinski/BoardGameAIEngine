@@ -105,3 +105,11 @@ class TestPlayerModel(unittest.TestCase):
         self.player.add_to_hand(5)
         with self.assertRaises(CardNotInHandException):
             self.player.trash(4)
+
+    def test_can_put_on_top_of_deck(self):
+        for _ in range(10):
+            self.player.gain_card("copper")
+        self.player.draw_cards(5)
+        self.player.put_card_on_top_of_deck("silver")
+        self.player.draw_cards(1)
+        self.assertEquals(["copper", "copper", "copper", "copper", "copper", "silver"], self.player.get_hand())

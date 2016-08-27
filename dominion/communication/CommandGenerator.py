@@ -6,8 +6,19 @@ class CommandGenerator(object):
                  "version" : version
                 }
 
-    def create_supply_info_message(self, supply):
+    def create_supply_info_message(self, supply_dict):
         return {
           "type" : "supply-info",
-          "cards" : supply
+          "cards" : supply_dict
+        }
+
+    def create_play_turn_request(self, actions, buys, extra_money, hand, played):
+        return {
+          "type": "play-turn",
+          "actions": actions,
+          "buys": buys,
+          "extra_money": extra_money,
+          "hand" : hand,
+          "cards_played": played
+
         }

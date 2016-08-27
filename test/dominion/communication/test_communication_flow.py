@@ -1,12 +1,13 @@
 import unittest
 from mock import Mock
 from dominion.model.Supply import *
+from dominion.model.Player import *
 import json
 
 from dominion.communication.CommunicationFlow import *
 
 def create_player(func):
-    player = Mock()
+    player = Player()
     player.send_message_and_await_response = func
     player.send_message = func
     return player
@@ -102,3 +103,25 @@ class TestCommunicationFlow(unittest.TestCase):
 
         player = create_player(receive)
         send_supply_info(player, supply)
+
+    def test_player_can_cleanup(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            self.assertEquals("play-turn", message["type"])
+            self.assertEquals(["copper", "copper", "copper", "copper", "copper"], message["hand"])
+            self.assertEquals(1, message["actions"])
+            self.assertEquals(1, message["buys"])
+            self.assertEquals(0, message["extra_money"])
+            self.assertEquals([], message["cards_played"])
+            return json.dumps({
+               "type": "play-turn",
+               "phase": "cleanup",
+               "top-discard" : "copper"
+               })
+        player = create_player(send_and_respond)
+        for _ in range(5):
+            player.add_to_hand("copper")
+            player.put_card_on_top_of_deck("silver")
+        send_turn_request(player)
+        self.assertEquals(player.get_discard_pile(), ["copper", "copper", "copper", "copper", "copper"])
+        self.assertEquals(player.get_hand(), ["silver", "silver", "silver", "silver", "silver"])

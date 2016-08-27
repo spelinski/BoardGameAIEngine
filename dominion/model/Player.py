@@ -27,6 +27,9 @@ class Player(object):
     def add_to_hand(self, card):
         self.hand.append(card)
 
+    def put_card_on_top_of_deck(self, card):
+        self.deck.add(card)
+
     def get_hand(self):
         return [card for card in self.hand]
 

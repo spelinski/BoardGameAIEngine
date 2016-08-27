@@ -22,3 +22,10 @@ def send_player_info(player, player_number, version):
 def send_supply_info(player, supply):
     supply_info_message = CommandGenerator().create_supply_info_message(supply.supply)
     player.send_message(json.dumps(supply_info_message))
+
+def send_turn_request(player, actions=1, buys=1, extra_money=0):
+    play_turn_request = CommandGenerator().create_play_turn_request(actions, buys, extra_money, player.hand, [])
+    json_response = player.send_message_and_await_response(json.dumps(play_turn_request))
+    response = json.loads(json_response)
+    player.cleanup()
+    player.draw_cards(5)
