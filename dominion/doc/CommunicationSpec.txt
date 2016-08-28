@@ -1,0 +1,261 @@
+Version 1
+---------
+
+This document should outline what communication happens down to the bot
+
+Format of this document
+<x> will indicate a parameter
+<x|y> will indicate that either x|y will be sent
+<x-y> will indicate that the range x to y will be sent (inclusive on both ends)
+
+Every message will be sent as a new line delimited JSON request (one request per line).
+For formatting purposes, this spec will use multiple lines, but this is only for display purposes
+
+
+If a bot ever does not respond, it is disqualified from the match.
+
+Initial Messages
+---------------
+
+{
+  type: "player-name-request",
+  player_number: [player1|player2|player3|player4],
+  version: 1
+}
+  - This indicates which player you are
+  - This is also a request to name your bot
+  - The bot must return with player
+          {
+            type: "player-name-reply",
+            player_number: <playerN>,
+            name: "bot-name",
+            version: <version
+          }
+    where <playerN> is the player that was passed down, and <bot-name> is a name the player may choose
+  - If the bot responds with anything else, the name will automatically be assigned as PLAYERN
+  - <version> is the version of the spec (1 is the only supported version as of today)
+  - If the version is not a version the server supports, the server exits.
+
+{
+  type: "game-info",
+  kingdom_cards: [<card1> <card2> <card3> .. <card10>]
+}
+  - This is to inform which kingdom cards are in the deck
+  - <cardN> is the lower case identifier for the card
+  - In version 1, the supported cards are: cellar, market, militia, mine, moat, remodel, smithy, village, woodcutter and workshop
+
+
+Board Information Message
+-------------------------
+
+  These messages are informational, and require no response
+
+{
+  type: "supply-info",
+  cards: [{"card": <card1>, "count" <count1>},  .... {"card": <cardN>, "count" <countN>}]
+}
+  - There are 17 cards that are considered part of the supply
+  - This is sent every time the supply changes
+  - <cardN> is the name of the card (all lowercase) and <countN> is the number of cards that remain in the supply
+  - In version 1, the supported cards are: curse, copper, silver, gold, estate, duchy, province, cellar, market, militia, mine, moat, remodel, smithy, village, woodcutter and workshop
+
+{
+  type: "player-gained",
+  gained: [<card1>, <card2>, ... <cardN>]
+}
+   - this is a list of cards that the player has gained (through gaining or buying)  (and emitted after time a player gains/buys something)
+   - if the player gained None, this message is not sent
+   - <playerN> indicates player number, such as <player1>
+   - <cardN> is the lower case identifier for which cards the player gained
+
+{
+ type: "player-played",
+ played: [<card1>, <card2>, ... <cardN>]
+}
+   - this is a list of cards the player played (which does not includes cards cleaned up at the end of the turn) (and emitted after each player's turn)
+   - if the player played nothing, this message is not sent
+   - <cardN> is one of the cards that the player played
+
+{
+ type: "player-trashed",
+ trashed : [<card1>, <card2>, ... <cardN>]
+}
+   - this is a list of cards the player trashed (and emitted after each trashing )
+   - <cardN> is one of the cards that the player trashed
+
+{
+ type: "player-top-discard",
+ card: <card>
+}
+   - in Dominion, technically you don't see all the cards the player discards, but the top card is always shown
+   - this is sent out whenever a player discards card (such as militia or cleanup phase)
+   - this is sent before a player shuffles his discard into his deck
+{
+    type: "player-reveal",
+    from: "hand",
+    cards: [<card>, <card>, <card>]
+}
+   - this is emitted whenever a player reveals a card from their hand (such as a moat in response to a militia)
+   - <card> is the card revealed
+
+{
+  type: "player-shuffled"
+}
+   - this is emitted whenever a player shuffles their discard pile into their deck.
+
+
+Action Requests
+---------------
+{
+  type: "play-turn",
+  actions: <actions>,
+  buys: <buys>
+  extra_money: <money>,
+  hand: [<card1>, <card2>, ... <cardN>]
+  cards_played: [<played-card1>, <played-card2> ... <played-cardN>],
+  cards_bought: [<bought_card1>, <bought_card2> ... <bought_gcardN>
+
+}
+   - this is a request for a bot to take its turn (given a hand)
+   - this may be sent multiple times per player turn (for example, if a smithy (+3 cards) is played, the request will be sent again with 0 actions, 1 buy, 0 extra-money, and 7 cards (instead of 5) )
+   - <actions> is the number of actions left (by default it is 1)
+   - <buys> is the number of buys left (by default it is 1)
+   - <money> is the extra money available for buy
+   - <cardN> is the lower case identifier for a card in the players hand.  There is no limit on how many can be in a hand (can be zero)
+   - <playedcardN> is the lower case identifier for a card played so far this turn.  This can be empty.
+   - <bought_cardN> the cards you've bought this turn
+   - the appropriate responses are the following (any invalid message ends the player turn and top_discard is picked by the server):
+   - {
+       type: "play-reply",
+       phase: "cleanup",
+       top_discard: <card>
+     }
+      - this ends the players turn
+      - <card> is the card you want  to be the top discard card.  If it is not in your hand, or if the message is invalid, the turn ends.
+   - {
+       type: "play-reply",
+       phase: "buy",
+       played_treasures: [<played-card1>, <played-card2>, ... <played-cardN>]
+       cards_to_buy: [<card1>, <card2>, ... <cardN>]
+     }
+       - this buys the cards for the player
+       - if there are more cards than buys, or if the card value exceeds remaining money, the possible cards will be bought left to right
+       - on the first card that can't be bought (from left to right order), the player's turn ends.
+       - <cardN> is the card you are trying to buy
+       - <played-card1> is the card that you have played as treasure.  If a played treasured card is not a treasure or not in the hand, all buys are consumed
+       - if no card could be bought, all buys are consumed.
+   -  {
+       type: "play-reply",
+       phase: "action",
+       action_card: <card>,
+       additional_parameters: {<additional fields based on card - detailed below>}
+     }
+       - this is a reply to play a card
+       - if the player had no actions left, the player's turn ends
+       - if the player had actions left,  and the player sends an invalid message, 1 action is consumed and the play-request message is sent again
+       - once the action is fully resolved, the play-turn message is sent again with updated information.
+       - <card> is the card that is played.  This may have different results, described below
+
+
+       -card = cellar
+         additional_parameters =
+            {
+              cards: [<card1>, <card2>, .. <cardN>]
+            }
+         - cellar allows a player to discard N cards, draw N cards, and get an extra action
+         - plays a cellar card with the associated cards to discard
+         - the server will respond with another action-request play-turn message
+         - if the player specifies a card they do not have, cellar will discard all the cards up to that (evaluated left to right)
+         - if the player specifies no valid cards, then the cellar is consumed, the action is consumed, and the action-request play-turn message is sent to the player
+
+        -card = market
+          additional_parameters =
+             {
+
+             }
+          - market gives +1 card, +1 money, +1 buy, and +1 action
+
+        -card = militia
+          additional_parameters =
+             {
+             }
+          - militia gives + 2 money and forces other players to discard down to three
+          - every other player with more than 3 cards will receive the following message:
+              - {
+                  type: "attack-request"
+                  discard : <number-to-discard>
+                  options: [<card1>, <card2>, ... <cardN>]
+                }
+                  - this is a request to discard from your hand
+                  - <number-to-discard> is the number of cards to discard
+                  - <card1> <card2> ... <cardN> is the number of cards in your hand.
+                  - each player must respond with
+                    {
+                      type: "attack-reply"
+                      discard: [<card1>, <card2>, ... <cardN>]
+                    }
+                     - the number of cards must match the original number to discard
+                     - if the number doesn't match, or if there is an invalid message, the engine picks two cards at random
+                  - if the attacked player has a moat they are able to respond with:
+                      {
+                        type: "attack-reply-reaction"
+                        reaction: "moat"
+                      }
+                    - this prevents the discard
+                    - if the player does not have a moat or sends an invalid message, the engine picks two cards at random to discard
+                - after each discard, a <playerN> discarded <cards> message is sent
+
+        -card = mine
+          additional_parameters =
+             {
+               card_to_trash: <card>
+               desired_card: <desired_card>
+             }
+           - mine lets you trash a treasure card and allows you to pick a card costing up to 3 more than it.
+           - <card> is the card you are trashing
+           - <desired-card> is the card you wish to acquire
+           - both card and desired-card must be a treasure card and desired-card must be available in the supply, or else the action is consumed without any other effect.
+           - if there are no possible desired-cards, it can be left off, and the original <card> can still be trashed.  However if there is a card that can be gained, the action is consumed without <card> being trashed
+
+       -card = moat
+         additional_parameters =
+            {
+            }
+           - moat lets you draw 2 cards.  This is not the reaction ability on moat (protect from attack), --- see militia.
+
+      - card = remodel
+        additional_parameters =
+           {
+             card_to_trash: <card>
+             desired_card: <desired_card>
+           }
+          - remodel lets you trash a card and gain a card up to 2 more than the desired-card
+          - card must be a card in your hand, otherwise the action is consumed with no effect
+          - desired-card must be a card that exists in the supply and worth no more than two more than card, otherwise the action is consumed with no effect
+          - desired-card may be empty if there are no valid cards in the supply.
+
+      - card = smithy
+        additional_parameters =
+           {
+           }
+         - smithy gives the player 3 extra cards
+
+      - card = village
+        additional_parameters =
+           {
+           }
+         - village gives the playe 1 card and 2 actions
+
+     - card = woodcutter
+       additional_parameters =
+          {
+          }
+        - woodcutter gives the player an extra buy and 2 extra money
+
+      -card = workshop
+        additional_parameters =
+           {
+             desired_card: <desired_card>
+           }
+          - workshop lets a player gain a card costing up to 4
+          - desired card must be a card in the supply costing up to 4, or else the action is consumed without effect
