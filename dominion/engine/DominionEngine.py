@@ -9,7 +9,10 @@ class DominionEngine(object):
         self.players = players
         self.supply = Supply(len(players), game_set)
         for number, player in enumerate(players, start=1):
-            send_player_info(player, number, 1)
+            try:
+                send_player_info(player, number, 1)
+            except:
+                raise Exception("Player {} did not respond correctly".format(number))
             self.deal_starting_cards(player)
 
     def deal_starting_cards(self, player):
