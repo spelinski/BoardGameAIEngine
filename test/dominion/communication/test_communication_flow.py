@@ -253,6 +253,7 @@ class TestCommunicationFlow(unittest.TestCase):
             message = json.loads(json_message)
             if message["buys"] == 0:
                 self.hit_cleanup = True
+                self.assertEquals([], message["cards_played"])
                 return json.dumps({"type": "play-reply", "phase": "cleanup"})
             else:
                 return json.dumps({"type": "play-reply", "phase": "buy", "cards_to_buy": []})
@@ -266,6 +267,7 @@ class TestCommunicationFlow(unittest.TestCase):
             message = json.loads(json_message)
             if message["buys"] == 0:
                 self.hit_cleanup = True
+                self.assertEquals([COPPER, COPPER], message["cards_played"])
                 return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
             else:
                 return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.MOAT]})

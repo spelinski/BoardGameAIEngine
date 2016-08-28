@@ -17,7 +17,7 @@ def send_supply_info(player, supply):
     player.send_message(json.dumps(supply_info_message))
 
 def send_turn_request(player, supply, actions=1, buys=1, extra_money=0):
-    play_turn_request = CommandGenerator().create_play_turn_request(actions, buys, extra_money, player.hand, [])
+    play_turn_request = CommandGenerator().create_play_turn_request(actions, buys, extra_money, player.get_hand(), player.get_played_cards())
     json_response = player.send_message_and_await_response(json.dumps(play_turn_request))
     try:
         response = __get_json_message(json_response)
