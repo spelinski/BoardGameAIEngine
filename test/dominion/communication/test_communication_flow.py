@@ -379,7 +379,7 @@ class TestCommunicationFlow(unittest.TestCase):
                 return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER, Identifiers.FEAST]})
         player = create_player(send_and_respond)
         add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        send_turn_request(player, self.supply, extra_money=1)
+        send_turn_request(player, self.supply, extra_money=1, buys=2)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
 
@@ -395,6 +395,25 @@ class TestCommunicationFlow(unittest.TestCase):
             self.supply.take(COPPER)
         player = create_player(send_and_respond)
         add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        send_turn_request(player, self.supply, extra_money=1)
+        send_turn_request(player, self.supply, extra_money=1, buys=2)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
+
+    def test_player_cant_buy_if_game_ends(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["buys"] == 0:
+                self.hit_cleanup = True
+                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
+            else:
+                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.VILLAGE, Identifiers.COPPER]})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        for _ in range(10):
+            self.supply.take(MOAT)
+            self.supply.take(MARKET)
+        for _ in range(9):
+            self.supply.take(VILLAGE)
+        send_turn_request(player, self.supply, extra_money=1, buys=2)
+        self.assertTrue(self.hit_cleanup)
+        self.assertEquals([VILLAGE, COPPER, COPPER], player.get_discard_pile())

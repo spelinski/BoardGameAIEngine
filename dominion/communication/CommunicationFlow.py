@@ -45,7 +45,7 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
     money = sum([get_worth(card) for card in player.get_played_cards()]) + extra_money
     for card in cards_to_buy[:buys]:
         try:
-            if get_cost(card) > money:
+            if get_cost(card) > money or supply.is_game_over():
                 break
             money -= get_cost(card)
             supply.take(card)
