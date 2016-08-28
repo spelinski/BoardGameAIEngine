@@ -39,10 +39,11 @@ def __process_cleanup(top_discard, player):
     player.draw_cards(5)
 
 def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_money):
+    if not buys: raise Exception("Player did not have any more buys")
     for treasure in played_treasures:
         player.play_card(treasure)
     money = sum([get_worth(card) for card in player.get_played_cards()]) + extra_money
-    for card in cards_to_buy:
+    for card in cards_to_buy[:buys]:
         try:
             if get_cost(card) > money:
                 break
