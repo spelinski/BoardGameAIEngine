@@ -10,6 +10,17 @@ class DominionEngine(object):
         self.supply = Supply(len(players), game_set)
         for number, player in enumerate(players, start=1):
             send_player_info(player, number, 1)
+            self.deal_starting_cards(player)
+
+    def deal_starting_cards(self, player):
+        for _ in range(3):
+            self.supply.take(ESTATE)
+            player.gain_card(ESTATE)
+        for _ in range(7):
+            self.supply.take(COPPER)
+            player.gain_card(COPPER)
+        player.draw_cards(5)
+
 
 
     def run_until_game_end(self):
