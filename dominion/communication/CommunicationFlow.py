@@ -1,5 +1,6 @@
 from CommandGenerator import *
 from dominion.CardInfo import *
+from dominion.model.Supply import *
 import json
 
 def send_player_info(player, player_number, version):
@@ -48,8 +49,8 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
             money -= get_cost(card)
             supply.take(card)
             player.gain_card(card)
-        except:
-            pass
+        except CardNotInSupplyException:
+            break
 
     send_turn_request(player, supply, 0, 0, 0)
 
