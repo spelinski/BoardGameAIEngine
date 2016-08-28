@@ -12,8 +12,13 @@ def main():
     try:
         player1 = get_player(args.player1_cmd, args.player1_workdir)
         player2 = get_player(args.player2_cmd, args.player2_workdir)
-        engine = DominionEngine([player1, player2], Identifiers.FIRST_GAME)
+        players = [player1, player2]
+        engine = DominionEngine(players, Identifiers.FIRST_GAME)
         engine.run_until_game_end()
+        print "Scores were: "
+        for index, player in enumerate(players, start=1):
+
+            print "Player {} : Score: {} Turns Taken: {}".format(player.name, player.get_score(), player.get_number_of_turns_taken())
     except:
         raise
     finally:
