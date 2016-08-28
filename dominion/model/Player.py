@@ -8,6 +8,7 @@ class Player(object):
         self.deck = Deck()
         self.deck.set_replenisher(self.discard_pile)
         self.played = []
+        self.turns = 0
 
     def set_communication(self, comm):
         self.comm = comm
@@ -82,6 +83,12 @@ class Player(object):
 
     def get_played_cards(self):
         return self.played
+
+    def get_number_of_turns_taken(self):
+        return self.turns
+
+    def mark_turn_taken(self):
+        self.turns += 1
 
 
 class CardNotInHandException(Exception):

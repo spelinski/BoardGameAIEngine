@@ -221,3 +221,10 @@ class TestPlayerModel(unittest.TestCase):
         self.player.send_message("hello")
         self.assertTrue(mock_comm.hit_send)
         self.assertFalse(mock_comm.hit_respond)
+
+    def test_player_can_mark_tur_taken(self):
+        self.assertEquals(0, self.player.get_number_of_turns_taken())
+        self.player.mark_turn_taken()
+        self.assertEquals(1, self.player.get_number_of_turns_taken())
+        self.player.mark_turn_taken()
+        self.assertEquals(2, self.player.get_number_of_turns_taken())

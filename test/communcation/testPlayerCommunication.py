@@ -5,7 +5,7 @@ Created on Sep 23, 2015
 '''
 import unittest
 import sys
-from communcation.PlayerCommunication import PlayerCommunication, BotCommunicationError
+from communication.PlayerCommunication import PlayerCommunication, BotCommunicationError
 import os
 import time
 

@@ -1,8 +1,11 @@
 import argparse
 import sys
-import dominion.Identifiers
+from dominion import Identifiers
 from dominion.engine.DominionEngine import DominionEngine
-from dominon.starterbot.starter_bot import *
+import communication
+from communication.DirectInvocationCommunication import *
+from dominion.starterbot.starter_bot import *
+from dominion.model.Player import *
 
 def main():
     args = _get_args()
@@ -18,13 +21,14 @@ def main():
 
 def get_player(cmd, workdir):
     player = Player()
-    if args.player1_cmd == "stater_bot":
+    if cmd == "starter_bot":
         starter_bot = StarterBot()
-        comm = DirectInvocationCommunication(lambda msg: starter_bot.send_message(msg), lambda msg: starter_bot.get_response(msg))
+        comm = DirectInvocationCommunication(lambda msg: starter_bot.send_message(msg), lambda: starter_bot.get_response())
         player.set_communication(comm)
+    return player
 
 def _get_args():
-    default_bot = "starter_bot")
+    default_bot = "starter_bot"
     parser = argparse.ArgumentParser(
         description="Run a Battleline Engine with two bots")
     parser.add_argument(
