@@ -49,7 +49,7 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
             money -= get_cost(card)
             supply.take(card)
             player.gain_card(card)
-        except CardNotInSupplyException:
+        except:
             break
 
     send_turn_request(player, supply, 0, 0, 0)
