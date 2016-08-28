@@ -71,6 +71,9 @@ class Supply(object):
         """
         return len([key for key,value in self.supply.items() if value == 0])
 
+    def is_game_over(self):
+        return self.get_number_of_empty_piles() >= 3 or self.get_number_of_cards(Identifiers.PROVINCE) == 0
+
 class CardNotInSupplyException(Exception):
 
     def __init__(self, card):

@@ -1,5 +1,6 @@
 import argparse
 import sys
+import dominion.Identifiers
 from dominion.engine.DominionEngine import DominionEngine
 from dominon.starterbot.starter_bot import *
 
@@ -7,12 +8,8 @@ def main():
     args = _get_args()
     try:
         player1 = get_player(args.player1_cmd, args.player1_workdir)
-        comm1 = PlayerCommunication(args.player1_cmd, args.player1_workdir)
-        comm2 = PlayerCommunication(args.player2_cmd, args.player2_workdir)
-        player1 = SubprocessPlayer(comm1)
-        player2 = SubprocessPlayer(comm2)
-        engine = DominionEngine()
-        engine.initialize()
+        player2 = get_player(args.player2_cmd, args.player2_workdir)
+        engine = DominionEngine([player1, player2], Identifiers.FIRST_GAME)
         engine.run_until_game_end()
     except:
         raise
