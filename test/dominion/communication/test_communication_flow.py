@@ -266,7 +266,7 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
 
-    def test_player_can_buy_card(self):
+    def test_player_can_buy_card_worth_money(self):
         def send_and_respond(json_message):
             message = json.loads(json_message)
             if message["buys"] == 0:
@@ -313,3 +313,37 @@ class TestCommunicationFlow(unittest.TestCase):
             player.put_card_on_top_of_deck(SILVER)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, COPPER, COPPER, COPPER], player.get_discard_pile())
+
+    def test_player_buy_is_consumed_if_card_costs_too_much(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["buys"] == 0:
+                self.hit_cleanup = True
+                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
+            else:
+                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER]})
+        player = create_player(send_and_respond)
+        player.add_to_hand(COPPER)
+        player.add_to_hand(COPPER)
+        for _ in range(5):
+            player.put_card_on_top_of_deck(SILVER)
+        send_turn_request(player, self.supply)
+        self.assertTrue(self.hit_cleanup)
+        self.assertEquals([COPPER, COPPER], player.get_discard_pile())
+
+    def test_player_can_buy_more_expensive_card_with_extra_money(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["buys"] == 0:
+                self.hit_cleanup = True
+                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
+            else:
+                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER]})
+        player = create_player(send_and_respond)
+        player.add_to_hand(COPPER)
+        player.add_to_hand(COPPER)
+        for _ in range(5):
+            player.put_card_on_top_of_deck(SILVER)
+        send_turn_request(player, self.supply, extra_money=1)
+        self.assertTrue(self.hit_cleanup)
+        self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())

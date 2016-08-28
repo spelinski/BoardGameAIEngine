@@ -1,4 +1,5 @@
 from CommandGenerator import *
+from dominion.CardInfo import *
 import json
 
 def send_player_info(player, player_number, version):
@@ -26,7 +27,8 @@ def send_turn_request(player, supply, actions=1, buys=1, extra_money=0):
             __process_cleanup(top_discard, player)
         if response["phase"] == "buy":
             cards_to_buy = response.get("cards_to_buy", [])
-            __process_buy(cards_to_buy, player, supply, buys, extra_money)
+            played_treasures = response.get("played_treasures", [])
+            __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_money)
     except:
         __process_cleanup(None, player)
         raise
@@ -35,9 +37,15 @@ def __process_cleanup(top_discard, player):
     player.cleanup(top_discard)
     player.draw_cards(5)
 
-def __process_buy(cards_to_buy, player, supply, buys, extra_money):
+def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_money):
+    for treasure in played_treasures:
+        player.play_card(treasure)
+    money = sum([get_worth(card) for card in player.get_played_cards()]) + extra_money
     for card in cards_to_buy:
         try:
+            if get_cost(card) > money:
+                break
+            money -= get_cost(card)
             supply.take(card)
             player.gain_card(card)
         except:
