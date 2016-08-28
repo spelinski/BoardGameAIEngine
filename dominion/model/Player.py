@@ -1,4 +1,5 @@
 from mechanics.Deck import Deck
+from dominion.CardInfo import *
 
 class Player(object):
 
@@ -89,6 +90,10 @@ class Player(object):
 
     def mark_turn_taken(self):
         self.turns += 1
+
+    def get_score(self):
+        all_cards = self.get_hand() + self.get_deck_cards() + self.get_discard_pile()
+        return sum([get_victory_points(card) for card in all_cards])
 
 
 class CardNotInHandException(Exception):
