@@ -5,7 +5,7 @@ class DirectInvocationCommunication(object):
         self.respond_func = respond_func
 
     def send_message(self, message):
-        send_func(message)
+        self.send_func(message)
 
     def get_response(self):
-        return respond_func()
+        return self.respond_func()
