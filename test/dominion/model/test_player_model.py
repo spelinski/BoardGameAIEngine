@@ -1,5 +1,6 @@
 import unittest
 from dominion.model.Player import Player, CardNotInHandException
+from mock import Mock
 
 class TestPlayerModel(unittest.TestCase):
 
@@ -180,3 +181,43 @@ class TestPlayerModel(unittest.TestCase):
         self.player.cleanup("silver")
         self.assertEquals("silver", self.player.get_top_discard_card())
         self.assertEquals([], self.player.get_played_cards())
+
+    def test_player_communication_send_and_receive(self):
+        mock_comm = Mock()
+        mock_comm.hit_send = False
+        mock_comm.hit_respond = False
+
+        def send_message(msg):
+            self.assertEquals("hello", msg)
+            mock_comm.hit_send = True
+
+        def get_response():
+            mock_comm.hit_respond = True
+            return ""
+
+        mock_comm.send_message = send_message
+        mock_comm.get_response = get_response
+        self.player.set_communication(mock_comm)
+        self.assertEquals("", self.player.send_message_and_await_response("hello"))
+        self.assertTrue(mock_comm.hit_send)
+        self.assertTrue(mock_comm.hit_respond)
+
+    def test_player_communication_send_only(self):
+        mock_comm = Mock()
+        mock_comm.hit_send = False
+        mock_comm.hit_respond = False
+
+        def send_message(msg):
+            self.assertEquals("hello", msg)
+            mock_comm.hit_send = True
+
+        def get_response():
+            mock_comm.hit_respond = True
+            return ""
+
+        mock_comm.send_message = send_message
+        mock_comm.get_response = get_response
+        self.player.set_communication(mock_comm)
+        self.player.send_message("hello")
+        self.assertTrue(mock_comm.hit_send)
+        self.assertFalse(mock_comm.hit_respond)

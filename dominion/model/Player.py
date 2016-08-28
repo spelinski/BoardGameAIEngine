@@ -9,6 +9,16 @@ class Player(object):
         self.deck.set_replenisher(self.discard_pile)
         self.played = []
 
+    def set_communication(self, comm):
+        self.comm = comm
+
+    def send_message_and_await_response(self, message):
+        self.comm.send_message(message)
+        return self.comm.get_response()
+
+    def send_message(self, message):
+        self.comm.send_message(message)
+
     def gain_card(self, card):
         self.discard_pile.add(card)
 
