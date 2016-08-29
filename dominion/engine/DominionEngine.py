@@ -38,3 +38,6 @@ class DominionEngine(object):
                 #bot messed up, turn skipped
                 pass
             player.mark_turn_taken()
+
+    def get_winning_player(self):
+        return self.players[0]
