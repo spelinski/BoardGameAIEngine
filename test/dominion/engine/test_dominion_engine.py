@@ -78,4 +78,23 @@ class TestDominionEngine(unittest.TestCase):
         player1.add_to_hand(ESTATE)
         players = [player1, player2]
         engine = DominionEngine(players, FIRST_GAME)
-        self.assertEquals(player1, engine.get_winning_player())
+        self.assertEquals([player1], engine.get_winning_player())
+
+    def test_player_wins_with_less_turns_tiebreaker(self):
+        player1 = create_player_that_responds_to_first_message()
+        player2 = create_player_that_responds_to_first_message()
+        player1.add_to_hand(ESTATE)
+        player2.add_to_hand(ESTATE)
+        player1.mark_turn_taken()
+        players = [player1, player2]
+        engine = DominionEngine(players, FIRST_GAME)
+        self.assertEquals([player2], engine.get_winning_player())
+
+    def test_players_with_same_scores_and_turns_tie(self):
+        player1 = create_player_that_responds_to_first_message()
+        player2 = create_player_that_responds_to_first_message()
+        player1.add_to_hand(ESTATE)
+        player2.add_to_hand(ESTATE)
+        players = [player1, player2]
+        engine = DominionEngine(players, FIRST_GAME)
+        self.assertEquals([player1, player2], engine.get_winning_player())
