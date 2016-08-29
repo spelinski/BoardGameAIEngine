@@ -61,6 +61,7 @@ Board Information Message
 
 {
   type: "player-gained",
+  player_number: <playerN>,
   gained: [<card1>, <card2>, ... <cardN>]
 }
    - this is a list of cards that the player has gained (through gaining or buying)  (and emitted after time a player gains/buys something)
@@ -70,38 +71,49 @@ Board Information Message
 
 {
  type: "player-played",
+ player_number: <playerN>,
  played: [<card1>, <card2>, ... <cardN>]
 }
    - this is a list of cards the player played (which does not includes cards cleaned up at the end of the turn) (and emitted after each player's turn)
    - if the player played nothing, this message is not sent
+   - <playerN> indicates player number, such as <player1>
    - <cardN> is one of the cards that the player played
 
 {
  type: "player-trashed",
+ player_number: <playerN>,
  trashed : [<card1>, <card2>, ... <cardN>]
 }
    - this is a list of cards the player trashed (and emitted after each trashing )
+   - <playerN> indicates player number, such as <player1>
    - <cardN> is one of the cards that the player trashed
 
 {
  type: "player-top-discard",
+ player_number: <playerN>,
  card: <card>
 }
    - in Dominion, technically you don't see all the cards the player discards, but the top card is always shown
    - this is sent out whenever a player discards card (such as militia or cleanup phase)
    - this is sent before a player shuffles his discard into his deck
+   - <playerN> indicates player number, such as <player1>
+
 {
     type: "player-reveal",
+    player_number: <playerN>,
     from: "hand",
     cards: [<card>, <card>, <card>]
 }
    - this is emitted whenever a player reveals a card from their hand (such as a moat in response to a militia)
+   - <playerN> indicates player number, such as <player1>
    - <card> is the card revealed
 
 {
-  type: "player-shuffled"
+  type: "player-shuffled",
+  player_number: <playerN>
 }
    - this is emitted whenever a player shuffles their discard pile into their deck.
+   - <playerN> indicates player number, such as <player1>
 
 
 Action Requests
