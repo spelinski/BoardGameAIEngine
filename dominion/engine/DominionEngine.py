@@ -24,8 +24,6 @@ class DominionEngine(object):
             player.gain_card(COPPER)
         player.draw_cards(5)
 
-
-
     def run_until_game_end(self):
         max_number_of_turns = 100 * len(self.players)
         for player in islice(cycle(self.players), max_number_of_turns):
@@ -40,4 +38,15 @@ class DominionEngine(object):
             player.mark_turn_taken()
 
     def get_winning_player(self):
-        return self.players[0]
+        winning_players = []
+        highest_score = self.players[0].get_score()
+        lowest_turns = self.players[0].get_number_of_turns_taken()
+        for player in self.players:
+            if player.get_score() >= highest_score:
+                highest_score = player.get_score()
+                if player.get_number_of_turns_taken() < lowest_turns:
+                    winning_players = [player]
+                    lowest_turns = player.get_number_of_turns_taken()
+                else:
+                    winning_players.append(player)
+        return winning_players
