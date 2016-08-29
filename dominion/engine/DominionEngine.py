@@ -37,7 +37,7 @@ class DominionEngine(object):
                 pass
             player.mark_turn_taken()
 
-    def get_winning_player(self):
+    def get_winners(self):
         winning_players = []
         highest_score = self.players[0].get_score()
         lowest_turns = self.players[0].get_number_of_turns_taken()

@@ -21,8 +21,10 @@ def main():
         engine.run_until_game_end()
         print "Scores were: "
         for index, player in enumerate(players, start=1):
-
             print "Player {} : Score: {} Turns Taken: {}".format(player.name, player.get_score(), player.get_number_of_turns_taken())
+        print "Winners are: "
+        for winner in engine.get_winners():
+            print "Winner: " + winner.name
     except:
         raise
     finally:
