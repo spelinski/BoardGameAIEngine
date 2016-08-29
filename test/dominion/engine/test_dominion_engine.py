@@ -4,17 +4,21 @@ from dominion.Identifiers import *
 from dominion.engine.DominionEngine import *
 from dominion.model.Player import *
 
+def create_player_that_responds_to_first_message():
+    player = Player()
+    def send_message_and_await_response(json_message):
+        message = json.loads(json_message)
+        return json.dumps( {"type": "player-name-reply", "player_number": message["player_number"],
+                "name" : "nothing-bot", "version": 1})
+    player.send_message_and_await_response = send_message_and_await_response
+    player.send_message = lambda msg: None
+    return player
+
 class TestDominionEngine(unittest.TestCase):
 
     def test_game_engine_deals_starting_hand(self):
-        player = Player()
-        def send_message_and_await_response(json_message):
-            message = json.loads(json_message)
-            return json.dumps( {"type": "player-name-reply", "player_number": message["player_number"],
-                    "name" : "nothing-bot", "version": 1})
-        player.send_message_and_await_response = send_message_and_await_response
-        player.send_message = lambda msg: None
 
+        player = create_player_that_responds_to_first_message()
         players = [player]
         engine = DominionEngine(players, FIRST_GAME)
 
@@ -67,3 +71,11 @@ class TestDominionEngine(unittest.TestCase):
 
         with self.assertRaisesRegexp(Exception, "Player 1 did not respond correctly"):
             engine = DominionEngine([player], FIRST_GAME)
+
+    def test_player_with_highest_score_wins(self):
+        player1 = create_player_that_responds_to_first_message()
+        player2 = create_player_that_responds_to_first_message()
+        player1.add_to_hand(ESTATE)
+        players = [player1, player2]
+        engine = DominionEngine(players, FIRST_GAME)
+        self.assertEquals(player1, engine.get_winning_player())

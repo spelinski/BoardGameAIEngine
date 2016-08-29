@@ -50,7 +50,6 @@ class PlayerCommunication(object):
             if self.exceptionFromThread is not None:
                 raise self.exceptionFromThread
             if thread.is_alive():
-                print "OH NO 2"
                 raise BotCommunicationError("timeout")
             return self.response
         else:
