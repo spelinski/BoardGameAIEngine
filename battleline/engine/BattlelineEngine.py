@@ -64,7 +64,7 @@ class BattlelineEngine(object):
         @return the player name that wins, otherwise None
         """
         return self.board_logic.winner
-    
+
     def get_winning_player_name(self):
         """
         get the winning player name
@@ -94,7 +94,8 @@ class BattlelineEngine(object):
         For a given player, coordinate with the player to compute its next turn.
         :param player: The player who is taking a turn.
         """
-        play = player.compute_turn(self.board_logic.board, self.last_move)
+        flags_open = self.board_logic.is_any_flag_playable(player.direction)
+        play = player.compute_turn(self.board_logic.board, flags_open, self.last_move)
         real_play = self.compute_real_play(player, play)
         if real_play.flag is not None:
             self.board_logic.addCard(

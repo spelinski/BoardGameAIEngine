@@ -12,7 +12,7 @@ class MockPlayer(Player):
     def __init__(self, name):
         self.name = name
 
-    def compute_turn(self, board, last_move):
+    def compute_turn(self, board, are_flags_open, last_move):
         logic = BoardLogic(None)
         logic.board = board
         return Play(card=self.hand[0], flag=logic.get_first_playable_flag(self.direction))

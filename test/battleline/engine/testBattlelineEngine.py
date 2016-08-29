@@ -18,7 +18,7 @@ class MockPlayer(Player):
         self.next_card = next_card
         self.next_flag = next_flag
 
-    def compute_turn(self, board, last_move):
+    def compute_turn(self, board, are_flags_open, last_move):
         return Play(card=self.next_card, flag=self.next_flag)
 
 

@@ -27,6 +27,14 @@ class BoardLogic:
         self.engine.output_handler.play_action(player, card, flag + 1)
         self.latestPlayer = player
 
+
+    def is_any_flag_playable(self,  direction):
+        """
+        Check if any flag can be played
+        @param direction the side of the flag to check
+        """
+        return any(flag.is_playable(direction) for flag in  self.board.flags)
+
     def is_flag_playable(self, flag_index, direction):
         """
         Check if a flag can be played on
