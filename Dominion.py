@@ -2,8 +2,8 @@ import argparse
 import sys
 from dominion import Identifiers
 from dominion.engine.DominionEngine import DominionEngine
-import communication
 from communication.DirectInvocationCommunication import *
+from communication.PlayerCommunication import PlayerCommunication
 from dominion.starterbot.starter_bot import *
 from dominion.model.Player import *
 
@@ -33,6 +33,9 @@ def get_player(cmd, workdir):
     if cmd == "starter_bot":
         starter_bot = StarterBot()
         comm = DirectInvocationCommunication(lambda msg: starter_bot.send_message(msg), lambda: starter_bot.get_response())
+        player.set_communication(comm)
+    else:
+        comm = PlayerCommunication(cmd, workdir)
         player.set_communication(comm)
     return player
 

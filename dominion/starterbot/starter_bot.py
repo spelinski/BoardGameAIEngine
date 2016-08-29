@@ -1,6 +1,6 @@
 import json
 from dominion.CardInfo import *
-
+from sys import stdin, stdout
 class StarterBot(object):
 
     def __init__(self):
@@ -11,6 +11,7 @@ class StarterBot(object):
 
 
     def send_message(self, json_message):
+        self.message= ""
         message = json.loads(json_message)
         if message["type"] == "supply-info":
             self.supply_dict = message["cards"]
@@ -25,3 +26,15 @@ class StarterBot(object):
                 self.message =   {"type": "play-reply", "phase": "cleanup"}
             else:
                 self.message = {"type": "play-reply", "phase": "buy", "played_treasures": treasures, "cards_to_buy" : [available_cards[0]]}
+
+
+if __name__ == "__main__":
+    bot = StarterBot()
+    while not stdin.closed:
+        message = stdin.readline().strip()
+        if len(message) == 0:
+            continue
+        bot.send_message(message)
+        if bot.message:
+            stdout.write(bot.get_response() + "\n")
+            stdout.flush()
