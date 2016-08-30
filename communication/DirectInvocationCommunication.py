@@ -9,3 +9,6 @@ class DirectInvocationCommunication(object):
 
     def get_response(self):
         return self.respond_func()
+
+    def close(self):
+        pass
