@@ -9,14 +9,14 @@ from dominion.model.Player import *
 
 def main():
     args = _get_args()
+    player1 = get_player(args.player1_cmd, args.player1_workdir)
+    player2 = get_player(args.player2_cmd, args.player2_workdir)
+    players = [player1, player2]
+    if int(args.num_players) >= 3:
+        players.append(get_player(args.player3_cmd, args.player3_workdir))
+    if int(args.num_players) == 4:
+        players.append(get_player(args.player4_cmd, args.player4_workdir))
     try:
-        player1 = get_player(args.player1_cmd, args.player1_workdir)
-        player2 = get_player(args.player2_cmd, args.player2_workdir)
-        players = [player1, player2]
-        if int(args.num_players) >= 3:
-            players.append(get_player(args.player3_cmd, args.player3_workdir))
-        if int(args.num_players) == 4:
-            players.append(get_player(args.player4_cmd, args.player4_workdir))
         engine = DominionEngine(players, Identifiers.FIRST_GAME)
         engine.run_until_game_end()
         print "Scores were: "
@@ -28,7 +28,8 @@ def main():
     except:
         raise
     finally:
-        pass
+        for player in players:
+            player.close_communication()
 
 def get_player(cmd, workdir):
     player = Player()

@@ -14,6 +14,10 @@ class Player(object):
     def set_communication(self, comm):
         self.comm = comm
 
+    def close_communication(self):
+        if self.comm:
+            self.comm.close()
+
     def send_message_and_await_response(self, message):
         self.comm.send_message(message)
         return self.comm.get_response()
