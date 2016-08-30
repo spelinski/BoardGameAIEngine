@@ -39,14 +39,8 @@ class DominionEngine(object):
 
     def get_winners(self):
         winning_players = []
-        highest_score = self.players[0].get_score()
-        lowest_turns = self.players[0].get_number_of_turns_taken()
-        for player in self.players:
-            if player.get_score() >= highest_score:
-                if player.get_number_of_turns_taken() < lowest_turns or player.get_score() > highest_score:
-                    winning_players = [player]
-                    lowest_turns = player.get_number_of_turns_taken()
-                else:
-                    winning_players.append(player)
-                highest_score = player.get_score()
-        return winning_players
+        highest_score = max([player.get_score() for player in self.players])
+        highest_score_players = [player for player in self.players if player.get_score() == highest_score]
+        lowest_turns = min([player.get_number_of_turns_taken() for player in highest_score_players])
+        winners = [player for player in highest_score_players if player.get_number_of_turns_taken() == lowest_turns]
+        return winners
