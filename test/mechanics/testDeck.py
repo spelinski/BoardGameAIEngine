@@ -73,6 +73,7 @@ class TestDeck(unittest.TestCase):
         self.assertEqual(2, deck.draw())
         self.assertEqual(1, deck.draw())
 
+
     def test_getting_cards_returns_copy(self):
         deck = Deck([1,2,3], shuffleDeck=False)
         cards = deck.get_cards()
