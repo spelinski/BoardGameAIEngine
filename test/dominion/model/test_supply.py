@@ -90,7 +90,7 @@ class TestSupply(unittest.TestCase):
             supply.take(Identifiers.MARKET)
         self.assertTrue(supply.is_game_over())
 
-    def test_can_check_if_game_is_done_three_piles(self):
+    def test_can_check_if_game_is_done_provinces_empty(self):
         supply = Supply(2, Identifiers.FIRST_GAME)
         for _ in range(8):
             supply.take(Identifiers.PROVINCE)
