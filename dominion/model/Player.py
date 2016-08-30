@@ -48,13 +48,13 @@ class Player(object):
         self.deck.add(card)
 
     def get_hand(self):
-        return [card for card in self.hand]
+        return list(self.hand)
 
     def get_deck_cards(self):
         return self.deck.get_cards()
 
     def __get_cards_to_discard(self):
-        return [card for card in self.hand+self.played]
+        return self.hand+self.played
 
     def cleanup(self, top_discard = ""):
         for card in self.__get_cards_to_discard():
