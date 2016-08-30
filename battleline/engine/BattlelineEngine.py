@@ -104,8 +104,8 @@ class BattlelineEngine(object):
             cardToBeDrawn = next(self.troop_deck)
             player.finish_turn(real_play.card, cardToBeDrawn)
             self.output_handler.draw_action(player.direction, cardToBeDrawn)
-            self.board_logic.checkAllFlags()
             self.last_move = real_play
+        self.board_logic.checkAllFlags(player.direction)
 
     def compute_real_play(self, player, play):
         """
