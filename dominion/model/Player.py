@@ -87,7 +87,7 @@ class Player(object):
         self.played.append(card)
 
     def get_played_cards(self):
-        return self.played
+        return list(self.played)
 
     def get_number_of_turns_taken(self):
         return self.turns

@@ -41,7 +41,7 @@ class Deck(object):
         """
         Get a list  (copy) of cards in the deck
         """
-        return [card for card in self.deck]
+        return list(self.deck)
 
     def draw(self):
         """providing a better named function for decks"""
