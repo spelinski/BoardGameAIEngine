@@ -12,13 +12,14 @@ class CommandGenerator(object):
           "cards" : supply_dict
         }
 
-    def create_play_turn_request(self, actions, buys, extra_money, hand, played):
+    def create_play_turn_request(self, actions, buys, extra_money, hand, played, gained):
         return {
           "type": "play-turn",
           "actions": actions,
           "buys": buys,
           "extra_money": extra_money,
           "hand" : hand,
-          "cards_played": played
+          "cards_played": played,
+          "cards_gained": gained
 
         }
