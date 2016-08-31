@@ -515,6 +515,7 @@ class TestCommunicationFlow(unittest.TestCase):
             if message["actions"] == 0:
                 self.hit_cleanup = True
                 self.assertEqual(message["cards_played"], [MOAT])
+                self.assertEqual(message["hand"], [COPPER, COPPER, SILVER, SILVER])
                 return json.dumps({"type": "play-reply", "phase": "cleanup"})
             else:
                 return json.dumps({"type": "play-reply", "phase": "action", "card": MOAT})
@@ -542,4 +543,21 @@ class TestCommunicationFlow(unittest.TestCase):
         player.add_to_hand(MARKET)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, SILVER, MARKET], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_smithy(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if SMITHY in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": SMITHY})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [SMITHY])
+                self.assertEqual(message["hand"], [COPPER, COPPER, SILVER, SILVER, SILVER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(SMITHY)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, SILVER, SILVER, SILVER,SMITHY], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
