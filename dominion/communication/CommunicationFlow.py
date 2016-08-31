@@ -78,6 +78,9 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
         if card == Identifiers.VILLAGE:
             player.draw_cards(1)
             actions += 2
+        if card == Identifiers.WOODCUTTER:
+            buys += 1
+            extra_money += 2
         player.play_card(card)
         gained_cards.append(card)
     send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards)

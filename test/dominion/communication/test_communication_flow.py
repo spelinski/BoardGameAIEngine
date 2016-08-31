@@ -579,3 +579,22 @@ class TestCommunicationFlow(unittest.TestCase):
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, SILVER, VILLAGE], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_woodcutter(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if WOODCUTTER in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": WOODCUTTER})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["buys"], 2)
+                self.assertEqual(message["extra_money"], 2)
+                self.assertEqual(message["cards_played"], [WOODCUTTER])
+                self.assertEqual(message["hand"], [COPPER, COPPER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(WOODCUTTER)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, WOODCUTTER], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
