@@ -75,6 +75,9 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
             extra_money += 1
         if card == Identifiers.SMITHY:
             player.draw_cards(3)
+        if card == Identifiers.VILLAGE:
+            player.draw_cards(1)
+            actions += 2
         player.play_card(card)
         gained_cards.append(card)
     send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards)
