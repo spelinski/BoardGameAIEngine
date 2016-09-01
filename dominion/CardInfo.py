@@ -34,3 +34,10 @@ def get_cost(card):
     if card in [Identifiers.GOLD]: return 6
     if card in [Identifiers.PROVINCE] : return 8
     raise ValueError("card not recognized")
+
+def get_extra_actions(card):
+    if card == Identifiers.VILLAGE: return 2
+    if card == Identifiers.MARKET: return 1
+    return 0
+
+
