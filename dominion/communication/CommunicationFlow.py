@@ -90,8 +90,17 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
         if card == Identifiers.WOODCUTTER:
             buys += 1
             extra_money += 2
+        if card == Identifiers.WORKSHOP:
+            desired_card = additional_parameters.get("desired_card", "")
+            try:
+                if get_cost(desired_card) <= 4:
+                    supply.take(desired_card)
+                    gained_cards.append(desired_card)
+                    player.gain_card(desired_card)
+            except:
+                pass
         player.play_card(card)
-        gained_cards.append(card)
+
     send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards)
 
 def __get_json_message(json_response):
