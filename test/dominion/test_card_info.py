@@ -15,6 +15,25 @@ class TestCardInfo(unittest.TestCase):
         self.assertTrue(is_treasure(Identifiers.GOLD))
         self.assertFalse(is_treasure(Identifiers.CURSE))
 
+    def test_can_check_if_is_action_card(self):
+        self.assertTrue(is_action_card(Identifiers.CELLAR))
+        self.assertTrue(is_action_card(Identifiers.MOAT))
+        self.assertTrue(is_action_card(Identifiers.VILLAGE))
+        self.assertTrue(is_action_card(Identifiers.WOODCUTTER))
+        self.assertTrue(is_action_card(Identifiers.WORKSHOP))
+        self.assertTrue(is_action_card(Identifiers.MILITIA))
+        self.assertTrue(is_action_card(Identifiers.REMODEL))
+        self.assertTrue(is_action_card(Identifiers.SMITHY))
+        self.assertTrue(is_action_card(Identifiers.MARKET))
+        self.assertTrue(is_action_card(Identifiers.MINE))
+        self.assertFalse(is_action_card(Identifiers.CURSE))
+        self.assertFalse(is_action_card(Identifiers.COPPER))
+        self.assertFalse(is_action_card(Identifiers.ESTATE))
+        self.assertFalse(is_action_card(Identifiers.SILVER))
+        self.assertFalse(is_action_card(Identifiers.DUCHY))
+        self.assertFalse(is_action_card(Identifiers.GOLD))
+        self.assertFalse(is_action_card(Identifiers.PROVINCE))
+
     def test_can_victory_points(self):
         self.assertEquals(1, get_victory_points(Identifiers.ESTATE))
         self.assertEquals(3, get_victory_points(Identifiers.DUCHY))

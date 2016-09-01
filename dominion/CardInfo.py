@@ -6,6 +6,12 @@ def is_victory_card(card):
 def is_treasure(card):
     return card in [Identifiers.COPPER, Identifiers.SILVER, Identifiers.GOLD]
 
+def is_action_card(card):
+    return card in [Identifiers.CELLAR, Identifiers.MOAT, Identifiers.VILLAGE,
+                    Identifiers.WOODCUTTER, Identifiers.WORKSHOP, Identifiers.MILITIA,
+                    Identifiers.REMODEL, Identifiers.SMITHY, Identifiers.MARKET,
+                    Identifiers.MINE]
+
 def get_victory_points(card):
     if card == Identifiers.ESTATE: return 1
     if card == Identifiers.DUCHY: return 3
