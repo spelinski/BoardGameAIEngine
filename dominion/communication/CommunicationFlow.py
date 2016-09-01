@@ -66,7 +66,9 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
 
 def __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards):
     if not actions: raise Exception("Player did not have any more actions")
-    if card in player.get_hand():
+    try:
+        if card not in player.get_hand():
+            raise Exception("Player did not have the card")
         if card == Identifiers.CELLAR:
             actions += 1
             discards = additional_parameters.get("cards", [])
@@ -82,6 +84,18 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
             actions += 1
             buys += 1
             extra_money += 1
+        if card == Identifiers.REMODEL:
+            trashed_card = additional_parameters["card_to_trash"]
+            desired_card = additional_parameters["desired_card"]
+            available_supply_cards = [supply_card for supply_card in supply.get_cards() if get_cost(supply_card) <= get_cost(trashed_card) + 2]
+            if desired_card not in available_supply_cards:
+                raise Exception("Card was too expensive to gain in remodel")
+            if trashed_card not in player.get_hand():
+                raise Exception("Player did not have the card in hand")
+            player.trash(trashed_card)
+            supply.take(desired_card)
+            gained_cards.append(desired_card)
+            player.gain_card(desired_card)
         if card == Identifiers.SMITHY:
             player.draw_cards(3)
         if card == Identifiers.VILLAGE:
@@ -91,15 +105,16 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
             buys += 1
             extra_money += 2
         if card == Identifiers.WORKSHOP:
-            desired_card = additional_parameters.get("desired_card", "")
-            try:
-                if get_cost(desired_card) <= 4:
-                    supply.take(desired_card)
-                    gained_cards.append(desired_card)
-                    player.gain_card(desired_card)
-            except:
-                pass
+            desired_card = additional_parameters["desired_card"]
+            if get_cost(desired_card) > 4:
+                raise Exception("Workshop card must be 4 or less")
+            supply.take(desired_card)
+            gained_cards.append(desired_card)
+            player.gain_card(desired_card)
+
         player.play_card(card)
+    except:
+        pass
 
     send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards)
 
