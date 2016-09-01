@@ -9,7 +9,7 @@ class TestCardInfo(unittest.TestCase):
         self.assertTrue(is_victory_card(Identifiers.PROVINCE))
         self.assertFalse(is_victory_card(Identifiers.CURSE))
 
-    def test_can_check_if_victory_card(self):
+    def test_can_check_if_treasure_card(self):
         self.assertTrue(is_treasure(Identifiers.COPPER))
         self.assertTrue(is_treasure(Identifiers.SILVER))
         self.assertTrue(is_treasure(Identifiers.GOLD))
