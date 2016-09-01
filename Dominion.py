@@ -12,7 +12,7 @@ def main():
     player1 = get_player(args.player1_cmd, args.player1_workdir)
     player2 = get_player(args.player2_cmd, args.player2_workdir)
     players = [player1, player2]
-    if int(args.num_players) >= 3:
+    if int(args.num_players) == 3 or int(args.num_players) == 4:
         players.append(get_player(args.player3_cmd, args.player3_workdir))
     if int(args.num_players) == 4:
         players.append(get_player(args.player4_cmd, args.player4_workdir))
