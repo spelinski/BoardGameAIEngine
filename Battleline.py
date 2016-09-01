@@ -2,7 +2,7 @@ import argparse
 import sys
 from battleline.engine.BattlelineEngine import BattlelineEngine
 from battleline.player.BattlelinePlayer import SubprocessPlayer
-from communcation.PlayerCommunication import PlayerCommunication
+from communication.PlayerCommunication import PlayerCommunication
 from battleline.view.Output import Output
 from battleline.view.DatabaseOutput import DatabaseOutput
 

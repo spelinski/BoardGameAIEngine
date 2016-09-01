@@ -72,10 +72,26 @@ class TestSupply(unittest.TestCase):
         supply = Supply(2, Identifiers.FIRST_GAME)
         self.assertEquals(0, supply.get_number_of_empty_piles())
 
-    def test_can_empty_piles(self):
+    def test_can_get_empty_piles(self):
         supply = Supply(2, Identifiers.FIRST_GAME)
         for _ in range(10):
             supply.take(Identifiers.MOAT)
             supply.take(Identifiers.REMODEL)
             supply.take(Identifiers.MARKET)
         self.assertEquals(3, supply.get_number_of_empty_piles())
+
+    def test_can_check_if_game_is_done_three_piles(self):
+        supply = Supply(2, Identifiers.FIRST_GAME)
+        for _ in range(10):
+            supply.take(Identifiers.MOAT)
+            supply.take(Identifiers.REMODEL)
+        self.assertFalse(supply.is_game_over())
+        for _ in range(10):
+            supply.take(Identifiers.MARKET)
+        self.assertTrue(supply.is_game_over())
+
+    def test_can_check_if_game_is_done_provinces_empty(self):
+        supply = Supply(2, Identifiers.FIRST_GAME)
+        for _ in range(8):
+            supply.take(Identifiers.PROVINCE)
+        self.assertTrue(supply.is_game_over())

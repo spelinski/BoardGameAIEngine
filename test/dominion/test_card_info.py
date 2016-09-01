@@ -9,6 +9,12 @@ class TestCardInfo(unittest.TestCase):
         self.assertTrue(is_victory_card(Identifiers.PROVINCE))
         self.assertFalse(is_victory_card(Identifiers.CURSE))
 
+    def test_can_check_if_treasure_card(self):
+        self.assertTrue(is_treasure(Identifiers.COPPER))
+        self.assertTrue(is_treasure(Identifiers.SILVER))
+        self.assertTrue(is_treasure(Identifiers.GOLD))
+        self.assertFalse(is_treasure(Identifiers.CURSE))
+
     def test_can_victory_points(self):
         self.assertEquals(1, get_victory_points(Identifiers.ESTATE))
         self.assertEquals(3, get_victory_points(Identifiers.DUCHY))

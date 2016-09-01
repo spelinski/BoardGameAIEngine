@@ -3,6 +3,9 @@ from dominion import Identifiers
 def is_victory_card(card):
     return card in [Identifiers.ESTATE, Identifiers.DUCHY, Identifiers.PROVINCE]
 
+def is_treasure(card):
+    return card in [Identifiers.COPPER, Identifiers.SILVER, Identifiers.GOLD]
+
 def get_victory_points(card):
     if card == Identifiers.ESTATE: return 1
     if card == Identifiers.DUCHY: return 3
