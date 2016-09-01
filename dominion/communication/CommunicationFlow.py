@@ -34,6 +34,7 @@ def send_turn_request(player, supply, actions=1, buys=1, extra_money=0, gained_c
         if response["phase"] == "action":
             card = response.get("card", "")
             additional_parameters = response.get("additional_parameters", {})
+            if type(additional_parameters) != dict: additional_parameters = {}
             __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards)
     except:
         __process_cleanup(None, player)
@@ -66,6 +67,14 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
 def __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards):
     if not actions: raise Exception("Player did not have any more actions")
     if card in player.get_hand():
+        if card == Identifiers.CELLAR:
+            actions += 1
+            discards = additional_parameters.get("cards", [])
+            for discard in discards:
+                if discard not in player.get_hand():
+                    break
+                player.discard(discard)
+                player.draw_cards(1)
         if card == Identifiers.MOAT:
             player.draw_cards(2)
         if card == Identifiers.MARKET:

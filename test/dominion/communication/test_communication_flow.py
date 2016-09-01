@@ -598,3 +598,112 @@ class TestCommunicationFlow(unittest.TestCase):
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, WOODCUTTER], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_cellar(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if CELLAR in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": CELLAR, "additional_parameters": {"cards": [COPPER]}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["actions"], 1)
+                self.assertEqual(message["cards_played"], [CELLAR])
+                self.assertEqual(message["hand"], [COPPER, SILVER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(CELLAR)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, SILVER, CELLAR], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_cellar_without_specifying_Cards(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if CELLAR in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": CELLAR})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["actions"], 1)
+                self.assertEqual(message["cards_played"], [CELLAR])
+                self.assertEqual(message["hand"], [COPPER, COPPER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(CELLAR)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, CELLAR], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_cellar_without_specifying_cards_2(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if CELLAR in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": CELLAR, "additional_parameters": {}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["actions"], 1)
+                self.assertEqual(message["cards_played"], [CELLAR])
+                self.assertEqual(message["hand"], [COPPER, COPPER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(CELLAR)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, CELLAR], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_cellar_without_specifying_cards_valid_cards(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if CELLAR in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": CELLAR, "additional_parameters": ""})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["actions"], 1)
+                self.assertEqual(message["cards_played"], [CELLAR])
+                self.assertEqual(message["hand"], [COPPER, COPPER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(CELLAR)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, CELLAR], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_cellar_without_specifying_no_cards_in_dict(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if CELLAR in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": CELLAR, "additional_parameters": {"cards": []}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["actions"], 1)
+                self.assertEqual(message["cards_played"], [CELLAR])
+                self.assertEqual(message["hand"], [COPPER, COPPER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(CELLAR)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, CELLAR], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+
+    def test_can_play_cellar_without_specifying_no_cards_in_dict(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if CELLAR in player.get_hand():
+                return json.dumps({"type": "play-reply", "phase": "action", "card": CELLAR, "additional_parameters": {"cards": [COPPER, COPPER, MOAT]}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["actions"], 1)
+                self.assertEqual(message["cards_played"], [CELLAR])
+                self.assertEqual(message["hand"], [SILVER, SILVER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(CELLAR)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, SILVER, SILVER, CELLAR], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
