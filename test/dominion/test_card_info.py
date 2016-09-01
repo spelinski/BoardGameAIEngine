@@ -71,11 +71,20 @@ class TestCardInfo(unittest.TestCase):
             get_cost("Bad Name")
 
     def test_can_get_extra_actions(self):
-        self.assertEquals(2, get_cost(Identifiers.VILLAGE))
-        self.assertEquals(1, get_cost(Identifiers.MARKET))
-        self.assertEquals(0, get_cost(Identifiers.MINE))
+        self.assertEquals(2, get_extra_actions(Identifiers.VILLAGE))
+        self.assertEquals(1, get_extra_actions(Identifiers.MARKET))
+        self.assertEquals(0, get_extra_actions(Identifiers.MINE))
 
     def test_can_get_extra_buys(self):
-        self.assertEquals(0, get_cost(Identifiers.VILLAGE))
-        self.assertEquals(1, get_cost(Identifiers.MARKET))
-        self.assertEquals(1, get_cost(Identifiers.WOODCUTTER))
+        self.assertEquals(0, get_extra_buys(Identifiers.VILLAGE))
+        self.assertEquals(1, get_extra_buys(Identifiers.MARKET))
+        self.assertEquals(1, get_extra_buys(Identifiers.WOODCUTTER))
+
+    def test_can_get_extra_cards(self):
+        self.assertTrue(get_extra_cards(Identifiers.CELLAR))
+        self.assertEquals(1, get_extra_cards(Identifiers.VILLAGE))
+        self.assertEquals(1, get_extra_cards(Identifiers.MARKET))
+        self.assertEquals(3, get_extra_cards(Identifiers.SMITHY))
+        self.assertEquals(0, get_extra_buys(Identifiers.WOODCUTTER))
+
+    
