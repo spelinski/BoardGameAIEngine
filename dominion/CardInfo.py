@@ -50,6 +50,13 @@ def get_extra_cards(card):
     if card == Identifiers.MARKET: return 1
     if card == Identifiers.SMITHY: return 3
     if card == Identifiers.VILLAGE: return 1
+    if card == Identifiers.MOAT: return 2
     return 0
-    
+
+def get_extra_treasure(card):
+    if card == Identifiers.MARKET: return 1
+    if card == Identifiers.MILITIA: return 2
+    if card == Identifiers.WOODCUTTER: return 2
+    return 0
+
 
