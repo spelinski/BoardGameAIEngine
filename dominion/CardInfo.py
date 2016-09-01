@@ -40,4 +40,7 @@ def get_extra_actions(card):
     if card == Identifiers.MARKET: return 1
     return 0
 
-
+def get_extra_buys(card):
+    if card == Identifiers.MARKET: return 1
+    if card == Identifiers.WOODCUTTER: return 1
+    return 0
