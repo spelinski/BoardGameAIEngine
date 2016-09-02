@@ -5,7 +5,6 @@ Created on Sep 23, 2015
 @author: rohk
 '''
 
-import os
 from sys import stdin, stdout
 import signal
 
@@ -40,7 +39,7 @@ class Bot:
                         pass
                 
                 if line == "die":
-                    os._exit(1)
+                    exit()
 
             except EOFError:
                 return
