@@ -86,13 +86,10 @@ class TestCardInfo(unittest.TestCase):
         self.assertEquals(1, get_extra_cards(Identifiers.MARKET))
         self.assertEquals(3, get_extra_cards(Identifiers.SMITHY))
         self.assertEquals(2, get_extra_cards(Identifiers.MOAT))
-        self.assertEquals(0, get_extra_buys(Identifiers.WOODCUTTER))
+        self.assertEquals(0, get_extra_cards(Identifiers.WOODCUTTER))
 
     def test_can_get_extra_treasure(self):
         self.assertEquals(1, get_extra_treasure(Identifiers.MARKET))
-        self.assertEquals(1, get_extra_treasure(Identifiers.MILITIA))
-        self.assertEquals(1, get_extra_treasure(Identifiers.WOODCUTTER))
+        self.assertEquals(2, get_extra_treasure(Identifiers.MILITIA))
+        self.assertEquals(2, get_extra_treasure(Identifiers.WOODCUTTER))
         self.assertEquals(0, get_extra_treasure(Identifiers.REMODEL))
-    
-
-
