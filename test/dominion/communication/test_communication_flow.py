@@ -219,6 +219,7 @@ class TestCommunicationFlow(unittest.TestCase):
                 return self.general_cleanup_function(message, expected_cards_gained=expected_cards_gained, expected_cards_played=expected_cards_played)
             else:
                 return self.get_buy_message(cards_to_buy)
+        return send_and_respond
 
     def test_player_can_buy_cards(self):
         buy_response_func = self.create_buy_response(cards_to_buy = [COPPER], expected_cards_gained=[COPPER])
