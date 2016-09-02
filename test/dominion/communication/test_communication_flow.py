@@ -13,6 +13,11 @@ def create_player(func):
     player.send_message = func
     return player
 
+def create_player_with_deck(func, num_of_coppers_in_hand=5, additional_hand_cards=[]):
+    player = create_player(func)
+    add_coppers_to_hand_and_silvers_to_deck(player, num_of_coppers_in_hand, additional_hand_cards)
+    return player
+
 def return_string(json_message):
     return "nope"
 
@@ -22,11 +27,37 @@ def return_invalid_json(json_message):
 def return_invalid_type( json_message):
     return json.dumps({"type": "nope"})
 
-def add_coppers_to_hand_and_silvers_to_deck(player, num_of_coppers):
+def add_coppers_to_hand_and_silvers_to_deck(player, num_of_coppers, additional_hand_cards=[]):
     for _ in range(num_of_coppers):
         player.add_to_hand(COPPER)
+    for card in additional_hand_cards:
+        player.add_to_hand(card)
     for _ in range(10):
         player.put_card_on_top_of_deck(SILVER)
+
+def reply_with_player_name(json_message):
+        message = json.loads(json_message)
+        assert "player-name-request" == message["type"]
+        return json.dumps({
+                 "type": "player-name-reply",
+                 "player_number": message["player_number"],
+                 "name": "test-bot",
+                 "version": message["version"]
+                })
+
+def make_response_function(dictionary):
+    def respond(json_message):
+        return json.dumps(dictionary)
+    return respond
+
+def cleanup_message(top_discard=None):
+    d = {
+       "type": "play-reply",
+       "phase": "cleanup"
+       }
+    if top_discard:
+        d["top_discard"] = top_discard
+    return json.dumps(d)
 
 class TestCommunicationFlow(unittest.TestCase):
 
@@ -35,73 +66,52 @@ class TestCommunicationFlow(unittest.TestCase):
         self.hit_cleanup = False
 
     def test_can_handle_player_request(self):
-
-        def send_message_and_await_response( json_message):
-            message = json.loads(json_message)
-            self.assertEquals("player-name-request", message["type"])
-            return json.dumps({
-                     "type": "player-name-reply",
-                     "player_number": message["player_number"],
-                     "name": "test-bot",
-                     "version": message["version"]
-                    })
-
-        player = create_player(send_message_and_await_response)
+        player = create_player_with_deck(reply_with_player_name)
         send_player_info(player, 1, 1)
         self.assertEquals("test-bot", player.name)
 
     def test_player_request_aborts_if_not_json(self):
-        player = create_player(return_string)
+        player = create_player_with_deck(return_string)
         with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
             send_player_info(player, 1, 1)
 
     def test_player_request_aborts_if_type_not_supplied(self):
-        player = create_player(return_invalid_json)
+        player = create_player_with_deck(return_invalid_json)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: Not Present"):
             send_player_info(player, 1, 1)
 
     def test_player_request_aborts_if_not_right_message(self):
-        player = create_player(return_invalid_message)
+        player = create_player_with_deck(return_invalid_response)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
             send_player_info(player, 1, 1)
 
     def test_player_request_aborts_if_version_is_lower(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "player-name-reply", "name": "bot", "version": 0})
-
-        player = create_player(invalid_message)
+        invalid_response = make_response_function({"type": "player-name-reply", "name": "bot", "version": 0})
+        player = create_player_with_deck(invalid_response)
         with self.assertRaisesRegexp(Exception, "Version mismatch: 0"):
             send_player_info(player, 1, 1)
 
     def test_player_request_aborts_if_version_is_absent(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "player-name-reply", "name": "bot"})
-
-        player = create_player(invalid_message)
+        invalid_response = make_response_function({"type": "player-name-reply", "name": "bot"})
+        player = create_player_with_deck(invalid_response)
         with self.assertRaisesRegexp(Exception, "Version mismatch: Not Present"):
             send_player_info(player, 1, 1)
 
     def test_player_request_aborts_if_player_number_is_wrong(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "player-name-reply", "name": "bot", "version": 1, "player_number": "player1"})
-
-        player = create_player(invalid_message)
+        invalid_response = make_response_function({"type": "player-name-reply", "name": "bot", "version": 1, "player_number": "player1"})
+        player = create_player_with_deck(invalid_response)
         with self.assertRaisesRegexp(Exception, "Player Number Mismatch: player1"):
             send_player_info(player, 2, 1)
 
     def test_player_request_aborts_if_player_number_is_absent(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "player-name-reply", "name": "bot", "version": 1})
-
-        player = create_player(invalid_message)
+        invalid_response = make_response_function({"type": "player-name-reply", "name": "bot", "version": 1})
+        player = create_player_with_deck(invalid_response)
         with self.assertRaisesRegexp(Exception, "Player Number Mismatch: Not Present"):
             send_player_info(player, 2, 1)
 
     def test_player_request_auto_fills_name(self):
-        def missing_name( json_message):
-            return json.dumps({"type": "player-name-reply", "player_number": "player2", "version": 1})
-
-        player = create_player(missing_name)
+        missing_name = make_response_function({"type": "player-name-reply", "player_number": "player2", "version": 1})
+        player = create_player_with_deck(missing_name)
         send_player_info(player, 2, 1)
         self.assertEquals("PLAYER2", player.name)
 
@@ -112,7 +122,7 @@ class TestCommunicationFlow(unittest.TestCase):
             self.assertEquals("supply-info", message["type"])
             self.assertEquals(supply.supply, message["cards"])
 
-        player = create_player(receive)
+        player = create_player_with_deck(receive)
         send_supply_info(player, supply)
 
     def test_player_can_cleanup(self):
@@ -124,25 +134,19 @@ class TestCommunicationFlow(unittest.TestCase):
             self.assertEquals(1, message["buys"])
             self.assertEquals(0, message["extra_money"])
             self.assertEquals([], message["cards_played"])
-            return json.dumps({
-               "type": "play-reply",
-               "phase": "cleanup",
-               "top-discard" : COPPER
-               })
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 5)
+            return cleanup_message(COPPER)
+        player = create_player_with_deck(send_and_respond)
         send_turn_request(player, self.supply)
         self.assertEquals(player.get_discard_pile(), [COPPER, COPPER, COPPER, COPPER, COPPER])
         self.assertEquals(player.get_hand(), [SILVER, SILVER, SILVER, SILVER, SILVER])
 
     def test_play_turn_aborts_if_not_json(self):
-        player = create_player(return_string)
+        player = create_player_with_deck(return_string)
         with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
             send_turn_request(player, self.supply)
 
     def test_player_cleans_up_on_exception_for_play_turn(self):
-        player = create_player(return_string)
-        add_coppers_to_hand_and_silvers_to_deck(player, 5)
+        player = create_player_with_deck(return_string)
         with self.assertRaisesRegexp(Exception, "Message was not JSON: nope"):
             send_turn_request(player, self.supply)
         self.assertEquals([SILVER, SILVER, SILVER, SILVER, SILVER], player.get_hand())
@@ -150,72 +154,49 @@ class TestCommunicationFlow(unittest.TestCase):
 
 
     def test_play_turn_aborts_if_missing_type(self):
-        player = create_player(return_invalid_json)
+        player = create_player_with_deck(return_invalid_json)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: Not Present"):
             send_turn_request(player, self.supply)
 
     def test_player_request_aborts_if_not_right_message(self):
-        player = create_player(return_invalid_type)
+        player = create_player_with_deck(return_invalid_type)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
             send_turn_request(player, self.supply)
 
     def test_player_request_aborts_if_phase_missing(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "play-reply"})
-
-        player = create_player(invalid_message)
+        invalid_response=make_response_function({"type": "play-reply"})
+        player = create_player_with_deck(invalid_response)
         with self.assertRaisesRegexp(Exception, "Invalid Phase: Not Present"):
             send_turn_request(player, self.supply)
 
     def test_player_request_aborts_if_phase_is_wrong(self):
-        def invalid_message( json_message):
-            return json.dumps({"type": "play-reply", "phase" : "nope"})
-
-        player = create_player(invalid_message)
+        invalid_response=make_response_function({"type": "play-reply", "phase" : "nope"})
+        player = create_player_with_deck(invalid_response)
         with self.assertRaisesRegexp(Exception, "Invalid Phase: nope"):
             send_turn_request(player, self.supply)
 
-    def test_player_can_specify_top_discard_card(self):
+    def cleanup_with_expected_hand_check(self, expected_hand, top_discard = None):
         def send_and_respond(json_message):
             message = json.loads(json_message)
-            self.assertEquals([SILVER, COPPER, COPPER, COPPER, COPPER, COPPER], message["hand"])
-            return json.dumps({
-               "type": "play-reply",
-               "phase": "cleanup",
-               "top_discard" : SILVER
-               })
-        player = create_player(send_and_respond)
-        player.add_to_hand(SILVER)
-        add_coppers_to_hand_and_silvers_to_deck(player, 5)
+            self.assertEquals(expected_hand, message["hand"])
+            return cleanup_message(top_discard)
+        return send_and_respond
+
+    def test_player_can_specify_top_discard_card(self):
+        cleanup_func = self.cleanup_with_expected_hand_check([COPPER, COPPER, COPPER, COPPER, COPPER, SILVER, GOLD], SILVER)
+        player = create_player_with_deck(cleanup_func, additional_hand_cards= [SILVER, GOLD])
         send_turn_request(player, self.supply)
         self.assertEquals(SILVER, player.get_top_discard_card())
 
     def test_player_doesnt_have_to_specify_top_discard_card(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            self.assertEquals([SILVER, COPPER, COPPER, COPPER, COPPER, COPPER], message["hand"])
-            return json.dumps({
-               "type": "play-reply",
-               "phase": "cleanup",
-               })
-        player = create_player(send_and_respond)
-        player.add_to_hand(SILVER)
-        add_coppers_to_hand_and_silvers_to_deck(player, 5)
+        cleanup_func = self.cleanup_with_expected_hand_check([COPPER, COPPER, COPPER, COPPER, COPPER, SILVER, GOLD])
+        player = create_player_with_deck(cleanup_func, additional_hand_cards= [SILVER, GOLD])
         send_turn_request(player, self.supply)
-        self.assertTrue( player.get_top_discard_card() in [COPPER, SILVER])
+        self.assertTrue( player.get_top_discard_card() in [COPPER, SILVER,GOLD])
 
     def test_player_can_specify_top_card_not_in_hand(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            self.assertEquals([SILVER, COPPER, COPPER, COPPER, COPPER, COPPER], message["hand"])
-            return json.dumps({
-               "type": "play-reply",
-               "phase": "cleanup",
-               "top-discard": GOLD
-               })
-        player = create_player(send_and_respond)
-        player.add_to_hand(SILVER)
-        add_coppers_to_hand_and_silvers_to_deck(player, 5)
+        cleanup_func = self.cleanup_with_expected_hand_check([COPPER, COPPER, COPPER, COPPER, COPPER, SILVER], GOLD)
+        player = create_player_with_deck(cleanup_func, additional_hand_cards= [SILVER])
         send_turn_request(player, self.supply)
         self.assertTrue( player.get_top_discard_card() in [COPPER, SILVER])
 
@@ -1330,7 +1311,7 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER], other_player.get_discard_pile() )
         self.assertTrue(self.hit_cleanup)
 
-    def test_can_play_militia_cant_use_moat_if_invalid_message(self):
+    def test_can_play_militia_cant_use_moat_if_invalid_response(self):
         def send_and_respond(json_message):
             message = json.loads(json_message)
             if message["type"] == "attack-request":
@@ -1357,7 +1338,7 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
         self.assertTrue(self.hit_cleanup)
 
-    def test_can_play_militia_cant_use_moat_if_invalid_message2(self):
+    def test_can_play_militia_cant_use_moat_if_invalid_response2(self):
         def send_and_respond(json_message):
             message = json.loads(json_message)
             if message["type"] == "attack-request":

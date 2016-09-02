@@ -94,7 +94,6 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
                 json_response = other_player.send_message_and_await_response(json.dumps(discard_request))
                 try:
                     response = __get_json_message(json_response)
-                    print response
                     if response.get("type", "") == "attack-reply-reaction" and response.get("reaction", "") == Identifiers.MOAT and Identifiers.MOAT in other_player.get_hand():
                         break
                     __assert_message_type_is_correct(response, "attack-reply")
