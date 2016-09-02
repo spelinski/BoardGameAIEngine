@@ -6,6 +6,12 @@ def is_victory_card(card):
 def is_treasure(card):
     return card in [Identifiers.COPPER, Identifiers.SILVER, Identifiers.GOLD]
 
+def is_action_card(card):
+    return card in [Identifiers.CELLAR, Identifiers.MOAT, Identifiers.VILLAGE,
+                    Identifiers.WOODCUTTER, Identifiers.WORKSHOP, Identifiers.MILITIA,
+                    Identifiers.REMODEL, Identifiers.SMITHY, Identifiers.MARKET,
+                    Identifiers.MINE]
+
 def get_victory_points(card):
     if card == Identifiers.ESTATE: return 1
     if card == Identifiers.DUCHY: return 3
@@ -28,3 +34,29 @@ def get_cost(card):
     if card in [Identifiers.GOLD]: return 6
     if card in [Identifiers.PROVINCE] : return 8
     raise ValueError("card not recognized")
+
+def get_extra_actions(card):
+    if card == Identifiers.VILLAGE: return 2
+    if card == Identifiers.MARKET: return 1
+    return 0
+
+def get_extra_buys(card):
+    if card == Identifiers.MARKET: return 1
+    if card == Identifiers.WOODCUTTER: return 1
+    return 0
+
+def get_extra_cards(card):
+    if card == Identifiers.CELLAR: return True
+    if card == Identifiers.MARKET: return 1
+    if card == Identifiers.SMITHY: return 3
+    if card == Identifiers.VILLAGE: return 1
+    if card == Identifiers.MOAT: return 2
+    return 0
+
+def get_extra_treasure(card):
+    if card == Identifiers.MARKET: return 1
+    if card == Identifiers.MILITIA: return 2
+    if card == Identifiers.WOODCUTTER: return 2
+    return 0
+
+
