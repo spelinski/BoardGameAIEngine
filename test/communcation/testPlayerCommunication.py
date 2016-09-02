@@ -68,8 +68,8 @@ class TestPlayerCommunication(unittest.TestCase):
         localPlayerCommunication = PlayerCommunication(
             self.workingBot, self.workingDir)
         localPlayerCommunication.send_message("die")
-        #self.assertRaisesRegexp(
-        #    BotCommunicationError, "program didn't say anything", localPlayerCommunication.get_response, 0.1)
+        self.assertRaisesRegexp(
+            BotCommunicationError, "program didn't say anything", localPlayerCommunication.get_response, 0.1)
         localPlayerCommunication.close()
 
     def test_should_raise_exception_if_bot_already_shutdown(self):
