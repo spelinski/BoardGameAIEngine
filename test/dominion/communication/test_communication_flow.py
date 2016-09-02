@@ -212,14 +212,17 @@ class TestCommunicationFlow(unittest.TestCase):
             buy_message["cards_to_buy"] = cards_to_buy
         return json.dumps(buy_message)
 
-    def test_player_can_buy_cards(self):
+    def create_buy_response(self, cards_to_buy=None, expected_cards_played=[], expected_cards_gained=[]):
         def send_and_respond(json_message):
             message = json.loads(json_message)
             if message["buys"] == 0:
-                return self.general_cleanup_function(message, expected_cards_gained=[COPPER])
+                return self.general_cleanup_function(message, expected_cards_gained=expected_cards_gained, expected_cards_played=expected_cards_played)
             else:
-                return self.get_buy_message([COPPER])
-        player = create_player_with_deck(send_and_respond)
+                return self.get_buy_message(cards_to_buy)
+
+    def test_player_can_buy_cards(self):
+        buy_response_func = self.create_buy_response(cards_to_buy = [COPPER], expected_cards_gained=[COPPER])
+        player = create_player_with_deck(buy_response_func)
         self.assertEqual(60, self.supply.get_number_of_cards(COPPER))
         send_turn_request(player, self.supply)
         self.assertEqual([COPPER, COPPER,COPPER, COPPER, COPPER, COPPER], player.get_discard_pile())
@@ -228,13 +231,8 @@ class TestCommunicationFlow(unittest.TestCase):
 
 
     def test_player_no_buy_cards_skips_buy(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                return self.general_cleanup_function(message)
-            else:
-                return self.get_buy_message()
-        player = create_player_with_deck(send_and_respond)
+        buy_response_func = self.create_buy_response()
+        player = create_player_with_deck(buy_response_func)
         send_turn_request(player, self.supply)
         self.assertTrue(self.hit_cleanup)
 
