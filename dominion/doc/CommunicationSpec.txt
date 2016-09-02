@@ -216,8 +216,8 @@ Action Requests
                         reaction: "moat"
                       }
                     - this prevents the discard
-                    - if the player does not have a moat or sends an invalid message, the engine picks two cards at random to discard
-                - after each discard, a <playerN> discarded <cards> message is sent
+                    - if the player does not have a moat or sends an invalid message, the engine picks two cards to discard
+                - after the discard, each other player is notified of the top discard
 
         -card = mine
           additional_parameters =
