@@ -200,21 +200,29 @@ class TestCommunicationFlow(unittest.TestCase):
         send_turn_request(player, self.supply)
         self.assertTrue( player.get_top_discard_card() in [COPPER, SILVER])
 
+    def general_cleanup_function(self, message, expected_cards_played=[], expected_cards_gained=[]):
+        self.hit_cleanup = True
+        self.assertEquals(expected_cards_played, message["cards_played"])
+        self.assertEquals(expected_cards_gained, message["cards_gained"])
+        return cleanup_message()
+
+    def get_buy_message(self, cards_to_buy=None):
+        buy_message = {"type": "play-reply", "phase": "buy"}
+        if cards_to_buy:
+            buy_message["cards_to_buy"] = cards_to_buy
+        return json.dumps(buy_message)
+
     def test_player_can_buy_cards(self):
         def send_and_respond(json_message):
             message = json.loads(json_message)
             if message["buys"] == 0:
-                self.hit_cleanup = True
-                self.assertEquals([], message["cards_played"])
-                self.assertEquals(message["cards_gained"], [COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+                return self.general_cleanup_function(message, expected_cards_gained=[COPPER])
             else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "cards_to_buy": [COPPER]})
-        player = create_player(send_and_respond)
+                return self.get_buy_message([COPPER])
+        player = create_player_with_deck(send_and_respond)
         self.assertEqual(60, self.supply.get_number_of_cards(COPPER))
-
         send_turn_request(player, self.supply)
-        self.assertEqual([COPPER], player.get_hand())
+        self.assertEqual([COPPER, COPPER,COPPER, COPPER, COPPER, COPPER], player.get_discard_pile())
         self.assertEqual(59, self.supply.get_number_of_cards(COPPER))
         self.assertTrue(self.hit_cleanup)
 
@@ -223,11 +231,10 @@ class TestCommunicationFlow(unittest.TestCase):
         def send_and_respond(json_message):
             message = json.loads(json_message)
             if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+                return self.general_cleanup_function(message)
             else:
-                return json.dumps({"type": "play-reply", "phase": "buy"})
-        player = create_player(send_and_respond)
+                return self.get_buy_message()
+        player = create_player_with_deck(send_and_respond)
         send_turn_request(player, self.supply)
         self.assertTrue(self.hit_cleanup)
 
