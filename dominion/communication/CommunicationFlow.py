@@ -16,7 +16,7 @@ def send_supply_info(player, supply):
     supply_info_message = CommandGenerator().create_supply_info_message(supply.supply)
     player.send_message(json.dumps(supply_info_message))
 
-def send_turn_request(player, supply, actions=1, buys=1, extra_money=0, gained_cards=None):
+def send_turn_request(player, supply, actions=1, buys=1, extra_money=0, gained_cards=None, other_players=[]):
     gained_cards = gained_cards if gained_cards else []
     play_turn_request = CommandGenerator().create_play_turn_request(actions, buys, extra_money, player.get_hand(), player.get_played_cards(), gained_cards)
     json_response = player.send_message_and_await_response(json.dumps(play_turn_request))
@@ -35,7 +35,7 @@ def send_turn_request(player, supply, actions=1, buys=1, extra_money=0, gained_c
             card = response.get("card", "")
             additional_parameters = response.get("additional_parameters", {})
             if type(additional_parameters) != dict: additional_parameters = {}
-            __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards)
+            __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards, other_players)
     except:
         __process_cleanup(None, player)
         raise
@@ -64,7 +64,7 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
 
     send_turn_request(player, supply, 0, 0, 0, gained_cards)
 
-def __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards):
+def __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards, other_players = []):
     if not actions: raise Exception("Player did not have any more actions")
     try:
         if card not in player.get_hand():
@@ -84,6 +84,26 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
             actions += 1
             buys += 1
             extra_money += 1
+        if card == Identifiers.MILITIA:
+            extra_money = 2
+            for other_player in other_players:
+                num_to_discard = len(other_player.get_hand()) - 3
+                if num_to_discard <=0:
+                    break
+                discard_request = CommandGenerator().create_attack_request_discard(num_to_discard, other_player.get_hand())
+                json_response = other_player.send_message_and_await_response(json.dumps(discard_request))
+                try:
+                    response = __get_json_message(json_response)
+                    print response
+                    if response.get("type", "") == "attack-reply-reaction" and response.get("reaction", "") == Identifiers.MOAT and Identifiers.MOAT in other_player.get_hand():
+                        break
+                    __assert_message_type_is_correct(response, "attack-reply")
+                    __assert_field_is_correct(response, "discard", lambda d: type(d) == list and len(d) == num_to_discard and all(discard in other_player.get_hand() for discard in d ), "Invalid discards")
+                    for discard in response["discard"]:
+                        other_player.discard(discard)
+                except:
+                    for discard in other_player.get_hand()[:num_to_discard]:
+                        other_player.discard(discard)
         if card == Identifiers.MINE:
             trashed_card = additional_parameters["card_to_trash"]
             desired_card = additional_parameters["desired_card"]
@@ -129,7 +149,7 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
     except:
         pass
 
-    send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards)
+    send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards, other_players)
 
 def __get_json_message(json_response):
     try:

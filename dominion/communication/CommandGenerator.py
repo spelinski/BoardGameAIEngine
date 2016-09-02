@@ -21,5 +21,10 @@ class CommandGenerator(object):
           "hand" : hand,
           "cards_played": played,
           "cards_gained": gained
-
+        }
+    def create_attack_request_discard(self, number_to_discard, options):
+        return {
+          "type" : "attack-request",
+          "discard": number_to_discard,
+          "options": options
         }

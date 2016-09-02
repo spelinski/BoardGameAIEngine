@@ -208,7 +208,8 @@ Action Requests
                       discard: [<card1>, <card2>, ... <cardN>]
                     }
                      - the number of cards must match the original number to discard
-                     - if the number doesn't match, or if there is an invalid message, the engine picks two cards at random
+                     - if the number doesn't match, or if there is an invalid message or if the cards aren't in the hand, the engine picks two cards at random
+                     - the last card discarded is treated as the top discard
                   - if the attacked player has a moat they are able to respond with:
                       {
                         type: "attack-reply-reaction"
