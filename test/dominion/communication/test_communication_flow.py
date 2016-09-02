@@ -817,7 +817,6 @@ class TestCommunicationFlow(unittest.TestCase):
         player.add_to_hand(REMODEL)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, REMODEL], player.get_discard_pile())
-        self.assertEquals(10, self.supply.get_number_of_cards(MOAT))
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_remodel_if_desired_card_is_too_high(self):
@@ -836,5 +835,179 @@ class TestCommunicationFlow(unittest.TestCase):
         player.add_to_hand(REMODEL)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, REMODEL], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_remodel_if_desired_card_supply_is_empty(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": REMODEL, "additional_parameters": { "card_to_trash": COPPER, "desired_card": ESTATE}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER,REMODEL])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        for _ in range(14):
+            self.supply.take(ESTATE)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(REMODEL)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, REMODEL], player.get_discard_pile())
         self.assertEquals(10, self.supply.get_number_of_cards(MOAT))
+        self.assertTrue(self.hit_cleanup)
+
+    def test_can_play_mine(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": {"card_to_trash": COPPER, "desired_card": SILVER}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [MINE])
+                self.assertEqual(message["hand"], [COPPER, SILVER])
+                self.assertEqual(message["cards_gained"], [SILVER])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, SILVER, MINE], player.get_discard_pile())
+        self.assertEquals(39, self.supply.get_number_of_cards(SILVER))
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_mine_if_no_trashed_card(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "desired_card": SILVER}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
+        self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_mine_if_no_desired_card(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
+        self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_mine_if_card_not_in_hand(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": SILVER, "desired_card": SILVER}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
+        self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_mine_if_card_too_expensive(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER, "desired_card": GOLD}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
+        self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_mine_if_supply_empty(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER, "desired_card": SILVER}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        for _ in range(40):
+            self.supply.take(SILVER)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_mine_if_not_playing_treasure(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": MOAT, "desired_card": SILVER}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER, MINE, MOAT])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        player.add_to_hand(MOAT)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, COPPER, MINE, MOAT], player.get_discard_pile())
+        self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
+        self.assertTrue(self.hit_cleanup)
+
+    def test_cant_play_mine_if_not_gaining_treasure(self):
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 1:
+                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER, "desired_card": CELLAR}})
+            else:
+                self.hit_cleanup = True
+                self.assertEqual(message["cards_played"], [])
+                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
+                self.assertEqual(message["cards_gained"], [])
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player = create_player(send_and_respond)
+        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player.add_to_hand(MINE)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
+        self.assertEquals(10, self.supply.get_number_of_cards(CELLAR))
         self.assertTrue(self.hit_cleanup)
