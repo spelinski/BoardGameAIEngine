@@ -71,7 +71,7 @@ class Player(object):
         self.discard_pile.add(card)
         if card in self.hand:
             self.hand.remove(card)
-        if card in self.played:
+        elif card in self.played:
             self.played.remove(card)
 
 

@@ -36,7 +36,7 @@ def send_turn_request(player, supply, actions=1, buys=1, extra_money=0, gained_c
             additional_parameters = response.get("additional_parameters", {})
             if type(additional_parameters) != dict: additional_parameters = {}
             __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards, other_players)
-    except:
+    except Exception as e:
         __process_cleanup(None, player)
         raise
 
