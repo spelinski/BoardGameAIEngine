@@ -71,6 +71,7 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
             raise Exception("Player did not play an action card")
         if card not in player.get_hand():
             raise Exception("Player did not have the card")
+        
         if card == Identifiers.CELLAR:
             actions += 1
             discards = additional_parameters.get("cards", [])

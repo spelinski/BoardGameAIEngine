@@ -370,7 +370,14 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
 
     def test_player_action_is_consumed_if_card_not_present(self):
-        action_response_func = self.get_action_response_function()
+        action_response_func = self.get_action_response_function(expected_buys=1)
+        player = create_player_with_deck(action_response_func, 2)
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_player_action_is_consumed_if_card_is_not_action(self):
+        action_response_func = self.get_action_response_function(COPPER, expected_buys=1)
         player = create_player_with_deck(action_response_func, 2)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
