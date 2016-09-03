@@ -18,6 +18,8 @@ class StarterBot(object):
         if message["type"] == "player-name-request":
             self.message =  {"type": "player-name-reply", "player_number": message["player_number"],
                     "name" : "starter-bot", "version": 1}
+        if message["type"] == "attack-request":
+            return {"type": "attack-reply", "discard": message["options"][:message["discards"]]}
         if message["type"] == "play-turn":
             treasures = [card for card in message["hand"] if is_treasure(card)]
             money = sum(get_worth(treasure) for treasure in treasures)
