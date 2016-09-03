@@ -76,6 +76,22 @@ def __sanitize_additional_parameters(player,supply, param, card):
     if card == CELLAR:
         if "cards" not in param or type(param["cards"]) != list:
             param["cards"] = []
+    if card == MINE:
+        if "card_to_trash" not in param:
+            raise Exception("Player must supply trashed card")
+        if "desired_card" not in param:
+            param["desired_card"] = ""
+        filters = [lambda card,_: get_cost(card) <= get_cost(param["card_to_trash"]) + 3,
+                   lambda card,_: is_treasure(card),
+                   lambda _,num: num > 0]
+        available_supply_cards = supply.filter(filters).get_cards()
+        if available_supply_cards:
+            if param["desired_card"] not in available_supply_cards:
+                raise Exception("Card was too expensive to gain in remodel or not a treasure")
+            if supply.get_number_of_cards(param["desired_card"]) == 0:
+                raise Exception("Card not in supply")
+        if not is_treasure(param["card_to_trash"]):
+            raise Exception("Card is not a treasure")
 
 
 
@@ -98,18 +114,9 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
                     break
                 __send_discard_request(other_player, num_to_discard)
         elif card == MINE:
-            trashed_card = additional_parameters["card_to_trash"]
-            desired_card = additional_parameters.get("desired_card", "")
-            available_supply_cards = [supply_card for supply_card in supply.get_cards() if get_cost(supply_card) <= get_cost(trashed_card) + 3 and is_treasure(supply_card) and supply.get_number_of_cards(supply_card) > 0]
-            if available_supply_cards:
-                if desired_card not in available_supply_cards:
-                    raise Exception("Card was too expensive to gain in remodel or not a treasure")
-                if supply.get_number_of_cards(desired_card) == 0:
-                    raise Exception("Card not in supply")
-            if not is_treasure(trashed_card):
-                raise Exception("Card is not a treasure")
-            player.trash(trashed_card)
-            if available_supply_cards:
+            player.trash(additional_parameters["card_to_trash"])
+            desired_card = additional_parameters["desired_card"]
+            if desired_card:
                 supply.take(desired_card)
                 gained_cards.append(desired_card)
                 player.add_to_hand(desired_card)
