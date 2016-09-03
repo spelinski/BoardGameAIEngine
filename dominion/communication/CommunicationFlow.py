@@ -85,7 +85,7 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
             buys += 1
             extra_money += 1
         if card == Identifiers.MILITIA:
-            extra_money = 2
+            extra_money += 2
             for other_player in other_players:
                 num_to_discard = len(other_player.get_hand()) - 3
                 if num_to_discard <=0:

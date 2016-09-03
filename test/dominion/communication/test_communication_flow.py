@@ -547,179 +547,91 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_can_play_mine(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": {"card_to_trash": COPPER, "desired_card": SILVER}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MINE])
-                self.assertEqual(message["hand"], [COPPER, SILVER])
-                self.assertEqual(message["cards_gained"], [SILVER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": COPPER, "desired_card": SILVER}, expected_hand=[COPPER, SILVER], expected_cards_played=[MINE], expected_cards_gained=[SILVER] )
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, SILVER, MINE], player.get_discard_pile())
         self.assertEquals(39, self.supply.get_number_of_cards(SILVER))
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_mine_if_no_trashed_card(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "desired_card": SILVER}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [])
-                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
-                self.assertEqual(message["cards_gained"], [])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"desired_card": SILVER}, expected_hand=[COPPER, COPPER, MINE])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
         self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_mine_if_no_desired_card(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [])
-                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
-                self.assertEqual(message["cards_gained"], [])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": COPPER}, expected_hand=[COPPER, COPPER, MINE])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
         self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_mine_if_card_not_in_hand(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": SILVER, "desired_card": SILVER}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [])
-                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
-                self.assertEqual(message["cards_gained"], [])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": SILVER, "desired_card": GOLD}, expected_hand=[COPPER, COPPER, MINE])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
-        self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
+        self.assertEquals(30, self.supply.get_number_of_cards(GOLD))
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_mine_if_card_too_expensive(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER, "desired_card": GOLD}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [])
-                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
-                self.assertEqual(message["cards_gained"], [])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": COPPER, "desired_card": GOLD}, expected_hand=[COPPER, COPPER, MINE])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
         self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_mine_if_supply_empty(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER, "desired_card": SILVER}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [])
-                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
-                self.assertEqual(message["cards_gained"], [])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        for _ in range(40):
-            self.supply.take(SILVER)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": COPPER, "desired_card": SILVER}, expected_hand=[COPPER, COPPER, MINE])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
+        self.empty_supply(SILVER)
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_mine_if_not_playing_treasure(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": MOAT, "desired_card": SILVER}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [])
-                self.assertEqual(message["hand"], [COPPER, COPPER, MINE, MOAT])
-                self.assertEqual(message["cards_gained"], [])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
-        player.add_to_hand(MOAT)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": MOAT, "desired_card": SILVER}, expected_hand=[COPPER, COPPER, MINE, MOAT])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE, MOAT])
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE, MOAT], player.get_discard_pile())
         self.assertEquals(40, self.supply.get_number_of_cards(SILVER))
         self.assertTrue(self.hit_cleanup)
 
     def test_cant_play_mine_if_not_gaining_treasure(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MINE, "additional_parameters": { "card_to_trash": COPPER, "desired_card": CELLAR}})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [])
-                self.assertEqual(message["hand"], [COPPER, COPPER, MINE])
-                self.assertEqual(message["cards_gained"], [])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MINE)
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": COPPER, "desired_card": CELLAR}, expected_hand=[COPPER, COPPER, MINE])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
         self.assertEquals(10, self.supply.get_number_of_cards(CELLAR))
         self.assertTrue(self.hit_cleanup)
 
-    def test_can_play_militia(self):
+    def create_militia_action_function(self):
         def send_and_respond(json_message):
             message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, COPPER], message["options"])
-                return json.dumps({"type": "attack-reply", "discard": [COPPER, COPPER]})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
+            if message["actions"] == 0:
+                return self.general_cleanup_function(message, expected_cards_played=[MILITIA], expected_hand=[COPPER,COPPER,COPPER,COPPER], expected_extra_money=2)
             else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 5)
-        player.add_to_hand(MILITIA)
+                return self.create_action_message(MILITIA)
+        return send_and_respond
+
+    def create_militia_response_function(self, hand, discards, expected_number_to_discard):
+        def respond(json_message):
+            message = json.loads(json_message)
+            if message["type"] == "attack-request":
+                self.assertEqual(expected_number_to_discard,message["discard"])
+                self.assertEquals(hand, message["options"])
+                return json.dumps({"type": "attack-reply", "discard": discards})
+        return respond
+
+    def test_can_play_militia(self):
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        response_func = self.create_militia_response_function([COPPER, COPPER, COPPER, COPPER, COPPER], [COPPER,COPPER], 2)
+        other_player = create_player_with_deck(response_func, 5)
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, COPPER], other_player.get_hand())
@@ -727,53 +639,19 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_can_play_militia_other_players_may_chose_discard(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply", "discard": [COPPER, MOAT]})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        response_func = self.create_militia_response_function([COPPER, COPPER, COPPER, COPPER, MOAT], [MOAT,COPPER], 2)
+        other_player = create_player_with_deck(response_func, 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, COPPER], other_player.get_hand())
         self.assertTrue(self.hit_cleanup)
-        self.assertEquals([COPPER, MOAT], other_player.get_discard_pile() )
+        self.assertEquals([MOAT, COPPER], other_player.get_discard_pile() )
 
     def test_can_play_militia_other_players_cant_pick_cards_not_in_hand(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply", "discard": [SILVER, MOAT]})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        response_func = self.create_militia_response_function([COPPER, COPPER, COPPER, COPPER, MOAT], [SILVER,MOAT], 2)
+        other_player = create_player_with_deck(response_func, 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
@@ -781,26 +659,8 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
 
     def test_can_play_militia_other_players_engine_chooses_if_invalid_mesage(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-replys"})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(make_response_function({"type": "attack-replys"}), 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
@@ -808,26 +668,8 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
 
     def test_can_play_militia_other_players_engine_chooses_if_invalid_mesage2(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply"})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(make_response_function({"type": "attack-reply"}), 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
@@ -835,26 +677,8 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
 
     def test_can_play_militia_other_players_engine_chooses_if_invalid_mesage3(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply", "discard": ""})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(make_response_function({"type": "attack-reply", "discard": ""}), 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
@@ -862,26 +686,9 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
 
     def test_can_play_militia_other_players_engine_chooses_if_not_enough_cards(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply", "discard": [COPPER]})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        response_func = self.create_militia_response_function([COPPER, COPPER, COPPER, COPPER, MOAT], [COPPER], 2)
+        other_player = create_player_with_deck(response_func, 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
@@ -889,26 +696,9 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
 
     def test_can_play_militia_other_players_engine_chooses_if_too_enough_cards(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply", "discard": [COPPER, COPPER, COPPER]})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        response_func = self.create_militia_response_function([COPPER, COPPER, COPPER, COPPER, MOAT], [COPPER,COPPER,COPPER], 2)
+        other_player = create_player_with_deck(response_func, 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
@@ -916,25 +706,9 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
 
     def test_can_play_militia_when_other_player_has_4(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(1,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER], message["options"])
-                return json.dumps({"type": "attack-reply", "discard": [COPPER]})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        response_func = self.create_militia_response_function([COPPER, COPPER, COPPER, COPPER], [COPPER], 1)
+        other_player = create_player_with_deck(response_func, 4)
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, COPPER], other_player.get_hand())
@@ -942,50 +716,31 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_can_play_militia_when_other_player_has_3_skips_request(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
+        def fail(json_message):
                 self.fail()
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 3)
-        player.add_to_hand(MILITIA)
+
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(fail, 3)
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, COPPER], other_player.get_hand())
         self.assertEquals([], other_player.get_discard_pile() )
         self.assertTrue(self.hit_cleanup)
 
-    def test_can_play_militia_can_be_blocked_by_moat(self):
-        def send_and_respond(json_message):
+    def create_moat_response_message(self, has_moat=True):
+        def respond(json_message):
             message = json.loads(json_message)
             if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
+                expected_options = [COPPER,COPPER,COPPER, COPPER]
+                if has_moat:
+                    expected_options.append(MOAT)
+                self.assertEquals(expected_options, message["options"])
                 return json.dumps({"type": "attack-reply-reaction", "reaction": MOAT})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        return respond
+
+    def test_can_play_militia_can_be_blocked_by_moat(self):
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(self.create_moat_response_message(), 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], other_player.get_hand())
@@ -993,25 +748,8 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_can_play_militia_cant_use_moat_if_not_in_hand(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(1,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER], message["options"])
-                return json.dumps({"type": "attack-reply-reaction", "reaction": MOAT})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(self.create_moat_response_message(False), 4)
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, COPPER], other_player.get_hand())
@@ -1019,26 +757,8 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_can_play_militia_cant_use_moat_if_invalid_response(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply-reaction"})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(make_response_function({"type": "attack-reply-reaction"}), 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
@@ -1046,26 +766,8 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_can_play_militia_cant_use_moat_if_invalid_response2(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(2,message["discard"])
-                self.assertEquals([COPPER, COPPER, COPPER, COPPER, MOAT], message["options"])
-                return json.dumps({"type": "attack-reply-reaction", "reaction": COPPER})
-            if message["actions"] == 1:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MILITIA})
-            else:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MILITIA])
-                self.assertEqual(message["extra_money"], 2)
-                self.assertEqual(message["hand"], [COPPER, COPPER, COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-        player = create_player(send_and_respond)
-        other_player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 4)
-        add_coppers_to_hand_and_silvers_to_deck(other_player, 4)
-        player.add_to_hand(MILITIA)
-        other_player.add_to_hand(MOAT)
+        player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
+        other_player = create_player_with_deck(make_response_function({"type": "attack-reply-reaction", "card":COPPER}), 4, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, other_players=[other_player])
         self.assertEquals([ COPPER, COPPER, COPPER, COPPER, MILITIA], player.get_discard_pile())
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
