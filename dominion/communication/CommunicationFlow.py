@@ -71,6 +71,14 @@ def __play_treasures(player, played_treasures):
         money += get_worth(treasure)
     return money
 
+
+def __sanitize_additional_parameters(player,supply, param, card):
+    if card == CELLAR:
+        if "cards" not in param or type(param["cards"]) != list:
+            param["cards"] = []
+
+
+
 def __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards, other_players = []):
     if not actions: raise Exception("Player did not have any more actions")
     try:
@@ -78,11 +86,9 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
             raise Exception("Player did not play an action card")
         if card not in player.get_hand():
             raise Exception("Player did not have the card")
-
+        __sanitize_additional_parameters(player,supply, additional_parameters, card)
         if card == CELLAR:
-            discards = additional_parameters.get("cards", [])
-            if type(discards) != list: discards = []
-            discards = list(itertools.takewhile(lambda discard: discard in player.get_hand(), discards))
+            discards = list(itertools.takewhile(player.is_in_hand, additional_parameters["cards"]))
             player.discard_multiple(discards)
             player.draw_cards(len(discards))
         elif card == MILITIA:
