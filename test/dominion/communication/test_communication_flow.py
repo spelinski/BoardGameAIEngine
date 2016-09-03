@@ -205,10 +205,12 @@ class TestCommunicationFlow(unittest.TestCase):
         send_turn_request(player, self.supply)
         self.assertTrue( player.get_top_discard_card() in [COPPER, SILVER])
 
-    def general_cleanup_function(self, message, expected_cards_played=[], expected_cards_gained=[], top_discard = None):
+    def general_cleanup_function(self, message, expected_cards_played=[], expected_cards_gained=[], top_discard = None, expected_hand=None):
         self.hit_cleanup = True
         self.assertEquals(expected_cards_played, message["cards_played"])
         self.assertEquals(expected_cards_gained, message["cards_gained"])
+        if expected_hand is not None:
+            self.assertEquals(expected_hand, message["hand"])
         return cleanup_message(top_discard)
 
     def get_buy_message(self, cards_to_buy=None, played_treasures=None):
@@ -346,56 +348,47 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([MOAT, COPPER, COPPER], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
 
-    def test_player_cant_play_action_with_zero_actions(self):
+    def create_action_message(self, card=None, additional_parameters={}):
+        message =  {"type": "play-reply", "phase": "action", "additional_parameters": additional_parameters}
+        if card:
+            message["card"] = card
+        return json.dumps(message)
+
+    def get_action_response_function(self, card=None, additional_parameters={}, expected_hand=None, expected_cards_played=[]):
         def send_and_respond(json_message):
             message = json.loads(json_message)
-            return json.dumps({"type": "play-reply", "phase": "action", "card": MOAT, "additional_parameters": {}})
+            if message["actions"] == 0:
+                return self.general_cleanup_function(message, expected_cards_played=expected_cards_played, expected_hand=expected_hand)
+            else:
+                return self.create_action_message(card, additional_parameters)
+        return send_and_respond
+
+
+    def test_player_cant_play_action_with_zero_actions(self):
+        def send_and_respond(json_message):
+            return self.create_action_message(MOAT)
         player = create_player_with_deck(send_and_respond, 2)
         with self.assertRaisesRegexp(Exception, "Player did not have any more actions"):
             send_turn_request(player, self.supply, actions=0)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
 
     def test_player_action_is_consumed_if_card_not_present(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "action"})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        action_response_func = self.get_action_response_function()
+        player = create_player_with_deck(action_response_func, 2)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
 
     def test_player_action_is_consumed_if_card_not_in_hand(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MOAT})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        action_response_func = self.get_action_response_function(MOAT)
+        player = create_player_with_deck(action_response_func, 2)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
 
     def test_can_play_moat(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["actions"] == 0:
-                self.hit_cleanup = True
-                self.assertEqual(message["cards_played"], [MOAT])
-                self.assertEqual(message["hand"], [COPPER, COPPER, SILVER, SILVER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "action", "card": MOAT})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MOAT)
+        action_response_func = self.get_action_response_function(MOAT, expected_hand=[COPPER, COPPER, SILVER, SILVER], expected_cards_played=[MOAT])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, SILVER, SILVER, MOAT], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
