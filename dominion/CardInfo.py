@@ -46,7 +46,6 @@ def get_extra_buys(card):
     return 0
 
 def get_extra_cards(card):
-    if card == CELLAR: return True
     if card == MARKET: return 1
     if card == SMITHY: return 3
     if card == VILLAGE: return 1

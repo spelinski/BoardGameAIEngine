@@ -72,81 +72,84 @@ def __play_treasures(player, played_treasures):
     return money
 
 
-def __sanitize_additional_parameters(player,supply, param, card):
+def __sanitize_and_verify_parameters(player,supply, param, card):
     if card == CELLAR:
         if "cards" not in param or type(param["cards"]) != list:
             param["cards"] = []
-    if card == MINE:
-        if "card_to_trash" not in param:
-            raise Exception("Player must supply trashed card")
+    elif card == MINE:
+        if "card_to_trash" not in param or not is_treasure(param["card_to_trash"]):
+            raise Exception("Player must supply trashed treasure card")
         if "desired_card" not in param:
             param["desired_card"] = ""
+        if not player.is_in_hand(param["card_to_trash"]):
+            raise Exception("Card was not in player's hand")
+
         filters = [lambda card,_: get_cost(card) <= get_cost(param["card_to_trash"]) + 3,
                    lambda card,_: is_treasure(card),
                    lambda _,num: num > 0]
         available_supply_cards = supply.filter(filters).get_cards()
-        if available_supply_cards:
-            if param["desired_card"] not in available_supply_cards:
-                raise Exception("Card was too expensive to gain in remodel or not a treasure")
-            if supply.get_number_of_cards(param["desired_card"]) == 0:
-                raise Exception("Card not in supply")
-        if not is_treasure(param["card_to_trash"]):
-            raise Exception("Card is not a treasure")
+        if available_supply_cards and  param["desired_card"] not in available_supply_cards:
+            raise Exception("Card was not able to be gained")
+    elif card == REMODEL:
+        if "card_to_trash" not in param or "desired_card" not in param:
+            raise Exception("Player must supply trashed card and desired card")
+        if not player.is_in_hand(param["card_to_trash"]):
+            raise Exception("Card was not in player's hand")
+        filters = [lambda card,_: get_cost(card) <= get_cost(param["card_to_trash"]) + 2,
+                   lambda _,num: num > 0]
+        if param["desired_card"] not in supply.filter(filters).get_cards():
+                raise Exception("Card was not able to be gained")
+    elif card == WORKSHOP:
+        if get_cost(param["desired_card"]) > 4:
+            raise Exception("Workshop card must cost 4 or less")
+        if supply.get_number_of_cards(param["desired_card"] ) == 0:
+            raise Exception("card not in supply")
 
 
-
-def __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards, other_players = []):
+def __process_action(player, supply, actions, buys, extra_money, card, parameters, gained_cards, other_players = []):
     if not actions: raise Exception("Player did not have any more actions")
     try:
         if not is_action_card(card):
             raise Exception("Player did not play an action card")
         if card not in player.get_hand():
             raise Exception("Player did not have the card")
-        __sanitize_additional_parameters(player,supply, additional_parameters, card)
-        if card == CELLAR:
-            discards = list(itertools.takewhile(player.is_in_hand, additional_parameters["cards"]))
-            player.discard_multiple(discards)
-            player.draw_cards(len(discards))
-        elif card == MILITIA:
-            for other_player in other_players:
-                num_to_discard = len(other_player.get_hand()) - 3
-                if num_to_discard <=0:
-                    break
-                __send_discard_request(other_player, num_to_discard)
-        elif card == MINE:
-            player.trash(additional_parameters["card_to_trash"])
-            desired_card = additional_parameters["desired_card"]
-            if desired_card:
-                supply.take(desired_card)
-                gained_cards.append(desired_card)
-                player.add_to_hand(desired_card)
-        elif card == REMODEL:
-            trashed_card = additional_parameters["card_to_trash"]
-            desired_card = additional_parameters["desired_card"]
-            available_supply_cards = [supply_card for supply_card in supply.get_cards() if get_cost(supply_card) <= get_cost(trashed_card) + 2]
-            if desired_card not in available_supply_cards:
-                raise Exception("Card was too expensive to gain in remodel")
-            if supply.get_number_of_cards(desired_card) == 0:
-                raise Exception("Card not in supply")
-            player.trash(trashed_card)
-            supply.take(desired_card)
-            gained_cards.append(desired_card)
-            player.gain_card(desired_card)
-        elif card == WORKSHOP:
-            desired_card = additional_parameters["desired_card"]
-            if get_cost(desired_card) > 4:
-                raise Exception("Workshop card must be 4 or less")
-            supply.take(desired_card)
-            gained_cards.append(desired_card)
-            player.gain_card(desired_card)
-        elif card in [MARKET, MOAT, SMITHY, VILLAGE]:
-            player.draw_cards(get_extra_cards(card))
-        actions += get_extra_actions(card)
-        buys += get_extra_buys(card)
-        extra_money += get_extra_treasure(card)
-        player.play_card(card)
+        __sanitize_and_verify_parameters(player,supply, parameters, card)
     except Exception as e:
-        pass
+        send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards, other_players)
+        return
+
+    def take_from_supply(card):
+        supply.take(card)
+        gained_cards.append(card)
+        player.gain_card(card)
+
+    player.draw_cards(get_extra_cards(card))
+    if card == CELLAR:
+        discards = list(itertools.takewhile(player.is_in_hand, parameters["cards"]))
+        player.discard_multiple(discards)
+        player.draw_cards(len(discards))
+    elif card == MILITIA:
+        for other_player in other_players:
+            num_to_discard = len(other_player.get_hand()) - 3
+            if num_to_discard <=0:
+                break
+            __send_discard_request(other_player, num_to_discard)
+    elif card == MINE:
+        player.trash(parameters["card_to_trash"])
+        desired_card = parameters["desired_card"]
+        if desired_card:
+            supply.take(desired_card)
+            gained_cards.append(desired_card)
+            player.add_to_hand(desired_card)
+    elif card == REMODEL:
+        player.trash(parameters["card_to_trash"])
+        take_from_supply(parameters["desired_card"])
+    elif card == WORKSHOP:
+        take_from_supply(parameters["desired_card"])
+    actions += get_extra_actions(card)
+    buys += get_extra_buys(card)
+    extra_money += get_extra_treasure(card)
+    player.play_card(card)
 
     send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards, other_players)
 
