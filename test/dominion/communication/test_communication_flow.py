@@ -59,11 +59,16 @@ def cleanup_message(top_discard=None):
         d["top_discard"] = top_discard
     return json.dumps(d)
 
+
 class TestCommunicationFlow(unittest.TestCase):
 
     def setUp(self):
         self.supply = Supply(2, Identifiers.FIRST_GAME)
         self.hit_cleanup = False
+
+    def empty_supply(self, card):
+        while self.supply.get_number_of_cards(card) > 0:
+            self.supply.take(card)
 
     def test_can_handle_player_request(self):
         player = create_player_with_deck(reply_with_player_name)
@@ -265,69 +270,36 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_player_buy_is_consumed_if_card_costs_too_much(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        buy_response_func = self.create_buy_response(cards_to_buy = [SILVER], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER])
+        player = create_player_with_deck(buy_response_func, 2)
         send_turn_request(player, self.supply)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
 
     def test_player_can_buy_more_expensive_card_with_extra_money(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                self.assertEquals(message["cards_gained"], [SILVER])
-                self.assertEquals(message["cards_played"], [COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        buy_response_func = self.create_buy_response(cards_to_buy = [SILVER], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER], expected_cards_gained=[SILVER])
+        player = create_player_with_deck(buy_response_func, 2)
         send_turn_request(player, self.supply, extra_money=1)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
 
     def test_player_can_buy_multiple_cards_if_multiple_buys(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                self.assertEquals(message["cards_gained"], [SILVER, COPPER])
-                self.assertEquals(message["cards_played"], [COPPER, COPPER])
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [SILVER, COPPER]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        buy_response_func = self.create_buy_response(cards_to_buy = [SILVER, COPPER], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER], expected_cards_gained=[SILVER, COPPER])
+        player = create_player_with_deck(buy_response_func, 2)
         send_turn_request(player, self.supply, extra_money=1, buys=2)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER, COPPER], player.get_discard_pile())
 
     def test_player_cant_buy_multiple_cards_if_not_enough_buys(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER, Identifiers.COPPER]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        buy_response_func = self.create_buy_response(cards_to_buy = [SILVER, COPPER], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER], expected_cards_gained=[SILVER])
+        player = create_player_with_deck(buy_response_func, 2)
         send_turn_request(player, self.supply, extra_money=1)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
 
     def test_player_cant_buy_with_zero_buys(self):
         def send_and_respond(json_message):
-            message = json.loads(json_message)
-            return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.COPPER]})
+            return  self.get_buy_message([COPPER], [COPPER, COPPER])
         player = create_player(send_and_respond)
         add_coppers_to_hand_and_silvers_to_deck(player, 2)
         with self.assertRaisesRegexp(Exception, "Player did not have any more buys"):
@@ -335,65 +307,25 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
 
     def test_player_cant_buy_multiple_cards_if_invalid_card(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER, Identifiers.FEAST]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        buy_response_func = self.create_buy_response(cards_to_buy = [SILVER, FEAST], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER], expected_cards_gained=[SILVER])
+        player = create_player_with_deck(buy_response_func, 2)
         send_turn_request(player, self.supply, extra_money=1, buys=2)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
 
     def test_player_cant_buy_multiple_cards_if_supply_empty(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER, Identifiers.COPPER]})
-        for _ in range(60):
-            self.supply.take(COPPER)
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        buy_response_func = self.create_buy_response(cards_to_buy = [SILVER, COPPER], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER], expected_cards_gained=[SILVER])
+        player = create_player_with_deck(buy_response_func, 2)
+        self.empty_supply(COPPER)
         send_turn_request(player, self.supply, extra_money=1, buys=2)
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
-
-    def test_player_cant_buy_multiple_cards_if_not_supply_empty(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.SILVER, Identifiers.COPPER]})
-        for _ in range(60):
-            self.supply.take(COPPER)
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        send_turn_request(player, self.supply, extra_money=1, buys=2)
-        self.assertTrue(self.hit_cleanup)
-        self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
-
 
     def test_player_cant_buy_if_game_ends(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup", "top_discard" : COPPER})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER], "cards_to_buy": [Identifiers.VILLAGE, Identifiers.COPPER]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        for _ in range(10):
-            self.supply.take(MOAT)
-            self.supply.take(MARKET)
+        buy_response_func = self.create_buy_response(cards_to_buy = [VILLAGE, COPPER], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER], expected_cards_gained=[VILLAGE])
+        player = create_player_with_deck(buy_response_func, 2)
+        self.empty_supply(MOAT)
+        self.empty_supply(MARKET)
         for _ in range(9):
             self.supply.take(VILLAGE)
         send_turn_request(player, self.supply, extra_money=1, buys=2)
@@ -401,30 +333,15 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([VILLAGE, COPPER, COPPER], player.get_discard_pile())
 
     def test_player_cant_buy_with_treasures_not_in_hand(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [SILVER], "cards_to_buy": [Identifiers.COPPER]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        send_turn_request(player, self.supply, buys=1)
+        buy_response_func = self.create_buy_response(cards_to_buy = [ COPPER], played_treasures=[SILVER])
+        player = create_player_with_deck(buy_response_func, 2)
+        send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
 
     def test_player_cant_buy_with_non_treasures(self):
-        def send_and_respond(json_message):
-            message = json.loads(json_message)
-            if message["buys"] == 0:
-                self.hit_cleanup = True
-                return json.dumps({"type": "play-reply", "phase": "cleanup"})
-            else:
-                return json.dumps({"type": "play-reply", "phase": "buy", "played_treasures": [COPPER, COPPER, MOAT], "cards_to_buy": [Identifiers.COPPER]})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
-        player.add_to_hand(MOAT)
+        buy_response_func = self.create_buy_response(cards_to_buy = [ COPPER], played_treasures=[COPPER, COPPER, MOAT], expected_cards_played=[COPPER,COPPER])
+        player = create_player_with_deck(buy_response_func, 2, additional_hand_cards=[MOAT])
         send_turn_request(player, self.supply, buys=1)
         self.assertEquals([MOAT, COPPER, COPPER], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
@@ -433,8 +350,7 @@ class TestCommunicationFlow(unittest.TestCase):
         def send_and_respond(json_message):
             message = json.loads(json_message)
             return json.dumps({"type": "play-reply", "phase": "action", "card": MOAT, "additional_parameters": {}})
-        player = create_player(send_and_respond)
-        add_coppers_to_hand_and_silvers_to_deck(player, 2)
+        player = create_player_with_deck(send_and_respond, 2)
         with self.assertRaisesRegexp(Exception, "Player did not have any more actions"):
             send_turn_request(player, self.supply, actions=0)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
