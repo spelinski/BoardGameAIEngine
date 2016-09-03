@@ -74,6 +74,10 @@ class Player(object):
         elif card in self.played:
             self.played.remove(card)
 
+    def discard_multiple(self, cards):
+        for card in cards:
+            self.discard(card)
+
 
     def trash(self, card):
         if card not in self.hand:

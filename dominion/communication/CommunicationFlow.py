@@ -3,6 +3,7 @@ from dominion.CardInfo import *
 from dominion.model.Supply import *
 from dominion.Identifiers import *
 import json
+import itertools
 
 def send_player_info(player, player_number, version):
     player_info_request = CommandGenerator().create_player_info_request(player_number, version)
@@ -80,29 +81,16 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
 
         if card == CELLAR:
             discards = additional_parameters.get("cards", [])
-            for discard in discards:
-                if discard not in player.get_hand():
-                    break
-                player.discard(discard)
-                player.draw_cards(1)
+            if type(discards) != list: discards = []
+            discards = list(itertools.takewhile(lambda discard: discard in player.get_hand(), discards))
+            player.discard_multiple(discards)
+            player.draw_cards(len(discards))
         elif card == MILITIA:
             for other_player in other_players:
                 num_to_discard = len(other_player.get_hand()) - 3
                 if num_to_discard <=0:
                     break
-                discard_request = CommandGenerator().create_attack_request_discard(num_to_discard, other_player.get_hand())
-                json_response = other_player.send_message_and_await_response(json.dumps(discard_request))
-                try:
-                    response = __get_json_message(json_response)
-                    if response.get("type", "") == "attack-reply-reaction" and response.get("reaction", "") == MOAT and MOAT in other_player.get_hand():
-                        break
-                    __assert_message_type_is_correct(response, "attack-reply")
-                    __assert_field_is_correct(response, "discard", lambda d: type(d) == list and len(d) == num_to_discard and all(discard in other_player.get_hand() for discard in d ), "Invalid discards")
-                    for discard in response["discard"]:
-                        other_player.discard(discard)
-                except:
-                    for discard in other_player.get_hand()[:num_to_discard]:
-                        other_player.discard(discard)
+                __send_discard_request(other_player, num_to_discard)
         elif card == MINE:
             trashed_card = additional_parameters["card_to_trash"]
             desired_card = additional_parameters.get("desired_card", "")
@@ -144,10 +132,29 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
         buys += get_extra_buys(card)
         extra_money += get_extra_treasure(card)
         player.play_card(card)
-    except:
+    except Exception as e:
         pass
 
     send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards, other_players)
+
+def __send_discard_request(player, num_to_discard):
+    discard_request = CommandGenerator().create_attack_request_discard(num_to_discard, player.get_hand())
+    json_response = player.send_message_and_await_response(json.dumps(discard_request))
+    try:
+        response = __get_json_message(json_response)
+        if __is_valid_moat_response(response, player):
+            return
+        __assert_message_type_is_correct(response, "attack-reply")
+        __assert_field_is_correct(response, "discard", lambda d: type(d) == list and len(d) == num_to_discard and all(discard in player.get_hand() for discard in d ), "Invalid discards")
+        for discard in response["discard"]:
+            player.discard(discard)
+    except:
+        for discard in player.get_hand()[:num_to_discard]:
+            player.discard(discard)
+
+def __is_valid_moat_response(response, player):
+    return response.get("type", "") == "attack-reply-reaction" and response.get("reaction", "") == MOAT and MOAT in player.get_hand()
+
 
 def __get_json_message(json_response):
     try:
