@@ -67,6 +67,8 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
 def __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards, other_players = []):
     if not actions: raise Exception("Player did not have any more actions")
     try:
+        if not is_action_card(card):
+            raise Exception("Player did not play an action card")
         if card not in player.get_hand():
             raise Exception("Player did not have the card")
         if card == Identifiers.CELLAR:
