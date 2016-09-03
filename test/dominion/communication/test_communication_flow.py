@@ -329,17 +329,6 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
         self.assertEquals([SILVER, COPPER, COPPER], player.get_discard_pile())
 
-    def test_player_cant_buy_if_game_ends(self):
-        buy_response_func = self.create_buy_response(cards_to_buy = [VILLAGE, COPPER], played_treasures=[COPPER, COPPER], expected_cards_played=[COPPER, COPPER], expected_cards_gained=[VILLAGE])
-        player = create_player_with_deck(buy_response_func, 2)
-        self.empty_supply(MOAT)
-        self.empty_supply(MARKET)
-        for _ in range(9):
-            self.supply.take(VILLAGE)
-        send_turn_request(player, self.supply, extra_money=1, buys=2)
-        self.assertTrue(self.hit_cleanup)
-        self.assertEquals([VILLAGE, COPPER, COPPER], player.get_discard_pile())
-
     def test_player_cant_buy_with_treasures_not_in_hand(self):
         buy_response_func = self.create_buy_response(cards_to_buy = [ COPPER], played_treasures=[SILVER])
         player = create_player_with_deck(buy_response_func, 2)
@@ -593,6 +582,16 @@ class TestCommunicationFlow(unittest.TestCase):
         send_turn_request(player, self.supply)
         self.assertEquals([ COPPER, COPPER, MINE], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
+
+    def test_can_leave_off_desired_card_if_no_options(self):
+        action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": COPPER}, expected_hand=[COPPER], expected_cards_played=[MINE])
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[MINE])
+        self.empty_supply(SILVER)
+        self.empty_supply(COPPER)
+        send_turn_request(player, self.supply)
+        self.assertEquals([ COPPER, MINE], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
 
     def test_cant_play_mine_if_not_playing_treasure(self):
         action_response_func = self.get_action_response_function(MINE, additional_parameters={"card_to_trash": MOAT, "desired_card": SILVER}, expected_hand=[COPPER, COPPER, MINE, MOAT])

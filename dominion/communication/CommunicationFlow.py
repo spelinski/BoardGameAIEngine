@@ -53,7 +53,7 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
             player.play_card(treasure)
         money = sum([get_worth(card) for card in player.get_played_cards()]) + extra_money
         for card in cards_to_buy[:buys]:
-            if get_cost(card) > money or supply.is_game_over():
+            if get_cost(card) > money:
                 break
             money -= get_cost(card)
             supply.take(card)
@@ -105,18 +105,20 @@ def __process_action(player, supply, actions, buys, extra_money, card, additiona
                         other_player.discard(discard)
         if card == Identifiers.MINE:
             trashed_card = additional_parameters["card_to_trash"]
-            desired_card = additional_parameters["desired_card"]
-            available_supply_cards = [supply_card for supply_card in supply.get_cards() if get_cost(supply_card) <= get_cost(trashed_card) + 3 and is_treasure(supply_card)]
-            if desired_card not in available_supply_cards:
-                raise Exception("Card was too expensive to gain in remodel or not a treasure")
-            if supply.get_number_of_cards(desired_card) == 0:
-                raise Exception("Card not in supply")
+            desired_card = additional_parameters.get("desired_card", "")
+            available_supply_cards = [supply_card for supply_card in supply.get_cards() if get_cost(supply_card) <= get_cost(trashed_card) + 3 and is_treasure(supply_card) and supply.get_number_of_cards(supply_card) > 0]
+            if available_supply_cards:
+                if desired_card not in available_supply_cards:
+                    raise Exception("Card was too expensive to gain in remodel or not a treasure")
+                if supply.get_number_of_cards(desired_card) == 0:
+                    raise Exception("Card not in supply")
             if not is_treasure(trashed_card):
                 raise Exception("Card is not a treasure")
             player.trash(trashed_card)
-            supply.take(desired_card)
-            gained_cards.append(desired_card)
-            player.add_to_hand(desired_card)
+            if available_supply_cards:
+                supply.take(desired_card)
+                gained_cards.append(desired_card)
+                player.add_to_hand(desired_card)
         if card == Identifiers.REMODEL:
             trashed_card = additional_parameters["card_to_trash"]
             desired_card = additional_parameters["desired_card"]
