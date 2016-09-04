@@ -115,6 +115,7 @@ def __process_action(player, supply, actions, buys, extra_money, card, parameter
             raise Exception("Player did not have the card")
         __sanitize_and_verify_parameters(player,supply, parameters, card)
     except Exception as e:
+        print e
         send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards, other_players)
         return
 

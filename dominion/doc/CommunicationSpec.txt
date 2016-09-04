@@ -160,7 +160,7 @@ Action Requests
    -  {
        type: "play-reply",
        phase: "action",
-       action_card: <card>,
+       card: <card>,
        additional_parameters: {<additional fields based on card - detailed below>}
      }
        - this is a reply to play a card
