@@ -77,15 +77,3 @@ class InteractiveBot(object):
         if msg == "exit":
             print "Exit"
             exit()
-
-if __name__ == "__main__":
-    bot = StarterBot()
-    while not stdin.closed:
-        message = stdin.readline().strip()
-        if len(message) == 0:
-            continue
-        bot.send_message(message)
-        if bot.message:
-            stdout.write(bot.get_response() + "\n")
-            stdout.flush()
->>>>>>> Adding Interactive Bot
