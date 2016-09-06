@@ -66,17 +66,24 @@ class Player(object):
         assert self.played == []
 
     def discard(self, card):
-        if card not in self.hand and card not in self.played:
+        if self.is_in_hand(card):
+            self.hand.remove(card)
+        elif card in self.played:
+            self.played.remove(card)
+        else:
             raise CardNotInHandException(card)
         self.discard_pile.add(card)
-        if card in self.hand:
-            self.hand.remove(card)
-        if card in self.played:
-            self.played.remove(card)
+
+    def discard_multiple(self, cards):
+        for card in cards:
+            self.discard(card)
+
+    def is_in_hand(self, card):
+        return card in self.hand
 
 
     def trash(self, card):
-        if card not in self.hand:
+        if not self.is_in_hand(card):
             raise CardNotInHandException(card)
         self.hand.remove(card)
 

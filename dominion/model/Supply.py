@@ -24,6 +24,7 @@ class Supply(object):
         cards = kingdom_cards + other_supply_cards
         return  {card: self.__get_initial_number_of_cards(card, number_of_players) for card in cards}
 
+
     def __get_initial_number_of_cards(self, card, number_of_players):
         if is_victory_card(card):
             return self.__get_victory_card_count(card, number_of_players)
@@ -71,8 +72,16 @@ class Supply(object):
         """
         return len([key for key,value in self.supply.items() if value == 0])
 
-    def is_game_over(self):
-        return self.get_number_of_empty_piles() >= 3 or self.get_number_of_cards(Identifiers.PROVINCE) == 0
+    def get_cards(self):
+        return list(self.supply)
+
+    def filter(self, filter_funcs):
+        supply_dict = self.supply
+        for filter_func in filter_funcs:
+            supply_dict = {k:v for k,v in supply_dict.items() if filter_func(k,v)}
+        new_supply = Supply(2, Identifiers.FIRST_GAME)
+        new_supply.supply = supply_dict
+        return new_supply
 
 class CardNotInSupplyException(Exception):
 

@@ -81,7 +81,7 @@ class TestCardInfo(unittest.TestCase):
         self.assertEquals(0, get_extra_buys(Identifiers.VILLAGE))
 
     def test_can_get_extra_cards(self):
-        self.assertTrue(get_extra_cards(Identifiers.CELLAR))
+        self.assertEquals(0, get_extra_cards(Identifiers.CELLAR))
         self.assertEquals(1, get_extra_cards(Identifiers.VILLAGE))
         self.assertEquals(1, get_extra_cards(Identifiers.MARKET))
         self.assertEquals(3, get_extra_cards(Identifiers.SMITHY))

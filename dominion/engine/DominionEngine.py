@@ -25,9 +25,9 @@ class DominionEngine(object):
         player.draw_cards(5)
 
     def run_until_game_end(self):
-        max_number_of_turns = 100 * len(self.players)
+        max_number_of_turns = 500 * len(self.players)
         for player in islice(cycle(self.players), max_number_of_turns):
-            if self.supply.is_game_over():
+            if self.is_game_over():
                 break
             send_supply_info(player, self.supply)
             try:
@@ -36,6 +36,9 @@ class DominionEngine(object):
                 #bot messed up, turn skipped
                 pass
             player.mark_turn_taken()
+
+    def is_game_over(self):
+        return self.supply.get_number_of_empty_piles() >= 3 or self.supply.get_number_of_cards(Identifiers.PROVINCE) == 0
 
     def get_winners(self):
         winning_players = []
