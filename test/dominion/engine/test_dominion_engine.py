@@ -42,7 +42,7 @@ class TestDominionEngine(unittest.TestCase):
         engine.run_until_game_end()
 
         self.assertEquals(3, player.get_score())
-        self.assertEquals(100, player.get_number_of_turns_taken())
+        self.assertEquals(500, player.get_number_of_turns_taken())
 
     def test_game_ends_if_invalid_messages(self):
         player = Player()
@@ -62,7 +62,7 @@ class TestDominionEngine(unittest.TestCase):
         engine.run_until_game_end()
 
         self.assertEquals(3, player.get_score())
-        self.assertEquals(100, player.get_number_of_turns_taken())
+        self.assertEquals(500, player.get_number_of_turns_taken())
 
     def test_engine_exits_early_if_invalid_response_to_player_name(self):
         player = Player()

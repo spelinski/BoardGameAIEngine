@@ -78,12 +78,26 @@ class TestPlayerModel(unittest.TestCase):
         self.player.add_to_hand(3)
         self.assertEquals([2,3], self.player.get_hand())
 
+    def test_is_in_hand(self):
+        self.assertFalse(self.player.is_in_hand(2))
+        self.player.add_to_hand(2)
+        self.assertFalse(self.player.is_in_hand(3))
+        self.assertTrue(self.player.is_in_hand(2))
+
+
     def test_discard_puts_card_from_hand_to_discard_pile(self):
         self.player.add_to_hand(2)
         self.player.add_to_hand(3)
         self.player.discard(2)
         self.assertEquals([2], self.player.get_discard_pile())
         self.assertEquals([3], self.player.get_hand())
+
+    def test_discard_multiple(self):
+        for i in range(3):
+            self.player.add_to_hand(i)
+        self.player.discard_multiple([0,2])
+        self.assertEquals([0,2], self.player.get_discard_pile())
+        self.assertEquals([1], self.player.get_hand())
 
     def test_discard_throws_exception_if_card_not_in_hand(self):
         with self.assertRaises(CardNotInHandException):

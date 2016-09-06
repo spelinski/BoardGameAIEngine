@@ -13,7 +13,8 @@ For formatting purposes, this spec will use multiple lines, but this is only for
 
 
 If a bot ever does not respond, it is disqualified from the match.
-
+    self.assertEquals([COPPER, COPPER], message["cards_played"])
+                self.assertEquals(message["cards_bought"], [MOAT])
 Initial Messages
 ---------------
 
@@ -125,7 +126,7 @@ Action Requests
   extra_money: <money>,
   hand: [<card1>, <card2>, ... <cardN>]
   cards_played: [<played-card1>, <played-card2> ... <played-cardN>],
-  cards_bought: [<bought_card1>, <bought_card2> ... <bought_gcardN>
+  cards_gained: [<gained_card>, <gained_card2> ... <gained_cardN>
 
 }
    - this is a request for a bot to take its turn (given a hand)
@@ -135,7 +136,7 @@ Action Requests
    - <money> is the extra money available for buy
    - <cardN> is the lower case identifier for a card in the players hand.  There is no limit on how many can be in a hand (can be zero)
    - <playedcardN> is the lower case identifier for a card played so far this turn.  This can be empty.
-   - <bought_cardN> the cards you've bought this turn
+   - <gained_cardN> the cards you've gaind this turn
    - the appropriate responses are the following (any invalid message ends the player turn and top_discard is picked by the server):
    - {
        type: "play-reply",
@@ -207,15 +208,16 @@ Action Requests
                       discard: [<card1>, <card2>, ... <cardN>]
                     }
                      - the number of cards must match the original number to discard
-                     - if the number doesn't match, or if there is an invalid message, the engine picks two cards at random
+                     - if the number doesn't match, or if there is an invalid message or if the cards aren't in the hand, the engine picks two cards at random
+                     - the last card discarded is treated as the top discard
                   - if the attacked player has a moat they are able to respond with:
                       {
                         type: "attack-reply-reaction"
                         reaction: "moat"
                       }
                     - this prevents the discard
-                    - if the player does not have a moat or sends an invalid message, the engine picks two cards at random to discard
-                - after each discard, a <playerN> discarded <cards> message is sent
+                    - if the player does not have a moat or sends an invalid message, the engine picks two cards to discard
+                - after the discard, each other player is notified of the top discard
 
         -card = mine
           additional_parameters =
