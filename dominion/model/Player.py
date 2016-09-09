@@ -10,6 +10,7 @@ class Player(object):
         self.deck.set_replenisher(self.discard_pile)
         self.played = []
         self.turns = 0
+        self.listeners = []
 
     def set_communication(self, comm):
         self.comm = comm
@@ -24,6 +25,10 @@ class Player(object):
 
     def send_message(self, message):
         self.comm.send_message(message)
+
+    def add_event_listener(self, listener):
+        self.listeners.append(listener)
+        self.deck.add_shuffle_listener(listener)
 
     def gain_card(self, card):
         self.discard_pile.add(card)

@@ -20,7 +20,7 @@ class Deck(object):
             raise TypeError
         #need a new copy of a list if not valid
         self.deck = listOfCards if listOfCards else []
-        self.notifier = None
+        self.listeners = []
         if shuffleDeck:
             self.shuffle()
         self.replenisher = None
@@ -28,11 +28,11 @@ class Deck(object):
 
     def shuffle(self):
         shuffle(self.deck)
-        if self.notifier:
-            self.notifier.notify(Notification("shuffle-deck"))
+        for l in self.listeners:
+            l.notify(Notification("shuffle-deck"))
 
-    def set_shuffle_notification(self, notifier):
-        self.notifier = notifier
+    def add_shuffle_listener(self, listener):
+        self.listeners.append(listener)
 
     def is_empty(self):
         return self.deck == []

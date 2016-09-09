@@ -83,12 +83,12 @@ class TestDeck(unittest.TestCase):
 
     def test_notification_of_shuffle(self):
         deck = Deck([1,2], shuffleDeck = False)
-        notifier = Mock()
-        notifier.hit_function = False
+        listener = Mock()
+        listener.hit_function = False
         def notify(notification):
             self.assertEquals(notification.type, "shuffle-deck")
-            notifier.hit_function = True
-        notifier.notify = notify
-        deck.set_shuffle_notification(notifier)
+            listener.hit_function = True
+        listener.notify = notify
+        deck.add_shuffle_listener(listener)
         deck.shuffle()
-        self.assertTrue(notifier.hit_function)
+        self.assertTrue(listener.hit_function)
