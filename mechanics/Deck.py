@@ -1,5 +1,5 @@
 from random import shuffle
-
+from Notification import *
 class Deck(object):
     """
     A Deck is modeled as an infinite generator that  begins
@@ -29,7 +29,7 @@ class Deck(object):
     def shuffle(self):
         shuffle(self.deck)
         if self.notifier:
-            pass
+            self.notifier.notify(Notification("shuffle-deck"))
 
     def set_shuffle_notification(self, notifier):
         self.notifier = notifier
