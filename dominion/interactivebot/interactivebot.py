@@ -1,7 +1,6 @@
 import json
 from dominion.CardInfo import *
 from dominion.Identifiers import *
-from sys import stdin, stdout
 class InteractiveBot(object):
 
     def __init__(self, num):
