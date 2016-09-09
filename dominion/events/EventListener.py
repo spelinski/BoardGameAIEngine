@@ -6,4 +6,4 @@ class EventListener(object):
 
     def notify(self, notification):
         if notification.type == "shuffle-deck":
-            broadcast_message(self.players, {"type": "player-shuffled", "player_number" : self.number})
+            broadcast_message(self.players, CommandGenerator().create_player_shuffled_message(self.number))

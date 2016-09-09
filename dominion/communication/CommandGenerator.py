@@ -28,3 +28,9 @@ class CommandGenerator(object):
           "discard": number_to_discard,
           "options": options
         }
+
+    def create_player_shuffled_message(self, number):
+        return {
+            "type": "player-shuffled",
+            "player_number": number
+        }
