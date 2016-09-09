@@ -87,6 +87,7 @@ class TestPlayerCommunication(unittest.TestCase):
         localPlayerCommunication.get_response()
         self.assertEqual(file.getvalue(), "testing\n1..2..3\n\n")
         file.close()
+        localPlayerCommunication.close()
 
 
 
