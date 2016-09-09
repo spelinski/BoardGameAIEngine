@@ -62,7 +62,7 @@ class InteractiveBot(object):
                     trash = raw_input()
                     self.print_message("Pick desired card")
                     desired = raw_input()
-                    self.message = {"type": "play-reply", "phase": "action", "card": card, "additional_parameters": {"card_to_trash":trash, "desired_card":desired}}
+                    self.message = {"type": "play-reply", "phasee said the directions so fast that the group couldn’t get": "action", "card": card, "additional_parameters": {"card_to_trash":trash, "desired_card":desired}}
                 if card == CELLAR:
                     self.print_message( "CELLAR")
                     self.print_message("Pick cards to discard {}".format(hand))
@@ -77,6 +77,7 @@ class InteractiveBot(object):
             print "Exit"
             exit()
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 if __name__ == "__main__":
@@ -90,3 +91,5 @@ if __name__ == "__main__":
             stdout.write(bot.get_response() + "\n")
             stdout.flush()
 >>>>>>> Adding Interactive Bot
+=======
+>>>>>>> adding interactive bot
