@@ -6,10 +6,11 @@ Created on Sep 23, 2015
 import unittest
 import sys
 from communication.PlayerCommunication import PlayerCommunication, BotCommunicationError
-import os
 import StringIO
 import time
 
+def normalize_newlines(string):
+    return string.replace("\r\n", "\n")
 
 class TestPlayerCommunication(unittest.TestCase):
 
@@ -39,14 +40,14 @@ class TestPlayerCommunication(unittest.TestCase):
             self.workingBot, self.workingDir)
         localPlayerCommunication.send_message("testing")
         responseFromBot = localPlayerCommunication.get_response()
-        self.assertEqual(responseFromBot, "1..2..3\n")
+        self.assertEqual(normalize_newlines(responseFromBot), "1..2..3\n")
         localPlayerCommunication.close()
 
     def test_should_respond_to_say_something_without_set_workingdir(self):
         localPlayerCommunication = PlayerCommunication(self.workingBotWithPath)
         localPlayerCommunication.send_message("testing")
         responseFromBot = localPlayerCommunication.get_response()
-        self.assertEqual(responseFromBot, "1..2..3\n")
+        self.assertEqual(normalize_newlines(responseFromBot), "1..2..3\n")
         localPlayerCommunication.close()
 
     def test_should_raise_bot_communication_error_if_bot_can_not_respond(self):
@@ -85,10 +86,9 @@ class TestPlayerCommunication(unittest.TestCase):
             self.workingBot, self.workingDir, file)
         localPlayerCommunication.send_message("testing")
         localPlayerCommunication.get_response()
-        self.assertEqual(file.getvalue(), "testing\n1..2..3\n\n")
+        self.assertEqual(normalize_newlines(file.getvalue()), "testing\n1..2..3\n\n")
         file.close()
         localPlayerCommunication.close()
-
 
 
 class TestPlayerCommunicationShutdown(unittest.TestCase):
@@ -127,15 +127,13 @@ class TestPlayerCommunicationShutdown(unittest.TestCase):
         self.assert_comms_closed(localPlayerCommunication)
 
     def assert_comms_closed(self, comms):
+        from psutil import pid_exists
+
         pid = comms.runningPlayer.pid
 
-        # Sig 0 doesn't do anything, use it to poke the subprocess
-        os.kill(pid, 0)
+        assert pid_exists(pid)
 
         # stop the process and wait a bit
         comms.close()
 
-        # An exception will be raised if sig 0 couldn't be delivered
-        # because the process is now gone
-        with self.assertRaises(OSError):
-            os.kill(pid, 0)
+        assert not pid_exists(pid)
