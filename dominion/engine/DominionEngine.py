@@ -16,7 +16,7 @@ class DominionEngine(object):
             except:
                 raise Exception("Player {} did not respond correctly".format(number))
             self.deal_starting_cards(player)
-        broadcast_message(CommandGenerator().create_game_info_message(self.supply.get_cards())
+        broadcast_message(CommandGenerator().create_game_info_message(self.supply.get_cards()))
 
     def deal_starting_cards(self, player):
         for _ in range(3):
