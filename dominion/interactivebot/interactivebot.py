@@ -17,6 +17,8 @@ class InteractiveBot(object):
             self.print_message( "Supply: " + ''.join(["{},{} ".format(k,v) for k,v in message["cards"].items()]))
         if message["type"] == "player-shuffled":
             self.print_message("Player {} shuffled their deck".format(message["player_number"]))
+        if message["type"] == "game-info":
+            self.print_message("Kingdom Cards: {}".format(" ".join(message["kingdom_cards"])))
         if message["type"] == "player-name-request":
             self.message =  {"type": "player-name-reply", "player_number": message["player_number"],
                     "name" : "Interactive", "version": 1}
