@@ -1,6 +1,10 @@
 import json
 from dominion.CardInfo import *
 from dominion.Identifiers import *
+<<<<<<< HEAD
+=======
+from sys import stdin, stdout
+>>>>>>> 010ba874ee05b24bd0c7774821cf11e15f9015d3
 class InteractiveBot(object):
 
     def __init__(self, num):
@@ -15,8 +19,11 @@ class InteractiveBot(object):
         message = json.loads(json_message)
         if message["type"] == "supply-info":
             self.print_message( "Supply: " + ''.join(["{},{} ".format(k,v) for k,v in message["cards"].items()]))
+<<<<<<< HEAD
         if message["type"] == "player-shuffled":
             self.print_message("Player {} shuffled their deck".format(message["player_number"]))
+=======
+>>>>>>> 010ba874ee05b24bd0c7774821cf11e15f9015d3
         if message["type"] == "player-name-request":
             self.message =  {"type": "player-name-reply", "player_number": message["player_number"],
                     "name" : "Interactive", "version": 1}
@@ -77,4 +84,7 @@ class InteractiveBot(object):
         if msg == "exit":
             print "Exit"
             exit()
+<<<<<<< HEAD
 
+=======
+>>>>>>> 010ba874ee05b24bd0c7774821cf11e15f9015d3
