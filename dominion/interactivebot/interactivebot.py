@@ -77,7 +77,3 @@ class InteractiveBot(object):
         if msg == "exit":
             print "Exit"
             exit()
-<<<<<<< HEAD
-
-=======
->>>>>>> 010ba874ee05b24bd0c7774821cf11e15f9015d3
