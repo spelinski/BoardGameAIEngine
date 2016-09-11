@@ -34,3 +34,9 @@ class CommandGenerator(object):
             "type": "player-shuffled",
             "player_number": number
         }
+
+    def create_game_info_message(self, kingdom_cards):
+        return {
+            "type": "game-info",
+            "kingdom_cards" : kingdom_cards
+        }
