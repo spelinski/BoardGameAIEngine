@@ -1,10 +1,10 @@
 from dominion.Identifiers import *
 
 def is_victory_card(card):
-    return card in [ESTATE, DUCHY, PROVINCE]
+    return card in VICTORY_CARDS
 
 def is_treasure(card):
-    return card in [COPPER, SILVER, GOLD]
+    return card in TREASURE_CARDS
 
 def is_action_card(card):
     return card in [CELLAR, MOAT, VILLAGE,
