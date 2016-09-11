@@ -33,3 +33,8 @@ class TestCommandGenerator(unittest.TestCase):
         self.assertEquals("attack-request", message["type"])
         self.assertEquals(2, message["discard"])
         self.assertEquals(["copper", "copper", "copper", "copper", "copper"], message["options"])
+
+    def test_player_shuffled_message(self):
+        message = self.generator.create_player_shuffled_message(3)
+        self.assertEquals("player-shuffled", message["type"])
+        self.assertEquals(3, message["player_number"])

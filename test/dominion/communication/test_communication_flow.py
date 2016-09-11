@@ -779,3 +779,14 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertEquals([COPPER, COPPER, MOAT], other_player.get_hand())
         self.assertEquals([COPPER, COPPER], other_player.get_discard_pile() )
         self.assertTrue(self.hit_cleanup)
+
+    def test_broadcast_message(self):
+        self.number_of_times_hit = 0
+        def receive( json_message):
+            self.assertEquals({"a":1, "b":2}, json.loads(json_message))
+            self.number_of_times_hit += 1
+
+        player = create_player_with_deck(receive)
+        player2 = create_player_with_deck(receive)
+        broadcast_message([player, player2], {"a":1, "b":2})
+        self.assertEquals(2, self.number_of_times_hit)

@@ -252,3 +252,15 @@ class TestPlayerModel(unittest.TestCase):
         self.assertEquals(7, self.player.get_score())
         self.player.put_card_on_top_of_deck(Identifiers.DUCHY)
         self.assertEquals(10, self.player.get_score())
+
+    def test_player_can_get_notified_if_shuffles(self):
+        listener = Mock()
+        listener.hit_notify = False
+        def notify(message):
+            self.assertEquals("shuffle-deck", message.type)
+            listener.hit_notify = True
+        listener.notify = notify
+        self.player.add_event_listener(listener)
+        self.player.gain_card(Identifiers.COPPER)
+        self.player.draw_cards(1)
+        self.assertTrue(listener.hit_notify)
