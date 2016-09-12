@@ -3,10 +3,10 @@ Created on Sep 23, 2015
 
 @author: rohk
 '''
-import subprocess
 from subprocess import Popen, PIPE
-import threading
+import platform
 import shlex
+import threading
 import time
 
 
@@ -20,7 +20,7 @@ class PlayerCommunication(object):
         Constructor
         @param programWithPath relative path to executable
         """
-        shell_command = shlex.split(program)
+        shell_command = shlex.split(program, posix=platform.system() != "Windows")
         self.runningPlayer = Popen(
             shell_command, cwd=workdir, stdin=PIPE, stdout=PIPE)
         self.debugFile = debugFile

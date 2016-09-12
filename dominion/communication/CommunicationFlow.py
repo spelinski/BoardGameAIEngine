@@ -5,6 +5,11 @@ from dominion.Identifiers import *
 import json
 import itertools
 
+
+def broadcast_message(players, message):
+    for player in players:
+        player.send_message(json.dumps(message))
+
 def send_player_info(player, player_number, version):
     player_info_request = CommandGenerator().create_player_info_request(player_number, version)
     json_response = player.send_message_and_await_response(json.dumps(player_info_request))
