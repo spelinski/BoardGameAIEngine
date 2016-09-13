@@ -1,12 +1,14 @@
 from dominion.Identifiers import *
 from dominion.model.Supply import *
 from dominion.communication.CommunicationFlow import *
+from dominion.events.EventListener import *
 from itertools import *
 
 class DominionEngine(object):
 
     def __init__(self, players, game_set):
         self.players = players
+        self.set_up_listeners()
         self.supply = Supply(len(players), game_set)
         for number, player in enumerate(players, start=1):
             try:
@@ -23,6 +25,12 @@ class DominionEngine(object):
             self.supply.take(COPPER)
             player.gain_card(COPPER)
         player.draw_cards(5)
+
+    def set_up_listeners(self):
+        for number, player in enumerate(self.players, start=1):
+            listener = EventListener(number, self.players)
+            player.add_event_listener(listener)
+
 
     def run_until_game_end(self):
         max_number_of_turns = 500 * len(self.players)

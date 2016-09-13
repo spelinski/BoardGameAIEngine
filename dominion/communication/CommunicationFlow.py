@@ -43,7 +43,7 @@ def send_turn_request(player, supply, actions=1, buys=1, extra_money=0, gained_c
             additional_parameters = response.get("additional_parameters", {})
             if type(additional_parameters) != dict: additional_parameters = {}
             __process_action(player, supply, actions, buys, extra_money, card, additional_parameters, gained_cards, other_players)
-    except Exception as e:
+    except:
         __process_cleanup(None, player)
         raise
 
@@ -119,7 +119,7 @@ def __process_action(player, supply, actions, buys, extra_money, card, parameter
         if card not in player.get_hand():
             raise Exception("Player did not have the card")
         __sanitize_and_verify_parameters(player,supply, parameters, card)
-    except Exception as e:
+    except:
         send_turn_request(player, supply, actions-1, buys, extra_money, gained_cards, other_players)
         return
 
