@@ -44,6 +44,27 @@ class TestDominionEngine(unittest.TestCase):
         self.assertEquals(3, player.get_score())
         self.assertEquals(500, player.get_number_of_turns_taken())
 
+    def test_player_sees_kingdom_cards(self):
+        player = Player()
+        player.hit_game_info = False
+        def send_message_and_await_response(json_message):
+            message = json.loads(json_message)
+            if message["type"] == "player-name-request":
+                 return json.dumps( {"type": "player-name-reply", "player_number": message["player_number"],
+                        "name" : "nothing-bot", "version": 1})
+            elif message["type"] == "game-info":
+                self.assertEquals([CELLAR, MARKET, MILITIA, MINE, MOAT, REMODEL, SMITHY, VILLAGE, WOODCUTTER, WORKSHOP], message["kingdom_cards"])
+                player.hit_game_info = True
+            else:
+                return json.dumps({"type": "play-reply", "phase": "cleanup"})
+        player.send_message_and_await_response = send_message_and_await_response
+        player.send_message = send_message_and_await_response
+
+        players = [player]
+        engine = DominionEngine(players, FIRST_GAME)
+
+        self.assertTrue(player.hit_game_info)
+
     def test_game_ends_if_invalid_messages(self):
         player = Player()
 
