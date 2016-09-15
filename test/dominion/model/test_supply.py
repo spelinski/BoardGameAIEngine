@@ -90,4 +90,4 @@ class TestSupply(unittest.TestCase):
 
     def test_can_get_kingdom_cards(self):
         supply = Supply(2, FIRST_GAME)
-        self.assertEquals([CELLAR, MARKET, MILITIA, MINE, MOAT, REMODEL, SMITHY, VILLAGE, WOODCUTTER, WORKSHOP], supply.get_kingdom_cards())
+        self.assertEquals((CELLAR, MARKET, MILITIA, MINE, MOAT, REMODEL, SMITHY, VILLAGE, WOODCUTTER, WORKSHOP), supply.get_kingdom_cards())
