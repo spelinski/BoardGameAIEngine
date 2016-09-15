@@ -7,6 +7,7 @@ class Player(object):
         self.discard_pile = Deck()
         self.hand = []
         self.deck = Deck()
+        self.comm = None
         self.deck.set_replenisher(self.discard_pile)
         self.played = []
         self.turns = 0

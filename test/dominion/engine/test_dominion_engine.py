@@ -88,7 +88,7 @@ class TestDominionEngine(unittest.TestCase):
     def test_engine_exits_early_if_invalid_response_to_player_name(self):
         player = Player()
         player.send_message_and_await_response = lambda msg: ""
-        player.send_message = lambda msg: None
+        player.send_message = lambda msg: self.fail
 
         with self.assertRaisesRegexp(Exception, "Player 1 did not respond correctly"):
             engine = DominionEngine([player], FIRST_GAME)

@@ -58,14 +58,14 @@ class TestSupply(unittest.TestCase):
 
     def test_cant_take_card_not_in_supply(self):
         supply = Supply(2, FIRST_GAME)
-        with self.assertRaises(CardNotInSupplyException):
+        with self.assertRaisesRegexp(CardNotInSupplyException, "feast is not in the supply"):
             supply.take(FEAST)
 
     def test_cant_take_card_not_if_pile_is_empty(self):
         supply = Supply(2, FIRST_GAME)
         for _ in range(8):
             supply.take(DUCHY)
-        with self.assertRaises(PileEmptyException):
+        with self.assertRaisesRegexp(PileEmptyException, "duchy's pile is empty"):
             supply.take(DUCHY)
 
     def test_no_piles_are_empty_to_start(self):
