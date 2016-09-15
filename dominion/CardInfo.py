@@ -7,10 +7,7 @@ def is_treasure(card):
     return card in TREASURE_CARDS
 
 def is_action_card(card):
-    return card in [CELLAR, MOAT, VILLAGE,
-                    WOODCUTTER, WORKSHOP, MILITIA,
-                    REMODEL, SMITHY, MARKET,
-                    MINE]
+    return card in ALL_ACTION_CARDS
 
 def get_victory_points(card):
     if card == ESTATE: return 1

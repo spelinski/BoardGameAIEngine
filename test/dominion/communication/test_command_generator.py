@@ -39,6 +39,36 @@ class TestCommandGenerator(unittest.TestCase):
         self.assertEquals("player-shuffled", message["type"])
         self.assertEquals(3, message["player_number"])
 
+    def test_player_gained_message(self):
+        message = self.generator.create_player_gained_message(42, range(3))
+        self.assertEquals ("player-gained", message["type"])
+        self.assertEquals(42, message["player_number"])
+        self.assertEquals(range(3), message["gained"])
+
+    def test_player_played_message(self):
+        message = self.generator.create_player_played_message(42, range(2))
+        self.assertEquals ("player-played", message["type"])
+        self.assertEquals(42, message["player_number"])
+        self.assertEquals(range(2), message["played"])
+
+    def test_player_trashed_message(self):
+        message = self.generator.create_player_trashed_message(42, range(1))
+        self.assertEquals ("player-trashed", message["type"])
+        self.assertEquals(42, message["player_number"])
+        self.assertEquals(range(1), message["trashed"])
+
+    def test_player_discard_message(self):
+        message = self.generator.create_player_discard_message(42, "curse")
+        self.assertEquals ("player-top-discard", message["type"])
+        self.assertEquals(42, message["player_number"])
+        self.assertEquals("curse", message["card"])
+
+    def test_player_reveal_message(self):
+        message = self.generator.create_player_reveal_message(42, ["none", "of your", "business"])
+        self.assertEquals ("player-reveal", message["type"])
+        self.assertEquals(42, message["player_number"])
+        self.assertEquals(["none", "of your", "business"], message["cards"])
+
     def test_game_info_mesasge(self):
         message = self.generator.create_game_info_message([1,2,3,4,5,6])
         self.assertEquals("game-info", message["type"])
