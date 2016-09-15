@@ -85,8 +85,8 @@ class TestCommunicationFlow(unittest.TestCase):
         with self.assertRaisesRegexp(Exception, "Message was not correct type: Not Present"):
             send_player_info(player, 1, 1)
 
-    def test_player_request_aborts_if_not_right_message(self):
-        player = create_player_with_deck(return_invalid_response)
+    def test_player_request_aborts_if_not_right_message_nope(self):
+        player = create_player_with_deck(return_invalid_type)
         with self.assertRaisesRegexp(Exception, "Message was not correct type: nope"):
             send_player_info(player, 1, 1)
 
@@ -347,8 +347,7 @@ class TestCommunicationFlow(unittest.TestCase):
         message =  {"type": "play-reply", "phase": "action"}
         if additional_parameters is not None:
             message["additional_parameters"] = additional_parameters
-        if card:
-            message["card"] = card
+        message["card"] = card
         return json.dumps(message)
 
     def get_action_response_function(self, card=None, additional_parameters={}, expected_hand=None, expected_cards_played=[], expected_actions=None, expected_buys=None, expected_extra_money=None, expected_cards_gained=[]):
@@ -384,8 +383,14 @@ class TestCommunicationFlow(unittest.TestCase):
         self.assertTrue(self.hit_cleanup)
 
     def test_player_action_is_consumed_if_card_not_in_hand(self):
-        action_response_func = self.get_action_response_function(MOAT)
-        player = create_player_with_deck(action_response_func, 2)
+        def send_and_respond(json_message):
+            message = json.loads(json_message)
+            if message["actions"] == 0:
+                return self.general_cleanup_function(message)
+            else:
+                return self.create_action_message(MOAT)
+
+        player = create_player_with_deck(send_and_respond, 2)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
@@ -486,6 +491,14 @@ class TestCommunicationFlow(unittest.TestCase):
     def test_workshop_doesnt_gain_if_card_not_in_supply(self):
         action_response_func = self.get_action_response_function(WORKSHOP, additional_parameters={"desired_card": FEAST} )
         player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[WORKSHOP])
+        send_turn_request(player, self.supply)
+        self.assertEquals([COPPER, COPPER, WORKSHOP], player.get_discard_pile())
+        self.assertTrue(self.hit_cleanup)
+
+    def test_workshop_doesnt_gain_if_supply_empty(self):
+        action_response_func = self.get_action_response_function(WORKSHOP, additional_parameters={"desired_card": MOAT} )
+        player = create_player_with_deck(action_response_func, 2, additional_hand_cards=[WORKSHOP])
+        self.empty_supply(MOAT)
         send_turn_request(player, self.supply)
         self.assertEquals([COPPER, COPPER, WORKSHOP], player.get_discard_pile())
         self.assertTrue(self.hit_cleanup)
@@ -628,10 +641,10 @@ class TestCommunicationFlow(unittest.TestCase):
     def create_militia_response_function(self, hand, discards, expected_number_to_discard):
         def respond(json_message):
             message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                self.assertEqual(expected_number_to_discard,message["discard"])
-                self.assertEquals(hand, message["options"])
-                return json.dumps({"type": "attack-reply", "discard": discards})
+            self.assertEquals("attack-request", message["type"])
+            self.assertEquals(expected_number_to_discard,message["discard"])
+            self.assertEquals(hand, message["options"])
+            return json.dumps({"type": "attack-reply", "discard": discards})
         return respond
 
     def test_can_play_militia(self):
@@ -723,7 +736,7 @@ class TestCommunicationFlow(unittest.TestCase):
 
     def test_can_play_militia_when_other_player_has_3_skips_request(self):
         def fail(json_message):
-                self.fail()
+            self.fail()
 
         player = create_player_with_deck(self.create_militia_action_function(), 4, additional_hand_cards=[MILITIA])
         other_player = create_player_with_deck(fail, 3)
@@ -736,12 +749,12 @@ class TestCommunicationFlow(unittest.TestCase):
     def create_moat_response_message(self, has_moat=True):
         def respond(json_message):
             message = json.loads(json_message)
-            if message["type"] == "attack-request":
-                expected_options = [COPPER,COPPER,COPPER, COPPER]
-                if has_moat:
-                    expected_options.append(MOAT)
-                self.assertEquals(expected_options, message["options"])
-                return json.dumps({"type": "attack-reply-reaction", "reaction": MOAT})
+            self.assertEquals("attack-request", message["type"])
+            expected_options = [COPPER,COPPER,COPPER, COPPER]
+            if has_moat:
+                expected_options.append(MOAT)
+            self.assertEquals(expected_options, message["options"])
+            return json.dumps({"type": "attack-reply-reaction", "reaction": MOAT})
         return respond
 
     def test_can_play_militia_can_be_blocked_by_moat(self):

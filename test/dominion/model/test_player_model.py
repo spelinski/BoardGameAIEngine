@@ -100,7 +100,7 @@ class TestPlayerModel(unittest.TestCase):
         self.assertEquals([1], self.player.get_hand())
 
     def test_discard_throws_exception_if_card_not_in_hand(self):
-        with self.assertRaises(CardNotInHandException):
+        with self.assertRaisesRegexp(CardNotInHandException, "4 is not in the hand"):
             self.player.discard(4)
 
         self.player.add_to_hand(5)
@@ -217,6 +217,22 @@ class TestPlayerModel(unittest.TestCase):
         self.assertTrue(mock_comm.hit_send)
         self.assertTrue(mock_comm.hit_respond)
 
+    def test_player_communication_close(self):
+        mock_comm = Mock()
+        mock_comm.hit_close = False
+
+        def close():
+            mock_comm.hit_close = True
+
+        mock_comm.close = close
+        self.player.close_communication()
+        self.assertFalse(mock_comm.hit_close)
+
+        self.player.set_communication(mock_comm)
+        self.player.close_communication()
+
+        self.assertTrue(mock_comm.hit_close)
+
     def test_player_communication_send_only(self):
         mock_comm = Mock()
         mock_comm.hit_send = False
@@ -227,15 +243,13 @@ class TestPlayerModel(unittest.TestCase):
             mock_comm.hit_send = True
 
         def get_response():
-            mock_comm.hit_respond = True
-            return ""
+            self.fail()
 
         mock_comm.send_message = send_message
         mock_comm.get_response = get_response
         self.player.set_communication(mock_comm)
         self.player.send_message("hello")
         self.assertTrue(mock_comm.hit_send)
-        self.assertFalse(mock_comm.hit_respond)
 
     def test_player_can_mark_turn_taken(self):
         self.assertEquals(0, self.player.get_number_of_turns_taken())
