@@ -39,11 +39,13 @@ Initial Messages
 
 {
   type: "game-info",
+  player_bot_names : [<bot1> <bot2> <bot3> <bot4>]
   kingdom_cards: [<card1> <card2> <card3> .. <card10>]
 }
   - This is to inform which kingdom cards are in the deck
   - <cardN> is the lower case identifier for the card
   - In version 1, the supported cards are: cellar, market, militia, mine, moat, remodel, smithy, village, woodcutter and workshop
+  - player_bot_names is a list of names of other bots
 
 
 Board Information Message
@@ -258,7 +260,7 @@ Action Requests
         additional_parameters =
            {
            }
-         - village gives the playe 1 card and 2 actions
+         - village gives the player 1 card and 2 actions
 
      - card = woodcutter
        additional_parameters =
@@ -273,3 +275,16 @@ Action Requests
            }
           - workshop lets a player gain a card costing up to 4
           - desired card must be a card in the supply costing up to 4, or else the action is consumed without effect
+
+Final Messages
+--------------
+
+When the game ends, the server will send out to every bot the following message:
+{
+  type: "game-end",
+  scores: [<score1> <score2> <score3> <score4>],
+  winners: [<winner1> .. <winnerN>]
+}
+
+<scoreN> is the score (from player1 to player4)
+<winnersN> is the winners (at least one player will be supplied)
