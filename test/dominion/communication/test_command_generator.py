@@ -40,6 +40,7 @@ class TestCommandGenerator(unittest.TestCase):
         self.assertEquals(3, message["player_number"])
 
     def test_game_info_mesasge(self):
-        message = self.generator.create_game_info_message([1,2,3,4,5,6])
+        message = self.generator.create_game_info_message(["a", "b"], [1,2,3,4,5,6])
         self.assertEquals("game-info", message["type"])
+        self.assertEquals(["a","b"], message["player_bot_names"])
         self.assertEquals([1,2,3,4,5,6], message["kingdom_cards"])
