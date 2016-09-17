@@ -118,8 +118,6 @@ class TestDominionEngine(unittest.TestCase):
         players = [player1, player2]
         engine = DominionEngine(players, FIRST_GAME)
         self.assertEquals([player1], engine.get_winners())
-        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player1.last_message)
-        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player2.last_message)
 
     def test_player_wins_with_less_turns_tiebreaker(self):
         player1 = create_player_that_responds_to_first_message()
@@ -139,3 +137,14 @@ class TestDominionEngine(unittest.TestCase):
         players = [player1, player2]
         engine = DominionEngine(players, FIRST_GAME)
         self.assertEquals([player1, player2], engine.get_winners())
+
+
+    def test_can_receive_game_end_message(self):
+        player1 = create_player_that_responds_to_first_message()
+        player2 = create_player_that_responds_to_first_message()
+        player1.add_to_hand(ESTATE)
+        players = [player1, player2]
+        engine = DominionEngine(players, FIRST_GAME)
+        engine.run_until_game_end()
+        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player1.last_message)
+        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player2.last_message)
