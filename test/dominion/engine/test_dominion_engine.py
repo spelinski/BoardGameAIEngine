@@ -11,7 +11,10 @@ def create_player_that_responds_to_first_message():
         return json.dumps( {"type": "player-name-reply", "player_number": message["player_number"],
                 "name" : "nothing-bot", "version": 1})
     player.send_message_and_await_response = send_message_and_await_response
-    player.send_message = lambda msg: None
+
+    def respond_message(json_message):
+        player.last_message = json.loads(json_message)
+    player.send_message = respond_message
     return player
 
 class TestDominionEngine(unittest.TestCase):
@@ -107,6 +110,16 @@ class TestDominionEngine(unittest.TestCase):
         players = [player1, player2]
         engine = DominionEngine(players, FIRST_GAME)
         self.assertEquals([player1], engine.get_winners())
+
+    def test_players_get_winning_hand(self):
+        player1 = create_player_that_responds_to_first_message()
+        player2 = create_player_that_responds_to_first_message()
+        player1.add_to_hand(ESTATE)
+        players = [player1, player2]
+        engine = DominionEngine(players, FIRST_GAME)
+        self.assertEquals([player1], engine.get_winners())
+        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player1.last_message)
+        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player2.last_message)
 
     def test_player_wins_with_less_turns_tiebreaker(self):
         player1 = create_player_that_responds_to_first_message()

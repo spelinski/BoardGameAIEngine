@@ -45,6 +45,7 @@ class DominionEngine(object):
                 #bot messed up, turn skipped
                 pass
             player.mark_turn_taken()
+        broadcast_message(self.players, CommandGenerator().create_game_end_message([p.get_score() for p in self.players], self.get_winners()))
 
     def is_game_over(self):
         return self.supply.get_number_of_empty_piles() >= 3 or self.supply.get_number_of_cards(Identifiers.PROVINCE) == 0
