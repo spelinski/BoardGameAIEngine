@@ -41,3 +41,10 @@ class CommandGenerator(object):
             "player_bot_names": player_names,
             "kingdom_cards" : kingdom_cards
         }
+
+    def create_game_end_message(self, scores, winners):
+        return {
+            "type" : "game-end",
+            "scores": scores,
+            "winners": winners
+        }
