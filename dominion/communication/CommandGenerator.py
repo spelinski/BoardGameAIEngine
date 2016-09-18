@@ -35,7 +35,42 @@ class CommandGenerator(object):
             "player_number": number
         }
 
-    def create_game_info_message(self, player_names, kingdom_cards):
+    def create_player_gained_message(self, number, cards):
+        return {
+            "type": "player-gained",
+            "player_number": number,
+            "gained": cards
+        }
+
+    def create_player_played_message(self, number, cards):
+        return {
+            "type": "player-played",
+            "player_number": number,
+            "played": cards
+        }
+
+    def create_player_trashed_message(self, number, cards):
+        return {
+            "type": "player-trashed",
+            "player_number": number,
+            "trashed": cards
+        }
+
+    def create_player_discard_message(self, number, card):
+        return {
+            "type": "player-top-discard",
+            "player_number": number,
+            "card": card
+        }
+
+    def create_player_reveal_message(self, number, cards):
+        return {
+            "type": "player-reveal",
+            "player_number": number,
+            "cards": cards
+        }
+
+    def create_game_info_message(self, kingdom_cards):
         return {
             "type": "game-info",
             "player_bot_names": player_names,
