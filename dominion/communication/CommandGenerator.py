@@ -55,7 +55,7 @@ class CommandGenerator(object):
             "player_number": number,
             "trashed": cards
         }
-    
+
     def create_player_discard_message(self, number, card):
         return {
             "type": "player-top-discard",
@@ -73,5 +73,13 @@ class CommandGenerator(object):
     def create_game_info_message(self, kingdom_cards):
         return {
             "type": "game-info",
+            "player_bot_names": player_names,
             "kingdom_cards" : kingdom_cards
+        }
+
+    def create_game_end_message(self, scores, winners):
+        return {
+            "type" : "game-end",
+            "scores": scores,
+            "winners": winners
         }
