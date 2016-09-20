@@ -31,8 +31,9 @@ class Player(object):
         self.listeners.append(listener)
         self.deck.add_shuffle_listener(listener)
 
-    def gain_card(self, card):
-        self.discard_pile.add(card)
+    def gain_cards(self, cards):
+        for card in cards: 
+            self.discard_pile.add(card)
 
     def get_discard_pile(self):
         return self.discard_pile.get_cards()
