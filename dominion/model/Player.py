@@ -1,5 +1,6 @@
 from mechanics.Deck import Deck
 from dominion.CardInfo import *
+from mechanics.Notification import *
 
 class Player(object):
 
@@ -34,6 +35,8 @@ class Player(object):
     def gain_cards(self, cards):
         for card in cards: 
             self.discard_pile.add(card)
+        for l in self.listeners:
+            l.notify(Notification("gained-cards", cards=cards))
 
     def get_discard_pile(self):
         return self.discard_pile.get_cards()

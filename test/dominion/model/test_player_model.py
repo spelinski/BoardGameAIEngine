@@ -276,7 +276,20 @@ class TestPlayerModel(unittest.TestCase):
             self.assertEquals("shuffle-deck", message.type)
             listener.hit_notify = True
         listener.notify = notify
+        self.player.gain_cards([Identifiers.COPPER])
+        self.player.add_event_listener(listener)
+        #self.player.gain_cards([Identifiers.COPPER])
+        self.player.draw_cards(1)
+        self.assertTrue(listener.hit_notify)
+
+    def test_player_can_get_notified_if_gains_cards(self):
+        listener = Mock()
+        listener.hit_notify = False
+        def notify(message):
+            self.assertEquals("gained-cards", message.type)
+            self.assertEquals([Identifiers.COPPER], message.cards)
+            listener.hit_notify = True
+        listener.notify = notify
         self.player.add_event_listener(listener)
         self.player.gain_cards([Identifiers.COPPER])
-        self.player.draw_cards(1)
         self.assertTrue(listener.hit_notify)
