@@ -53,7 +53,7 @@ class TestBoardLogic(unittest.TestCase):
     """
 
     def test_checkAllFlags_empty(self):
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         for flag in self.boardLogic.board.flags:
             self.assertEquals(flag.is_claimed(), False)
 
@@ -61,7 +61,7 @@ class TestBoardLogic(unittest.TestCase):
         self.addCard(0, Identifiers.NORTH, TroopCard(1, "blue"))
         self.addCard(0, Identifiers.NORTH, TroopCard(3, "green"))
         self.addCard(0, Identifiers.NORTH, TroopCard(5, "red"))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertNotEqual(self.boardLogic.board.flags[
                             0].claimed, Identifiers.NORTH)
         self.assertNotEqual(self.boardLogic.board.flags[
@@ -77,7 +77,7 @@ class TestBoardLogic(unittest.TestCase):
                 self.addCard(i, Identifiers.NORTH, TroopCard(8, colors))
                 self.addCard(i, Identifiers.NORTH, TroopCard(9, colors))
                 self.addCard(i, Identifiers.NORTH, TroopCard(10, colors))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertEqual(self.boardLogic.board.flags[
                          i].claimed, Identifiers.NORTH)
 
@@ -88,7 +88,7 @@ class TestBoardLogic(unittest.TestCase):
                      TroopCard(9, Identifiers.COLORS[0]))
         self.addCard(0, Identifiers.NORTH,
                      TroopCard(10, Identifiers.COLORS[0]))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertEqual(self.boardLogic.board.flags[
                          0].claimed, Identifiers.NORTH)
 
@@ -106,7 +106,7 @@ class TestBoardLogic(unittest.TestCase):
         self.addCard(0, Identifiers.SOUTH, TroopCard(2, 'blue'))
 
         self.addCard(0, Identifiers.NORTH, TroopCard(8, 'blue'))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         with self.assertRaisesRegexp(FlagAlreadyClaimedError, "south is attempting to place card on already claimed flag."):
             self.addCard(0, Identifiers.SOUTH, TroopCard(3, 'blue'))
         self.assertEqual(self.boardLogic.board.flags[
@@ -121,7 +121,11 @@ class TestBoardLogic(unittest.TestCase):
 
         self.addCard(1, Identifiers.SOUTH, TroopCard(3, 'red'))
         self.addCard(1, Identifiers.NORTH, TroopCard(8, 'red'))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.SOUTH)
+        self.assertEqual(self.boardLogic.board.flags[
+                         0].claimed, Identifiers.NORTH)
+
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertEqual(self.boardLogic.board.flags[
                          1].claimed, Identifiers.NORTH)
 
@@ -136,7 +140,7 @@ class TestBoardLogic(unittest.TestCase):
 
         self.addCard(8, Identifiers.NORTH, TroopCard(5, 'blue'))
         self.addCard(2, Identifiers.SOUTH, TroopCard(3, 'green'))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.SOUTH)
         self.assertEqual(self.boardLogic.board.flags[
                          2].claimed, Identifiers.SOUTH)
 
@@ -155,7 +159,7 @@ class TestBoardLogic(unittest.TestCase):
 
         self.addCard(4, Identifiers.NORTH, TroopCard(5, 'yellow'))
         self.addCard(4, Identifiers.SOUTH, TroopCard(5, 'purple'))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertEqual(self.boardLogic.board.flags[
                          4].claimed, Identifiers.NORTH)
 
@@ -168,7 +172,7 @@ class TestBoardLogic(unittest.TestCase):
 
         self.addCard(5, Identifiers.SOUTH, TroopCard(1, 'purple'))
         self.addCard(5, Identifiers.NORTH, TroopCard(1, 'yellow'))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.SOUTH)
         self.assertEqual(self.boardLogic.board.flags[
                          5].claimed, Identifiers.SOUTH)
 
@@ -178,7 +182,7 @@ class TestBoardLogic(unittest.TestCase):
 
         self.boardLogic.board.get_flag(1).sides[Identifiers.NORTH] = [TroopCard(
             1, "color1"), TroopCard(2, "color1"), TroopCard(3, "color1")]
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertFalse(
             self.boardLogic.is_flag_playable(0, Identifiers.NORTH))
         self.assertTrue(self.boardLogic.is_flag_playable(0, Identifiers.SOUTH))
@@ -196,20 +200,20 @@ class TestBoardLogic(unittest.TestCase):
         # 3 adjacent flags.
         for flag, colorId in zip([1, 2, 3], range(0, 3)):
             for cardValue in range(8, 11):
-                self.boardLogic.checkAllFlags()
+                self.boardLogic.checkAllFlags(Identifiers.NORTH)
                 self.assertIsNone(self.boardLogic.winner)
                 self.boardLogic.addCard(
                     flag, Identifiers.NORTH, TroopCard(cardValue, Identifiers.COLORS[colorId]))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertEqual(self.boardLogic.winner, Identifiers.NORTH)
 
     def test_check_envelopment(self):
         # 5 flags.
         for flag, colorId in zip([1, 2, 4, 5, 7], range(0, 5)):
             for cardValue in range(8, 11):
-                self.boardLogic.checkAllFlags()
+                self.boardLogic.checkAllFlags(Identifiers.NORTH)
                 self.assertIsNone(self.boardLogic.winner)
                 self.boardLogic.addCard(
                     flag, Identifiers.NORTH, TroopCard(cardValue, Identifiers.COLORS[colorId]))
-        self.boardLogic.checkAllFlags()
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
         self.assertEqual(self.boardLogic.winner, Identifiers.NORTH)

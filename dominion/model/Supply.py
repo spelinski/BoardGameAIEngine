@@ -16,13 +16,10 @@ class Supply(object):
         self.supply = self.__create_supply(number_of_players, set)
 
     def __create_supply(self, number_of_players, set):
-        kingdom_cards = [Identifiers.CELLAR, Identifiers.MARKET, Identifiers.MILITIA, Identifiers.MINE, Identifiers.MOAT,
-                         Identifiers.REMODEL, Identifiers.SMITHY, Identifiers.VILLAGE, Identifiers.WOODCUTTER, Identifiers.WORKSHOP]
-        other_supply_cards = [Identifiers.COPPER, Identifiers.SILVER, Identifiers.GOLD,
-                              Identifiers.ESTATE, Identifiers.DUCHY, Identifiers.PROVINCE,
-                              Identifiers.CURSE]
-        cards = kingdom_cards + other_supply_cards
+        self.kingdom_cards = Identifiers.FIRST_GAME_ACTION_CARDS
+        cards = Identifiers.ALL_FIRST_GAME_CARDS
         return  {card: self.__get_initial_number_of_cards(card, number_of_players) for card in cards}
+
 
     def __get_initial_number_of_cards(self, card, number_of_players):
         if is_victory_card(card):
@@ -70,6 +67,20 @@ class Supply(object):
         @return the number of empty piles in the supply
         """
         return len([key for key,value in self.supply.items() if value == 0])
+
+    def get_cards(self):
+        return list(self.supply)
+
+    def get_kingdom_cards(self):
+        return self.kingdom_cards
+
+    def filter(self, filter_funcs):
+        supply_dict = self.supply
+        for filter_func in filter_funcs:
+            supply_dict = {k:v for k,v in supply_dict.items() if filter_func(k,v)}
+        new_supply = Supply(2, Identifiers.FIRST_GAME)
+        new_supply.supply = supply_dict
+        return new_supply
 
 class CardNotInSupplyException(Exception):
 

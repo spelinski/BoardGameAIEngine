@@ -1,21 +1,54 @@
 import argparse
 import sys
+from dominion import Identifiers
 from dominion.engine.DominionEngine import DominionEngine
+from communication.DirectInvocationCommunication import *
+from communication.PlayerCommunication import PlayerCommunication
+from dominion.starterbot.starter_bot import *
+from dominion.interactivebot.interactivebot import *
+from dominion.model.Player import *
 
 def main():
     args = _get_args()
+    player1 = get_player(args.player1_cmd, args.player1_workdir,1)
+    player2 = get_player(args.player2_cmd, args.player2_workdir,2)
+    players = [player1, player2]
+    if int(args.num_players) == 3 or int(args.num_players) == 4:
+        players.append(get_player(args.player3_cmd, args.player3_workdir,3))
+    if int(args.num_players) == 4:
+        players.append(get_player(args.player4_cmd, args.player4_workdir,4))
     try:
-        engine = DominionEngine()
-        engine.initialize()
+        engine = DominionEngine(players, Identifiers.FIRST_GAME)
         engine.run_until_game_end()
+        print "Scores were: "
+        for index, player in enumerate(players, start=1):
+            print "Player {} : Score: {} Turns Taken: {}".format(player.name, player.get_score(), player.get_number_of_turns_taken())
+        print "Winners are: "
+        for winner in engine.get_winners():
+            print "Winner: " + winner.name
     except:
         raise
     finally:
-        pass
+        for player in players:
+            player.close_communication()
 
+def get_player(cmd, workdir, num):
+    player = Player()
+    if cmd == "starter_bot":
+        starter_bot = StarterBot()
+        comm = DirectInvocationCommunication(lambda msg: starter_bot.send_message(msg), lambda: starter_bot.get_response())
+        player.set_communication(comm)
+    elif cmd == "interactive":
+        bot = InteractiveBot(num)
+        comm = DirectInvocationCommunication(lambda msg: bot.send_message(msg), lambda: bot.get_response())
+        player.set_communication(comm)
+    else:
+        comm = PlayerCommunication(cmd, workdir)
+        player.set_communication(comm)
+    return player
 
 def _get_args():
-    default_bot = "{} {}".format(sys.executable, "runStarterBot.py")
+    default_bot = "starter_bot"
     parser = argparse.ArgumentParser(
         description="Run a Battleline Engine with two bots")
     parser.add_argument(

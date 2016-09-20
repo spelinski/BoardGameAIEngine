@@ -1,5 +1,5 @@
 from random import shuffle
-
+from Notification import *
 class Deck(object):
     """
     A Deck is modeled as an infinite generator that  begins
@@ -20,12 +20,19 @@ class Deck(object):
             raise TypeError
         #need a new copy of a list if not valid
         self.deck = listOfCards if listOfCards else []
+        self.listeners = []
         if shuffleDeck:
             self.shuffle()
         self.replenisher = None
 
+
     def shuffle(self):
         shuffle(self.deck)
+        for l in self.listeners:
+            l.notify(Notification("shuffle-deck"))
+
+    def add_shuffle_listener(self, listener):
+        self.listeners.append(listener)
 
     def is_empty(self):
         return self.deck == []
@@ -41,7 +48,7 @@ class Deck(object):
         """
         Get a list  (copy) of cards in the deck
         """
-        return [card for card in self.deck]
+        return list(self.deck)
 
     def draw(self):
         """providing a better named function for decks"""

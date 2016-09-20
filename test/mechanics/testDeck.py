@@ -1,6 +1,6 @@
 import unittest
 from mechanics.Deck import Deck
-
+from mock import Mock
 
 class TestDeck(unittest.TestCase):
 
@@ -73,9 +73,22 @@ class TestDeck(unittest.TestCase):
         self.assertEqual(2, deck.draw())
         self.assertEqual(1, deck.draw())
 
+
     def test_getting_cards_returns_copy(self):
         deck = Deck([1,2,3], shuffleDeck=False)
         cards = deck.get_cards()
         self.assertEquals([1,2,3], cards)
         deck.draw()
         self.assertEquals([1,2,3], cards)
+
+    def test_notification_of_shuffle(self):
+        deck = Deck([1,2], shuffleDeck = False)
+        listener = Mock()
+        listener.hit_function = False
+        def notify(notification):
+            self.assertEquals(notification.type, "shuffle-deck")
+            listener.hit_function = True
+        listener.notify = notify
+        deck.add_shuffle_listener(listener)
+        deck.shuffle()
+        self.assertTrue(listener.hit_function)

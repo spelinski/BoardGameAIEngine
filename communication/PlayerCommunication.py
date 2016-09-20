@@ -3,10 +3,10 @@ Created on Sep 23, 2015
 
 @author: rohk
 '''
-import subprocess
 from subprocess import Popen, PIPE
-import threading
+import platform
 import shlex
+import threading
 import time
 
 
@@ -15,14 +15,15 @@ class PlayerCommunication(object):
     Class to communicate back and forth with an external program
     """
 
-    def __init__(self, program, workdir=None):
+    def __init__(self, program, workdir=None, debugFile=None):
         """
         Constructor
         @param programWithPath relative path to executable
         """
-        shell_command = shlex.split(program)
+        shell_command = shlex.split(program, posix=platform.system() != "Windows")
         self.runningPlayer = Popen(
             shell_command, cwd=workdir, stdin=PIPE, stdout=PIPE)
+        self.debugFile = debugFile
 
     def send_message(self, message):
         """
@@ -32,6 +33,7 @@ class PlayerCommunication(object):
         if self.runningPlayer.poll() is None:
             self.runningPlayer.stdin.write(message + "\n")
             self.runningPlayer.stdin.flush()
+            self.log(message)
         else:
             raise BotCommunicationError("not running, cannot send message")
 
@@ -51,6 +53,7 @@ class PlayerCommunication(object):
                 raise self.exceptionFromThread
             if thread.is_alive():
                 raise BotCommunicationError("timeout")
+            self.log(self.response)
             return self.response
         else:
             raise BotCommunicationError("not running, cannot get response")
@@ -69,6 +72,8 @@ class PlayerCommunication(object):
         """
         kill the external process
         """
+        if self.debugFile:
+            self.debugFile.close()
         if not self.polite_close():
             self.brutal_close()
 
@@ -88,6 +93,11 @@ class PlayerCommunication(object):
     def brutal_close(self):
         self.runningPlayer.kill()
         self.runningPlayer.wait()
+
+    def log(self, message):
+        if self.debugFile:
+            self.debugFile.write(message+"\n")
+            self.debugFile.flush()
 
 
 class BotCommunicationError(Exception):

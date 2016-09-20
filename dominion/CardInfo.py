@@ -1,27 +1,56 @@
-from dominion import Identifiers
+from dominion.Identifiers import *
 
 def is_victory_card(card):
-    return card in [Identifiers.ESTATE, Identifiers.DUCHY, Identifiers.PROVINCE]
+    return card in VICTORY_CARDS
+
+def is_treasure(card):
+    return card in TREASURE_CARDS
+
+def is_action_card(card):
+    return card in ALL_ACTION_CARDS
 
 def get_victory_points(card):
-    if card == Identifiers.ESTATE: return 1
-    if card == Identifiers.DUCHY: return 3
-    if card == Identifiers.PROVINCE: return 6
-    if card == Identifiers.CURSE: return -1
+    if card == ESTATE: return 1
+    if card == DUCHY: return 3
+    if card == PROVINCE: return 6
+    if card == CURSE: return -1
     return 0
 
 def get_worth(card):
-    if card == Identifiers.COPPER: return 1
-    if card == Identifiers.SILVER: return 2
-    if card == Identifiers.GOLD: return 3
+    if card == COPPER: return 1
+    if card == SILVER: return 2
+    if card == GOLD: return 3
     return 0
 
 def get_cost(card):
-    if card in [Identifiers.CURSE, Identifiers.COPPER]: return 0
-    if card in [Identifiers.MOAT, Identifiers.CELLAR, Identifiers.ESTATE]: return 2
-    if card in [Identifiers.SILVER, Identifiers.VILLAGE, Identifiers.WOODCUTTER, Identifiers.WORKSHOP] : return 3
-    if card in [Identifiers.REMODEL, Identifiers.SMITHY, Identifiers.MILITIA] : return 4
-    if card in [Identifiers.MINE, Identifiers.MARKET, Identifiers.DUCHY] : return 5
-    if card in [Identifiers.GOLD]: return 6
-    if card in [Identifiers.PROVINCE] : return 8
+    if card in [CURSE, COPPER]: return 0
+    if card in [MOAT, CELLAR, ESTATE]: return 2
+    if card in [SILVER, VILLAGE, WOODCUTTER, WORKSHOP] : return 3
+    if card in [REMODEL, SMITHY, MILITIA] : return 4
+    if card in [MINE, MARKET, DUCHY] : return 5
+    if card in [GOLD]: return 6
+    if card in [PROVINCE] : return 8
     raise ValueError("card not recognized")
+
+def get_extra_actions(card):
+    if card == VILLAGE: return 2
+    if card in [CELLAR, MARKET]: return 1
+    return 0
+
+def get_extra_buys(card):
+    if card == MARKET: return 1
+    if card == WOODCUTTER: return 1
+    return 0
+
+def get_extra_cards(card):
+    if card == MARKET: return 1
+    if card == SMITHY: return 3
+    if card == VILLAGE: return 1
+    if card == MOAT: return 2
+    return 0
+
+def get_extra_treasure(card):
+    if card == MARKET: return 1
+    if card == MILITIA: return 2
+    if card == WOODCUTTER: return 2
+    return 0
