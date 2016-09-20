@@ -16,7 +16,7 @@ class DominionEngine(object):
             except:
                 raise Exception("Player {} did not respond correctly".format(number))
             self.deal_starting_cards(player)
-        broadcast_message(players, CommandGenerator().create_game_info_message(self.supply.get_kingdom_cards()))
+        broadcast_message(players, CommandGenerator().create_game_info_message([p.name for p in players], self.supply.get_kingdom_cards()))
 
     def deal_starting_cards(self, player):
         for _ in range(3):
@@ -45,6 +45,9 @@ class DominionEngine(object):
                 #bot messed up, turn skipped
                 pass
             player.mark_turn_taken()
+        scores = [p.get_score() for p in self.players]
+        winners = ["player{}".format(i) for i,p in enumerate(self.players, start=1) if p in self.get_winners()]
+        broadcast_message(self.players, CommandGenerator().create_game_end_message(scores, winners))
 
     def is_game_over(self):
         return self.supply.get_number_of_empty_piles() >= 3 or self.supply.get_number_of_cards(Identifiers.PROVINCE) == 0

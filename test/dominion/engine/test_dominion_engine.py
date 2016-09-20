@@ -11,7 +11,10 @@ def create_player_that_responds_to_first_message():
         return json.dumps( {"type": "player-name-reply", "player_number": message["player_number"],
                 "name" : "nothing-bot", "version": 1})
     player.send_message_and_await_response = send_message_and_await_response
-    player.send_message = lambda msg: None
+
+    def respond_message(json_message):
+        player.last_message = json.loads(json_message)
+    player.send_message = respond_message
     return player
 
 class TestDominionEngine(unittest.TestCase):
@@ -44,26 +47,33 @@ class TestDominionEngine(unittest.TestCase):
         self.assertEquals(3, player.get_score())
         self.assertEquals(500, player.get_number_of_turns_taken())
 
-    def test_player_sees_kingdom_cards(self):
+    def create_game_info_player(self, number):
         player = Player()
         player.hit_game_info = False
         def send_message_and_await_response(json_message):
             message = json.loads(json_message)
             if message["type"] == "player-name-request":
                  return json.dumps( {"type": "player-name-reply", "player_number": message["player_number"],
-                        "name" : "nothing-bot", "version": 1})
+                        "name" : "nothing-bot{}".format(number), "version": 1})
             elif message["type"] == "game-info":
+                self.assertEquals(["nothing-bot1", "nothing-bot2"], message["player_bot_names"])
                 self.assertEquals([CELLAR, MARKET, MILITIA, MINE, MOAT, REMODEL, SMITHY, VILLAGE, WOODCUTTER, WORKSHOP], message["kingdom_cards"])
                 player.hit_game_info = True
             else:
                 return json.dumps({"type": "play-reply", "phase": "cleanup"})
         player.send_message_and_await_response = send_message_and_await_response
         player.send_message = send_message_and_await_response
+        return player
 
-        players = [player]
+    def test_player_sees_kingdom_cards(self):
+
+        player1 = self.create_game_info_player(1)
+        player2 = self.create_game_info_player(2)
+        players = [player1, player2]
         engine = DominionEngine(players, FIRST_GAME)
 
-        self.assertTrue(player.hit_game_info)
+        self.assertTrue(player1.hit_game_info)
+        self.assertTrue(player2.hit_game_info)
 
     def test_game_ends_if_invalid_messages(self):
         player = Player()
@@ -101,6 +111,14 @@ class TestDominionEngine(unittest.TestCase):
         engine = DominionEngine(players, FIRST_GAME)
         self.assertEquals([player1], engine.get_winners())
 
+    def test_players_get_winning_hand(self):
+        player1 = create_player_that_responds_to_first_message()
+        player2 = create_player_that_responds_to_first_message()
+        player1.add_to_hand(ESTATE)
+        players = [player1, player2]
+        engine = DominionEngine(players, FIRST_GAME)
+        self.assertEquals([player1], engine.get_winners())
+
     def test_player_wins_with_less_turns_tiebreaker(self):
         player1 = create_player_that_responds_to_first_message()
         player2 = create_player_that_responds_to_first_message()
@@ -119,3 +137,14 @@ class TestDominionEngine(unittest.TestCase):
         players = [player1, player2]
         engine = DominionEngine(players, FIRST_GAME)
         self.assertEquals([player1, player2], engine.get_winners())
+
+
+    def test_can_receive_game_end_message(self):
+        player1 = create_player_that_responds_to_first_message()
+        player2 = create_player_that_responds_to_first_message()
+        player1.add_to_hand(ESTATE)
+        players = [player1, player2]
+        engine = DominionEngine(players, FIRST_GAME)
+        engine.run_until_game_end()
+        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player1.last_message)
+        self.assertEquals({"type": "game-end", "winners": ["player1"], "scores": [4,3]}, player2.last_message)
