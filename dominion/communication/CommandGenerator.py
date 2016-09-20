@@ -70,7 +70,7 @@ class CommandGenerator(object):
             "cards": cards
         }
 
-    def create_game_info_message(self, kingdom_cards):
+    def create_game_info_message(self, player_names, kingdom_cards):
         return {
             "type": "game-info",
             "player_bot_names": player_names,
