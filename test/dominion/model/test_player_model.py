@@ -278,7 +278,6 @@ class TestPlayerModel(unittest.TestCase):
         listener.notify = notify
         self.player.gain_cards([Identifiers.COPPER])
         self.player.add_event_listener(listener)
-        #self.player.gain_cards([Identifiers.COPPER])
         self.player.draw_cards(1)
         self.assertTrue(listener.hit_notify)
 
