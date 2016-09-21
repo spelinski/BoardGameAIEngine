@@ -23,6 +23,11 @@ class TestEventListener(unittest.TestCase):
         for player in self.players:
             self.assertEquals({"type": "player-shuffled", "player_number": 1}, player.received_message)
 
+    def test_can_respond_to_gained(self):
+        self.listener.notify(Notification("gained-cards", cards=range(3)))
+        for player in self.players:
+            self.assertEquals({"type": "player-gained", "player_number": 1, "gained": range(3)}, player.received_message)
+
     def test_wrong_notification_doesnt_get_sent(self):
         self.listener.notify(Notification(""))
         for player in self.players:

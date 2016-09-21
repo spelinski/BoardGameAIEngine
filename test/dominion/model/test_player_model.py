@@ -9,18 +9,20 @@ class TestPlayerModel(unittest.TestCase):
         self.player = Player()
 
     def gain_cards(self, num_to_gain):
-        for x in range(num_to_gain):
-            self.player.gain_card(x)
+        self.player.gain_cards(range(num_to_gain))
 
     def test_player_discard_pile_is_empty_by_default(self):
         self.assertEquals([], self.player.get_discard_pile())
 
     def test_player_can_gain_cards(self):
-        self.player.gain_card(1)
+        self.player.gain_cards([1])
         self.assertEquals([1], self.player.get_discard_pile())
 
-        self.player.gain_card(2)
+        self.player.gain_cards([2])
         self.assertEquals([1,2], self.player.get_discard_pile())
+
+        self.player.gain_cards([3,4])
+        self.assertEquals([1,2,3,4], self.player.get_discard_pile())
 
     def test_players_hand_is_empty_by_default(self):
         self.assertEquals([], self.player.get_hand())
@@ -28,10 +30,10 @@ class TestPlayerModel(unittest.TestCase):
     def test_can_get_top_discard_card(self):
         self.assertIsNone(self.player.get_top_discard_card())
 
-        self.player.gain_card(1)
+        self.player.gain_cards([1])
         self.assertEquals(1, self.player.get_top_discard_card())
 
-        self.player.gain_card(2)
+        self.player.gain_cards([2])
         self.assertEquals(2, self.player.get_top_discard_card())
 
 
@@ -67,7 +69,7 @@ class TestPlayerModel(unittest.TestCase):
         self.player.draw_cards(5)
 
         for turn in xrange(10, 20):
-            self.player.gain_card(turn)
+            self.player.gain_cards([turn])
             self.player.cleanup()
             self.player.draw_cards(5)
 
@@ -124,7 +126,7 @@ class TestPlayerModel(unittest.TestCase):
 
     def test_can_put_on_top_of_deck(self):
         for _ in range(10):
-            self.player.gain_card("copper")
+            self.player.gain_cards(["copper"])
         self.player.draw_cards(5)
         self.player.put_card_on_top_of_deck("silver")
         self.player.draw_cards(1)
@@ -262,7 +264,7 @@ class TestPlayerModel(unittest.TestCase):
         self.assertEquals(0, self.player.get_score())
         self.player.add_to_hand(Identifiers.ESTATE)
         self.assertEquals(1, self.player.get_score())
-        self.player.gain_card(Identifiers.PROVINCE)
+        self.player.gain_cards([Identifiers.PROVINCE])
         self.assertEquals(7, self.player.get_score())
         self.player.put_card_on_top_of_deck(Identifiers.DUCHY)
         self.assertEquals(10, self.player.get_score())
@@ -274,7 +276,19 @@ class TestPlayerModel(unittest.TestCase):
             self.assertEquals("shuffle-deck", message.type)
             listener.hit_notify = True
         listener.notify = notify
+        self.player.gain_cards([Identifiers.COPPER])
         self.player.add_event_listener(listener)
-        self.player.gain_card(Identifiers.COPPER)
         self.player.draw_cards(1)
+        self.assertTrue(listener.hit_notify)
+
+    def test_player_can_get_notified_if_gains_cards(self):
+        listener = Mock()
+        listener.hit_notify = False
+        def notify(message):
+            self.assertEquals("gained-cards", message.type)
+            self.assertEquals([Identifiers.COPPER], message.cards)
+            listener.hit_notify = True
+        listener.notify = notify
+        self.player.add_event_listener(listener)
+        self.player.gain_cards([Identifiers.COPPER])
         self.assertTrue(listener.hit_notify)
