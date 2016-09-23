@@ -292,3 +292,40 @@ class TestPlayerModel(unittest.TestCase):
         self.player.add_event_listener(listener)
         self.player.gain_cards([Identifiers.COPPER])
         self.assertTrue(listener.hit_notify)
+
+    def test_player_can_get_notified_if_cleanup(self):
+        listener = Mock()
+        listener.hit_notify = False
+        top_discard = Identifiers.CURSE
+        hand_list = [Identifiers.CURSE] * 3
+        played_list = [Identifiers.COPPER] * 3
+        def notify(message):
+            self.assertIn(message.type, ("discard-card", "played-cards"))
+            if getattr(message, 'card', False):
+                self.assertEquals(top_discard, message.card)
+            if getattr(message, 'cards', False):
+                self.assertEquals(played_list, message.cards)
+            listener.hit_notify = True
+        listener.notify = notify
+        self.player.add_event_listener(listener)
+        self.player.hand = hand_list
+        self.player.played = played_list
+        self.player.cleanup(top_discard)
+        self.assertTrue(listener.hit_notify)
+
+    def test_notification_picks_card_if_no_top_discard(self):
+        listener = Mock()
+        listener.hit_notify = False
+        hand_list = [Identifiers.CURSE] * 3
+        played_list = [Identifiers.COPPER] * 3
+        def notify(message):
+            self.assertIn(message.type, ("discard-card", "played-cards"))
+            if getattr(message, 'card', False):
+                self.assertIn(message.card, hand_list+played_list)
+            listener.hit_notify = True
+        listener.notify = notify
+        self.player.add_event_listener(listener)
+        self.player.hand = hand_list
+        self.player.played = played_list
+        self.player.cleanup()
+        self.assertTrue(listener.hit_notify)
