@@ -67,9 +67,7 @@ class Player(object):
         return self.hand+self.played
 
     def cleanup(self, top_discard = ""):
-        discard_choice = top_discard if top_discard else self.__get_cards_to_discard()[0]
         for l in self.listeners:
-            l.notify(Notification("discard-card", card = discard_choice))
             l.notify(Notification("played-cards", cards = self.played))
 
         for card in self.__get_cards_to_discard():
@@ -77,6 +75,9 @@ class Player(object):
                 self.discard(card)
         for card in self.__get_cards_to_discard():
             self.discard(card)
+
+        for l in self.listeners:
+            l.notify(Notification("discard-card", card = self.get_top_discard_card()))
 
         assert self.hand == []
         assert self.played == []
