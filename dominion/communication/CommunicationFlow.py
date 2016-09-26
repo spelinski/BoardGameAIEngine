@@ -164,7 +164,7 @@ def __send_discard_request(player, num_to_discard):
     try:
         response = __get_json_message(json_response)
         if __is_valid_moat_response(response, player):
-            player.reveal(response.get("reaction", ""))
+            player.reveal(MOAT)
             return
         __assert_message_type_is_correct(response, "attack-reply")
         __assert_field_is_correct(response, "discard", lambda d: type(d) == list and len(d) == num_to_discard and all(discard in player.get_hand() for discard in d ), "Invalid discards")
