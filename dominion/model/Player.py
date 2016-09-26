@@ -122,6 +122,10 @@ class Player(object):
         all_cards = self.get_hand() + self.get_deck_cards() + self.get_discard_pile()
         return sum([get_victory_points(card) for card in all_cards])
 
+    def reveal_notify(self, cards):
+        for l in self.listeners:
+            l.notify(Notification("revealed-cards", cards = cards))
+
 
 class CardNotInHandException(Exception):
 

@@ -326,3 +326,16 @@ class TestPlayerModel(unittest.TestCase):
         self.player.add_event_listener(listener)
         self.player.trash(card_list)
         self.assertTrue(listener.hit_notify)
+
+    def test_player_can_get_notified_if_reveals_cards(self):
+        listener = Mock()
+        listener.hit_notify = False
+        def notify(message):
+            self.assertEquals("revealed-cards", message.type)
+            self.assertEquals([Identifiers.MOAT], message.cards)
+            listener.hit_notify = True
+        listener.notify = notify
+        self.player.hand = [Identifiers.MOAT]
+        self.player.add_event_listener(listener)
+        self.player.reveal_notify([Identifiers.MOAT])
+        self.assertTrue(listener.hit_notify)
