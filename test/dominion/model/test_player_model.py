@@ -112,17 +112,17 @@ class TestPlayerModel(unittest.TestCase):
     def test_trashing_card_from_hand(self):
         self.player.add_to_hand(2)
         self.player.add_to_hand(3)
-        self.player.trash(2)
+        self.player.trash([2])
         self.assertEquals([], self.player.get_discard_pile())
         self.assertEquals([3], self.player.get_hand())
 
     def test_trash_throws_exception_if_card_not_in_hand(self):
         with self.assertRaises(CardNotInHandException):
-            self.player.trash(4)
+            self.player.trash([4])
 
         self.player.add_to_hand(5)
         with self.assertRaises(CardNotInHandException):
-            self.player.trash(4)
+            self.player.trash([4])
 
     def test_can_put_on_top_of_deck(self):
         for _ in range(10):
@@ -311,4 +311,18 @@ class TestPlayerModel(unittest.TestCase):
         self.player.hand = hand_list
         self.player.played = played_list
         self.player.cleanup(top_discard)
+        self.assertTrue(listener.hit_notify)
+
+    def test_player_can_get_notified_if_trashes_cards(self):
+        listener = Mock()
+        listener.hit_notify = False
+        card_list = [Identifiers.COPPER, Identifiers.CURSE]
+        def notify(message):
+            self.assertEquals("trashed-cards", message.type)
+            self.assertEquals(card_list, message.cards)
+            listener.hit_notify = True
+        listener.notify = notify
+        self.player.hand = card_list
+        self.player.add_event_listener(listener)
+        self.player.trash(card_list)
         self.assertTrue(listener.hit_notify)
