@@ -337,5 +337,5 @@ class TestPlayerModel(unittest.TestCase):
         listener.notify = notify
         self.player.hand = [Identifiers.MOAT]
         self.player.add_event_listener(listener)
-        self.player.reveal_notify([Identifiers.MOAT])
+        self.player.reveal([Identifiers.MOAT])
         self.assertTrue(listener.hit_notify)
