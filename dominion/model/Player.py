@@ -69,16 +69,13 @@ class Player(object):
     def cleanup(self, top_discard = ""):
         for l in self.listeners:
             l.notify(Notification("played-cards", cards = self.played))
-
         for card in self.__get_cards_to_discard():
             if card != top_discard:
                 self.discard(card)
         for card in self.__get_cards_to_discard():
             self.discard(card)
-
         for l in self.listeners:
             l.notify(Notification("discard-card", card = self.get_top_discard_card()))
-
         assert self.hand == []
         assert self.played == []
 
@@ -98,11 +95,13 @@ class Player(object):
     def is_in_hand(self, card):
         return card in self.hand
 
-
-    def trash(self, card):
-        if not self.is_in_hand(card):
-            raise CardNotInHandException(card)
-        self.hand.remove(card)
+    def trash(self, cards):
+        for card in cards:
+            if not self.is_in_hand(card):
+                raise CardNotInHandException(card)
+            self.hand.remove(card)
+        for l in self.listeners:
+            l.notify(Notification("trashed-cards", cards = cards))
 
     def play_card(self, card):
         if card not in self.hand:
@@ -122,6 +121,10 @@ class Player(object):
     def get_score(self):
         all_cards = self.get_hand() + self.get_deck_cards() + self.get_discard_pile()
         return sum([get_victory_points(card) for card in all_cards])
+
+    def reveal(self, cards):
+        for l in self.listeners:
+            l.notify(Notification("revealed-cards", cards = cards))
 
 
 class CardNotInHandException(Exception):

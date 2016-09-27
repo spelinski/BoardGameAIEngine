@@ -140,14 +140,14 @@ def __process_action(player, supply, actions, buys, extra_money, card, parameter
                 break
             __send_discard_request(other_player, num_to_discard)
     elif card == MINE:
-        player.trash(parameters["card_to_trash"])
+        player.trash([parameters["card_to_trash"]])
         desired_card = parameters["desired_card"]
         if desired_card:
             supply.take(desired_card)
             gained_cards.append(desired_card)
             player.add_to_hand(desired_card)
     elif card == REMODEL:
-        player.trash(parameters["card_to_trash"])
+        player.trash([parameters["card_to_trash"]])
         take_from_supply(parameters["desired_card"])
     elif card == WORKSHOP:
         take_from_supply(parameters["desired_card"])
@@ -164,6 +164,7 @@ def __send_discard_request(player, num_to_discard):
     try:
         response = __get_json_message(json_response)
         if __is_valid_moat_response(response, player):
+            player.reveal(MOAT)
             return
         __assert_message_type_is_correct(response, "attack-reply")
         __assert_field_is_correct(response, "discard", lambda d: type(d) == list and len(d) == num_to_discard and all(discard in player.get_hand() for discard in d ), "Invalid discards")
