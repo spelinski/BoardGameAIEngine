@@ -21,10 +21,10 @@ class DominionEngine(object):
     def deal_starting_cards(self, player):
         for _ in range(3):
             self.supply.take(ESTATE)
-            player.gain_card(ESTATE)
+            player.gain_cards([ESTATE])
         for _ in range(7):
             self.supply.take(COPPER)
-            player.gain_card(COPPER)
+            player.gain_cards([COPPER])
         player.draw_cards(5)
 
     def set_up_listeners(self):

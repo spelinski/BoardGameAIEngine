@@ -1,5 +1,6 @@
 from random import shuffle
 from Notification import *
+
 class Deck(object):
     """
     A Deck is modeled as an infinite generator that  begins

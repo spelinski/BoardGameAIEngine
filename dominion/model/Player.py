@@ -1,5 +1,6 @@
 from mechanics.Deck import Deck
 from dominion.CardInfo import *
+from mechanics.Notification import *
 
 class Player(object):
 
@@ -31,8 +32,11 @@ class Player(object):
         self.listeners.append(listener)
         self.deck.add_shuffle_listener(listener)
 
-    def gain_card(self, card):
-        self.discard_pile.add(card)
+    def gain_cards(self, cards):
+        for card in cards: 
+            self.discard_pile.add(card)
+        for l in self.listeners:
+            l.notify(Notification("gained-cards", cards = cards))
 
     def get_discard_pile(self):
         return self.discard_pile.get_cards()
@@ -63,11 +67,18 @@ class Player(object):
         return self.hand+self.played
 
     def cleanup(self, top_discard = ""):
+        for l in self.listeners:
+            l.notify(Notification("played-cards", cards = self.played))
+
         for card in self.__get_cards_to_discard():
             if card != top_discard:
                 self.discard(card)
         for card in self.__get_cards_to_discard():
             self.discard(card)
+
+        for l in self.listeners:
+            l.notify(Notification("discard-card", card = self.get_top_discard_card()))
+
         assert self.hand == []
         assert self.played == []
 

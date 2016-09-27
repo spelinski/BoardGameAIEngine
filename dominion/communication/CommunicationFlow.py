@@ -60,7 +60,7 @@ def __process_buy(cards_to_buy, played_treasures, player, supply, buys, extra_mo
                 break
             money -= get_cost(card)
             supply.take(card)
-            player.gain_card(card)
+            player.gain_cards([card])
             gained_cards.append(card)
     except:
         pass
@@ -126,7 +126,7 @@ def __process_action(player, supply, actions, buys, extra_money, card, parameter
     def take_from_supply(card):
         supply.take(card)
         gained_cards.append(card)
-        player.gain_card(card)
+        player.gain_cards([card])
 
     player.draw_cards(get_extra_cards(card))
     if card == CELLAR:
