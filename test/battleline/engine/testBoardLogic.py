@@ -172,6 +172,12 @@ class TestBoardLogic(unittest.TestCase):
 
         self.addCard(5, Identifiers.SOUTH, TroopCard(1, 'purple'))
         self.addCard(5, Identifiers.NORTH, TroopCard(1, 'yellow'))
+
+        #Since north added a card last it shouldn't claim the flag at the end of it's turn
+        self.boardLogic.checkAllFlags(Identifiers.NORTH)
+        self.assertEqual(self.boardLogic.board.flags[5].claimed, None)
+
+        #South finished first so it should claim it at the end of it's turn
         self.boardLogic.checkAllFlags(Identifiers.SOUTH)
         self.assertEqual(self.boardLogic.board.flags[
                          5].claimed, Identifiers.SOUTH)
