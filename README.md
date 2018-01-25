@@ -1,4 +1,4 @@
-Battleline AI Engine
+Board Game AI Engine
 ====================
 
 This is a python engine for the board game BattleLine.
